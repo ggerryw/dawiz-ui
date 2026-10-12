@@ -22,4 +22,5 @@ NHL pool standings page. See README.md for the overview and file layout.
 - Keep it plain: static HTML pages (`index.html`, `overnight.html`) sharing `style.css` and `common.js`. No framework, no build step.
 - UI is deliberately large with generous spacing for readability. Don't shrink text or tap targets without asking.
 - It must fit phone widths (360px and up) with no sideways scrolling. On phones the PPG column is hidden to make room.
+- No auto-refresh of any kind (timers or refresh-on-focus burn free-tier credits). Each page fetches its data once on load; visitors reload to get new data.
 - Respect light and dark mode via `prefers-color-scheme`.
