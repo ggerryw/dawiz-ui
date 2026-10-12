@@ -98,3 +98,11 @@
   .scorer { gap: 8px; padding: 10px; }
   .chip { font-size: .75rem; }
 }
+/* Draft page */
+.roundhead { margin: 22px 4px 8px; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pick { display: grid; grid-template-columns: 2.4em auto 1fr auto; align-items: center; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.pick:first-child { border-top: 0; }
+.pick .num { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.pick .pinfo { min-width: 0; }
+.filter { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+@media (max-width: 600px) { .pick { gap: 8px; padding: 9px 10px; grid-template-columns: 2em auto 1fr auto; } }

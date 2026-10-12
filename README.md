@@ -6,17 +6,18 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 
 ## How it works
 
-- `public/` is the frontend: `index.html` (standings) and `overnight.html` (everyone who scored last night, with their pool owner), sharing `style.css` and `common.js`. No framework or build step.
+- `public/` is the frontend: `index.html` (standings), `overnight.html` (everyone who scored last night, with their pool owner) and `draft.html` (recap of the draft, read from the static `draft.json`), sharing `style.css` and `common.js`. No framework or build step.
 - `netlify/functions/standings.mjs` and `overnight.mjs` are Netlify functions (shared helpers in `netlify/lib/nhl.mjs`). On each page load they pull stats, last night's games and today's schedule from the public NHL API and return JSON; `standings` totals each owner's active players, `overnight` lists last night's scorers and who owns them. (The NHL API can't be called straight from a browser, which is why the function exists.)
-- `dataFeed.csv` is the source of truth for who owns whom.
-- `scripts/build-rosters.mjs` turns that CSV into `netlify/functions/rosters.json`.
+- `dataFeed.csv` is the source of truth for who owns whom. `bibleFeed.csv` lists every player with their draft price and is the source of truth for positions.
+- `scripts/build-bible.mjs` turns the bible into `netlify/lib/bible.json`; `scripts/build-rosters.mjs` turns `dataFeed.csv` into `netlify/functions/rosters.json`, using bible positions.
 - `server.mjs` is a local stand-in for Netlify, for testing only.
 
 ## Updating rosters (e.g. after the drop/pick)
 
 1. Edit `dataFeed.csv`.
-2. Rebuild the roster file:
+2. Rebuild the generated files (run the bible step first if `bibleFeed.csv` changed):
    ```bash
+   node scripts/build-bible.mjs
    node scripts/build-rosters.mjs
    ```
 3. Commit and push. Netlify redeploys on every push to `main`.
@@ -34,6 +35,10 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 - IDs are NHL player IDs without the leading `84` (sheet `78402` = API `8478402`).
 
 Names and positions aren't in the CSV; the build script looks them up from the NHL API.
+
+## Draft snapshot
+
+`public/draft.json` was generated once with `node scripts/build-draft.mjs` and is deliberately not rebuilt when rosters change, so the draft page stays a true record of the draft. The script refuses to overwrite it unless run with `--force`.
 
 ## Run locally
 

@@ -5,7 +5,7 @@ import standings from "./netlify/functions/standings.mjs";
 import overnight from "./netlify/functions/overnight.mjs";
 
 const api = { "/api/standings": standings, "/api/overnight": overnight };
-const types = { html: "text/html", css: "text/css", js: "text/javascript" };
+const types = { html: "text/html", css: "text/css", js: "text/javascript", json: "application/json" };
 
 createServer(async (req, res) => {
   const path = req.url.split("?")[0];

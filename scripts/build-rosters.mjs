@@ -4,6 +4,9 @@
 // Names/positions aren't in the feed, so they're looked up from the NHL API.
 import { readFileSync, writeFileSync } from "node:fs";
 
+// Positions come from the bible (run build-bible.mjs first), not from the NHL API.
+const bible = JSON.parse(readFileSync(new URL("../netlify/lib/bible.json", import.meta.url), "utf8"));
+
 const rows = readFileSync(new URL("../dataFeed.csv", import.meta.url), "utf8")
   .split(/\r?\n/)
   .filter((l) => l.trim())
@@ -51,7 +54,10 @@ for (const id of ids.filter((id) => !info.has(id))) {
   await sleep(150);
 }
 
-const player = ({ id, round }) => ({ id, name: info.get(id)?.name ?? `Unknown (${id})`, pos: info.get(id)?.pos ?? "?", ...(round && { round }) });
+const player = ({ id, round }) => {
+  if (!bible[id]) console.warn(`! ${info.get(id)?.name ?? id} is not in the bible; using NHL position`);
+  return { id, name: info.get(id)?.name ?? `Unknown (${id})`, pos: bible[id] ?? info.get(id)?.pos ?? "?", ...(round && { round }) };
+};
 const out = ownerNames.map((owner) => ({
   owner,
   players: active[owner].map(player),

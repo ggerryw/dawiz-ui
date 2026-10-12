@@ -1,5 +1,6 @@
 import rosters from "./rosters.json" with { type: "json" };
 import { etDate, gameLines } from "../lib/nhl.mjs";
+import bible from "../lib/bible.json" with { type: "json" };
 
 // playerId -> owner names, for active roster spots only (bench is ignored here).
 const active = new Map();
@@ -14,7 +15,7 @@ export default async () => {
     .map((p) => ({
       id: p.playerId,
       name: p.skaterFullName,
-      pos: p.positionCode,
+      pos: bible[p.playerId] ?? p.positionCode, // bible is the source of truth
       team: p.teamAbbrev,
       opp: p.opponentTeamAbbrev,
       home: p.homeRoad === "H",
