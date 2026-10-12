@@ -57,7 +57,7 @@ function render() {
       <td class="sep">${o.tonight}</td></tr>`;
     if (isOpen) {
       const prow = (p, cls = "") => `<tr class="${cls}"><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><b>${p.name}${p.tonight ? '<span class="dot" title="Plays tonight"></span>' : ""}</b><span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${cls === "bench" ? "" : price(p.cost)}</span></div></a></td>
-        <td>${p.gp}</td><td>${p.g}</td><td>${p.a}</td><td><b>${p.tp}</b></td><td>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
+        <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td class="ln"${p.otp ? ' data-l="Last night"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
       const bench = o.bench?.length
         ? `<tr class="benchhead"><td colspan="6">Bench</td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
         : "";

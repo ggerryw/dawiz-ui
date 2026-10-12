@@ -27,7 +27,7 @@ function render() {
   const who = $("#owner").value;
   const shown = who ? picks.filter((p) => p.owner === who) : picks;
   const rounds = [...new Set(shown.map((p) => p.round))];
-  $("#summary").textContent = who ? `${who}'s picks` : `${picks.length} picks · snake draft`;
+  $("#summary").textContent = who ? `${who}'s picks` : "";
   $("#rounds").innerHTML = rounds.map((r) => `
     <div class="roundhead">Round ${r}</div>
     <div class="card">${shown.filter((p) => p.round === r).map((p) => `

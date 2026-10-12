@@ -24,6 +24,7 @@ NHL pool standings page. See README.md for the overview and file layout.
 
 - Keep it plain: static HTML pages (`index.html`, `overnight.html`, `draft.html`) sharing `style.css` and `common.js` (which also renders the tab bar: add new pages to `TABS` there). No framework, no build step.
 - UI is deliberately large with generous spacing for readability. Don't shrink text or tap targets without asking.
-- It must fit phone widths (360px and up) with no sideways scrolling. On phones the PPG column is hidden to make room.
+- It must fit phone widths (360px and up) with no sideways scrolling. On phones the PPG column is hidden to make room, and open rosters show each player's stats on a second line under the name.
+- On phones no text may be smaller than ~14px (older users struggled with small text). Don't shrink fonts to make something fit; change the layout or hide a lower-value column instead.
 - No auto-refresh of any kind (timers or refresh-on-focus burn free-tier credits). Each page fetches its data once on load; visitors reload to get new data.
 - Respect light and dark mode via `prefers-color-scheme`.
