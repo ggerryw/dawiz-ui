@@ -15,7 +15,7 @@ NHL pool standings page. See README.md for the overview and file layout.
 
 ## Workflow gotchas
 
-- After any change to `data/bibleFeed.csv`, run `node scripts/build-bible.mjs` then `node scripts/build-rosters.mjs`. After any change to `data/dataFeed.csv`, run `node scripts/build-rosters.mjs` and commit the generated JSON (`bible.json`, `rosters.json`) with it. Netlify does not run the script.
+- After any change to `data/bibleFeed.csv`, run `node scripts/build-bible.mjs` then `node scripts/build-rosters.mjs`. After any change to `data/teamFeed.csv`, run `node scripts/build-rosters.mjs` and commit the generated JSON (`bible.json`, `rosters.json`) with it. Netlify does not run the script.
 - The local server (`node server.mjs`) caches the function and `rosters.json`: restart it after changing either. Edits under `public/` only need a refresh.
 - The NHL API rate-limits bursts. Don't fire many parallel requests; the build script retries with backoff for this reason.
 - Do not push, deploy or change the live site without asking first. The repo is public.

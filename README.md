@@ -8,13 +8,13 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 
 - `public/` is the frontend: `index.html` (standings), `overnight.html` (everyone who scored last night, with their pool owner) and `draft.html` (recap of the draft, read from the static `draft.json`), sharing `style.css` and `common.js`. No framework or build step.
 - `netlify/functions/standings.mjs` and `overnight.mjs` are Netlify functions (shared helpers in `netlify/lib/nhl.mjs`). On each page load they pull stats, last night's games and today's schedule from the public NHL API and return JSON; `standings` totals each owner's active players, `overnight` lists last night's scorers and who owns them. (The NHL API can't be called straight from a browser, which is why the function exists.)
-- `data/` holds the two spreadsheets you edit by hand. `data/dataFeed.csv` is the source of truth for who owns whom. `data/bibleFeed.csv` lists every player with their draft price and position, and is the source of truth for both. A drafted player listed at $0.00 is a "freebie" priced by draft position: (owners × 16 + 1 − pick) / 100.
-- `scripts/build-bible.mjs` turns the bible into `netlify/lib/bible.json`; `scripts/build-rosters.mjs` turns `data/dataFeed.csv` into `netlify/functions/rosters.json`, using bible positions.
+- `data/` holds the two spreadsheets you edit by hand. `data/teamFeed.csv` is the source of truth for who owns whom. `data/bibleFeed.csv` lists every player with their draft price and position, and is the source of truth for both. A drafted player listed at $0.00 is a "freebie" priced by draft position: (owners × 16 + 1 − pick) / 100.
+- `scripts/build-bible.mjs` turns the bible into `netlify/lib/bible.json`; `scripts/build-rosters.mjs` turns `data/teamFeed.csv` into `netlify/functions/rosters.json`, using bible positions.
 - `server.mjs` is a local stand-in for Netlify, for testing only.
 
 ## Updating rosters (e.g. after the drop/pick)
 
-1. Edit `data/dataFeed.csv`.
+1. Edit `data/teamFeed.csv`.
 2. Rebuild the generated files (run the bible step first if `data/bibleFeed.csv` changed):
    ```bash
    node scripts/build-bible.mjs
