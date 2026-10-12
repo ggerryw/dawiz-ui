@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz L</title>
+<style>
+  :root {
+    --bg: #f4f6fb; --card: #fff; --text: #14213d; --muted: #5d6985; --line: #e3e8f2;
+    --accent: #1a56c9; --good: #dff6dd; --bad: #fde0e0; --best: #1f8a3b; --worst: #c0392b;
+    --photo: #dfe5f1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
+      --accent: #7ba8ff; --good: #1d3a2a; --bad: #43222a; --best: #5fd27f; --worst: #ff7b7b;
+      --photo: #2a3858; }
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 19px; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 1rem/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  h1 { margin: 0; font-size: 2.1rem; color: var(--accent); letter-spacing: .5px; }
+  .sub { color: var(--muted); font-size: .95rem; text-align: right; }
+  .card { background: var(--card); border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.15); overflow: hidden; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { padding: 14px 10px; text-align: center; white-space: nowrap; }
+  thead th { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
+    border-bottom: 1px solid var(--line); }
+  thead tr.grp th { border: 0; padding-bottom: 0; }
+  th.sep, td.sep { border-left: 1px solid var(--line); }
+  tbody tr.row { cursor: pointer; border-top: 1px solid var(--line); }
+  tbody tr.row:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.rank { color: var(--muted); width: 1.8em; padding-right: 0; }
+  td.name { text-align: left; font-weight: 700; font-size: 1.1rem; }
+  td.tp { font-weight: 700; }
+  td.good { background: var(--good); } td.bad { background: var(--bad); }
+  td.best { color: var(--best); font-weight: 700; } td.worst { color: var(--worst); font-weight: 700; }
+  .plus { color: var(--best); font-weight: 600; }
+  .detail > td { padding: 0; background: color-mix(in srgb, var(--accent) 4%, transparent); }
+  .detail table { margin: 0; }
+  .detail th, .detail td { padding: 8px 10px; font-size: .95rem; }
+  .detail td.pname { text-align: left; }
+  .player { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+  .player:hover b { color: var(--accent); text-decoration: underline; }
+  .photo { position: relative; flex: none; width: 52px; height: 52px; border-radius: 50%; background: var(--photo);
+    overflow: hidden; display: grid; place-items: center; font-size: .8rem; font-weight: 700; color: var(--muted); }
+  .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .pinfo { display: flex; flex-direction: column; line-height: 1.25; }
+  .pinfo b { font-weight: 600; }
+  .detail th.ln { white-space: normal; width: 3.2em; line-height: 1.15; }
+  .pmeta { white-space: nowrap; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .8rem; }
+  .logo { width: 22px; height: 22px; object-fit: contain; }
+  .dot { display: inline-block; width: .6em; height: .6em; border-radius: 50%; background: var(--best); margin-left: 4px; }
+  .benchhead td { text-align: left; padding: 18px 14px 6px; font-size: .75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--muted); border-top: 2px solid var(--line); }
+  tr.bench td { opacity: .72; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 16px 4px; color: var(--muted); font-size: .9rem; }
+  .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+  #err { color: var(--worst); padding: 20px; }
+  .chev { display: inline-block; transition: transform .15s; color: var(--muted); margin-right: 8px; font-size: .7em; }
+  tr.open .chev { transform: rotate(90deg); }
+  @media (max-width: 600px) {
+    html { font-size: 17px; }
+    main { padding: 10px; }
+    h1 { font-size: 1.8rem; }
+    th, td { padding: 13px 3px; }
+    thead th { font-size: .6rem; letter-spacing: 0; }
+    .chev { margin-right: 4px; }
+    td.rank, #main > thead tr th:first-child, #main .pp, #main td.ppg { display: none; }
+    td.name { padding-left: 8px; font-size: 1.05rem; }
+    .detail th, .detail td { padding: 8px 5px; font-size: .85rem; }
+    .player { gap: 8px; }
+    .detail td.pname { white-space: normal; min-width: 0; }
+    .pinfo b { font-size: .85rem; white-space: nowrap; }
+    .photo { width: 34px; height: 34px; }
+    .pmeta { font-size: .72rem; gap: 4px; }
+    .logo { width: 18px; height: 18px; }
+    .detail th, .detail td { padding: 8px 2px; }
+    .detail td.pname { padding-left: 8px; }
+    .detail th.ln { width: 2.6em; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>DaWiz L</h1>
+    <div class="sub" id="sub">Loading…</div>
+  </header>
+  <div class="card scroll">
+    <table id="main">
+      <thead>
+        <tr class="grp"><th></th><th></th><th colspan="5">Season</th><th colspan="2" class="sep og-grp">Last night</th><th class="sep"></th></tr>
+        <tr><th></th><th></th><th>GP</th><th>G</th><th>A</th><th>TP</th><th class="pp">PPG</th><th class="sep og">GP</th><th>TP</th><th class="sep" title="Players with a game today">Tonight</th></tr>
+      </thead>
+      <tbody id="body"></tbody>
+    </table>
+    <div id="err" hidden></div>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--good)"></i>At or above avg</span>
+    <span><i style="background:var(--bad)"></i>Below avg</span>
+    <span><span class="dot" style="margin:0 5px 0 0"></span>Plays tonight</span>  </div>
+</main>
+<script>
+const COLS = ["gp", "g", "a", "tp", "ppg"];
+const $ = (s) => document.querySelector(s);
+const open = new Set();
+let data;
+
+function shade(owners) {
+  const st = {};
+  for (const c of COLS) {
+    const v = owners.map((o) => o[c]);
+    st[c] = { avg: v.reduce((a, b) => a + b, 0) / v.length, max: Math.max(...v), min: Math.min(...v) };
+  }
+  return (c, v) => {
+    const s = st[c];
+    return (v >= s.avg ? "good" : "bad") + (v === s.max ? " best" : v === s.min ? " worst" : "");
+  };
+}
+
+const initials = (n) => n.split(" ").map((w) => w[0]).slice(0, 2).join("");
+const photo = (p) => `<span class="photo"><img loading="lazy" alt="" src="https://assets.nhle.com/mugs/nhl/latest/${p.id}.png" onerror="this.parentNode.textContent='${initials(p.name)}'"></span>`;
+const logo = (t) => t ? `<picture><source media="(prefers-color-scheme: dark)" srcset="https://assets.nhle.com/logos/nhl/svg/${t}_dark.svg"><img class="logo" loading="lazy" alt="${t}" src="https://assets.nhle.com/logos/nhl/svg/${t}_light.svg" onerror="this.remove()"></picture>` : "";
+
+function render() {
+  const cls = shade(data.owners);
+  const rows = data.owners.map((o, i) => {
+    const cells = COLS.map((c) => `<td class="${cls(c, o[c])} ${c}">${c === "ppg" ? o[c].toFixed(2) : o[c]}</td>`).join("");
+    const isOpen = open.has(o.owner);
+    let html = `<tr class="row ${isOpen ? "open" : ""}" data-o="${o.owner}">
+      <td class="rank">${i + 1}</td><td class="name"><span class="chev">▶</span>${o.owner}</td>${cells}
+      <td class="sep og">${o.ogp}</td><td>${o.otp ? `<span class="plus">+${o.otp}</span>` : 0}</td>
+      <td class="sep">${o.tonight}</td></tr>`;
+    if (isOpen) {
+      const prow = (p, cls = "") => `<tr class="${cls}"><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><b>${p.name}${p.tonight ? '<span class="dot" title="Plays tonight"></span>' : ""}</b><span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}</span></div></a></td>
+        <td>${p.gp}</td><td>${p.g}</td><td>${p.a}</td><td><b>${p.tp}</b></td><td>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
+      const bench = o.bench?.length
+        ? `<tr class="benchhead"><td colspan="6">Bench</td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
+        : "";
+      html += `<tr class="detail"><td colspan="10"><table><thead><tr><th style="text-align:left">Player</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th class="ln">Last night</th></tr></thead><tbody>${o.players.map((p) => prow(p)).join("")}${bench}</tbody></table></td></tr>`;
+    }
+    return html;
+  });
+  $("#body").innerHTML = rows.join("");
+  const d = new Date(data.asOf + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  $("#sub").textContent = `As of ${d}`;
+}
+
+$("#body").addEventListener("click", (e) => {
+  const r = e.target.closest("tr.row");
+  if (!r) return;
+  open.has(r.dataset.o) ? open.delete(r.dataset.o) : open.add(r.dataset.o);
+  render();
+});
+
+async function load() {
+  try {
+    const r = await fetch("/api/standings");
+    if (!r.ok) throw new Error(r.status);
+    data = await r.json();
+    $("#err").hidden = true;
+    render();
+  } catch (e) {
+    $("#err").hidden = false;
+    $("#err").textContent = "Couldn't load standings. Try refreshing.";
+    $("#sub").textContent = "";
+  }
+}
+load();
+setInterval(load, 5 * 60 * 1000);
+</script>
+</body>
+</html>

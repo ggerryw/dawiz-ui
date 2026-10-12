@@ -1,0 +1,1718 @@
+[
+ {
+  "owner": "Mike",
+  "players": [
+   {
+    "id": 8478402,
+    "name": "Connor McDavid",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8479385,
+    "name": "Jordan Kyrou",
+    "pos": "R",
+    "round": 2
+   },
+   {
+    "id": 8482097,
+    "name": "Jack Quinn",
+    "pos": "R",
+    "round": 3
+   },
+   {
+    "id": 8481582,
+    "name": "Nick Robertson",
+    "pos": "L",
+    "round": 4
+   },
+   {
+    "id": 8477402,
+    "name": "Pavel Buchnevich",
+    "pos": "L",
+    "round": 5
+   },
+   {
+    "id": 8481533,
+    "name": "Trevor Zegras",
+    "pos": "C",
+    "round": 6
+   },
+   {
+    "id": 8482671,
+    "name": "Owen Power",
+    "pos": "D",
+    "round": 7
+   },
+   {
+    "id": 8477946,
+    "name": "Dylan Larkin",
+    "pos": "C",
+    "round": 8
+   },
+   {
+    "id": 8478444,
+    "name": "Brock Boeser",
+    "pos": "R",
+    "round": 9
+   },
+   {
+    "id": 8475168,
+    "name": "Matt Duchene",
+    "pos": "C",
+    "round": 10
+   },
+   {
+    "id": 8474586,
+    "name": "Jordan Eberle",
+    "pos": "R",
+    "round": 11
+   },
+   {
+    "id": 8482113,
+    "name": "Anton Lundell",
+    "pos": "C",
+    "round": 12
+   },
+   {
+    "id": 8482105,
+    "name": "Jake Sanderson",
+    "pos": "D",
+    "round": 13
+   },
+   {
+    "id": 8478493,
+    "name": "Joel Eriksson Ek",
+    "pos": "C",
+    "round": 14
+   },
+   {
+    "id": 8476958,
+    "name": "Jaccob Slavin",
+    "pos": "D",
+    "round": 15
+   },
+   {
+    "id": 8478519,
+    "name": "Anthony Cirelli",
+    "pos": "C",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8484145,
+    "name": "Zach Benson",
+    "pos": "L"
+   },
+   {
+    "id": 8476906,
+    "name": "Shayne Gostisbehere",
+    "pos": "D"
+   },
+   {
+    "id": 8478445,
+    "name": "Mathew Barzal",
+    "pos": "C"
+   },
+   {
+    "id": 8477950,
+    "name": "Tony DeAngelo",
+    "pos": "D"
+   },
+   {
+    "id": 8476448,
+    "name": "William Karlsson",
+    "pos": "C"
+   },
+   {
+    "id": 8485957,
+    "name": "Alberts Smits",
+    "pos": "D"
+   },
+   {
+    "id": 8475726,
+    "name": "Tyler Toffoli",
+    "pos": "C"
+   },
+   {
+    "id": 8481624,
+    "name": "Ilya Mikheyev",
+    "pos": "R"
+   }
+  ]
+ },
+ {
+  "owner": "Matt",
+  "players": [
+   {
+    "id": 8484801,
+    "name": "Macklin Celebrini",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8480018,
+    "name": "Nick Suzuki",
+    "pos": "C",
+    "round": 2
+   },
+   {
+    "id": 8484984,
+    "name": "Ivan Demidov",
+    "pos": "R",
+    "round": 3
+   },
+   {
+    "id": 8482720,
+    "name": "Matthew Knies",
+    "pos": "L",
+    "round": 4
+   },
+   {
+    "id": 8484158,
+    "name": "Easton Cowan",
+    "pos": "R",
+    "round": 5
+   },
+   {
+    "id": 8478438,
+    "name": "Tommy Novak",
+    "pos": "C",
+    "round": 6
+   },
+   {
+    "id": 8482109,
+    "name": "Alexis Lafrenière",
+    "pos": "L",
+    "round": 7
+   },
+   {
+    "id": 8478469,
+    "name": "Thomas Chabot",
+    "pos": "D",
+    "round": 8
+   },
+   {
+    "id": 8481524,
+    "name": "Bowen Byram",
+    "pos": "D",
+    "round": 9
+   },
+   {
+    "id": 8475184,
+    "name": "Chris Kreider",
+    "pos": "L",
+    "round": 10
+   },
+   {
+    "id": 8482116,
+    "name": "Tim Stützle",
+    "pos": "C",
+    "round": 11
+   },
+   {
+    "id": 8480064,
+    "name": "Josh Norris",
+    "pos": "C",
+    "round": 12
+   },
+   {
+    "id": 8481596,
+    "name": "Shane Pinto",
+    "pos": "C",
+    "round": 13
+   },
+   {
+    "id": 8475754,
+    "name": "Brock Nelson",
+    "pos": "C",
+    "round": 14
+   },
+   {
+    "id": 8477500,
+    "name": "Bo Horvat",
+    "pos": "C",
+    "round": 15
+   },
+   {
+    "id": 8486161,
+    "name": "Owen Michaels",
+    "pos": "R",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8477504,
+    "name": "Josh Morrissey",
+    "pos": "D"
+   },
+   {
+    "id": 8485414,
+    "name": "Ben Kindel",
+    "pos": "C"
+   },
+   {
+    "id": 8477505,
+    "name": "Alexander Wennberg",
+    "pos": "C"
+   },
+   {
+    "id": 8476906,
+    "name": "Shayne Gostisbehere",
+    "pos": "D"
+   },
+   {
+    "id": 8480074,
+    "name": "Alexandre Texier",
+    "pos": "L"
+   },
+   {
+    "id": 8482093,
+    "name": "Seth Jarvis",
+    "pos": "R"
+   },
+   {
+    "id": 8484860,
+    "name": "Matvei Gridin",
+    "pos": "R"
+   },
+   {
+    "id": 8484471,
+    "name": "Emmitt Finnie",
+    "pos": "C"
+   }
+  ]
+ },
+ {
+  "owner": "Bill",
+  "players": [
+   {
+    "id": 8477492,
+    "name": "Nathan MacKinnon",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8481540,
+    "name": "Cole Caufield",
+    "pos": "R",
+    "round": 2
+   },
+   {
+    "id": 8484911,
+    "name": "Collin Graf",
+    "pos": "R",
+    "round": 3
+   },
+   {
+    "id": 8479345,
+    "name": "Jakob Chychrun",
+    "pos": "D",
+    "round": 4
+   },
+   {
+    "id": 8474564,
+    "name": "Steven Stamkos",
+    "pos": "C",
+    "round": 5
+   },
+   {
+    "id": 8481617,
+    "name": "Vasily Podkolzin",
+    "pos": "R",
+    "round": 6
+   },
+   {
+    "id": 8480009,
+    "name": "Eeli Tolvanen",
+    "pos": "R",
+    "round": 7
+   },
+   {
+    "id": 8477964,
+    "name": "Ivan Barbashev",
+    "pos": "L",
+    "round": 8
+   },
+   {
+    "id": 8478407,
+    "name": "Vince Dunn",
+    "pos": "D",
+    "round": 9
+   },
+   {
+    "id": 8483489,
+    "name": "Fraser Minten",
+    "pos": "C",
+    "round": 10
+   },
+   {
+    "id": 8478975,
+    "name": "Mason Marchment",
+    "pos": "L",
+    "round": 11
+   },
+   {
+    "id": 8473986,
+    "name": "Alex Killorn",
+    "pos": "L",
+    "round": 12
+   },
+   {
+    "id": 8478458,
+    "name": "Jack Roslovic",
+    "pos": "C",
+    "round": 13
+   },
+   {
+    "id": 8475692,
+    "name": "Mats Zuccarello",
+    "pos": "R",
+    "round": 14
+   },
+   {
+    "id": 8474590,
+    "name": "John Carlson",
+    "pos": "D",
+    "round": 15
+   },
+   {
+    "id": 8480448,
+    "name": "Parker Kelly",
+    "pos": "C",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8475158,
+    "name": "Ryan O'Reilly",
+    "pos": "C"
+   },
+   {
+    "id": 8478462,
+    "name": "Nicolas Roy",
+    "pos": "C"
+   },
+   {
+    "id": 8475745,
+    "name": "Charlie Coyle",
+    "pos": "C"
+   },
+   {
+    "id": 8476448,
+    "name": "William Karlsson",
+    "pos": "C"
+   },
+   {
+    "id": 8478854,
+    "name": "Ryan Shea",
+    "pos": "D"
+   },
+   {
+    "id": 8477416,
+    "name": "Oliver Bjorkstrand",
+    "pos": "R"
+   },
+   {
+    "id": 8477935,
+    "name": "Sam Bennett",
+    "pos": "C"
+   },
+   {
+    "id": 8480748,
+    "name": "Kiefer Sherwood",
+    "pos": "L"
+   }
+  ]
+ },
+ {
+  "owner": "Dave",
+  "players": [
+   {
+    "id": 8478420,
+    "name": "Mikko Rantanen",
+    "pos": "R",
+    "round": 1
+   },
+   {
+    "id": 8479314,
+    "name": "Matthew Tkachuk",
+    "pos": "L",
+    "round": 2
+   },
+   {
+    "id": 8482740,
+    "name": "Wyatt Johnston",
+    "pos": "C",
+    "round": 3
+   },
+   {
+    "id": 8480069,
+    "name": "Cale Makar",
+    "pos": "D",
+    "round": 4
+   },
+   {
+    "id": 8482175,
+    "name": "JJ Peterka",
+    "pos": "R",
+    "round": 5
+   },
+   {
+    "id": 8485406,
+    "name": "Porter Martone",
+    "pos": "R",
+    "round": 6
+   },
+   {
+    "id": 8475172,
+    "name": "Nazem Kadri",
+    "pos": "C",
+    "round": 7
+   },
+   {
+    "id": 8482684,
+    "name": "Luke Hughes",
+    "pos": "D",
+    "round": 8
+   },
+   {
+    "id": 8480801,
+    "name": "Brady Tkachuk",
+    "pos": "L",
+    "round": 9
+   },
+   {
+    "id": 8476456,
+    "name": "Jonathan Huberdeau",
+    "pos": "L",
+    "round": 10
+   },
+   {
+    "id": 8482660,
+    "name": "Kent Johnson",
+    "pos": "C",
+    "round": 11
+   },
+   {
+    "id": 8476881,
+    "name": "Tomas Hertl",
+    "pos": "C",
+    "round": 12
+   },
+   {
+    "id": 8484873,
+    "name": "Cole Hutson",
+    "pos": "D",
+    "round": 13
+   },
+   {
+    "id": 8480036,
+    "name": "Miro Heiskanen",
+    "pos": "D",
+    "round": 14
+   },
+   {
+    "id": 8478401,
+    "name": "Pavel Zacha",
+    "pos": "C",
+    "round": 15
+   },
+   {
+    "id": 8476462,
+    "name": "Dougie Hamilton",
+    "pos": "D",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8484145,
+    "name": "Zach Benson",
+    "pos": "L"
+   },
+   {
+    "id": 8477951,
+    "name": "Nick Schmaltz",
+    "pos": "C"
+   },
+   {
+    "id": 8482659,
+    "name": "Josh Doan",
+    "pos": "R"
+   },
+   {
+    "id": 8481554,
+    "name": "Kaapo Kakko",
+    "pos": "R"
+   },
+   {
+    "id": 8475786,
+    "name": "Zach Hyman",
+    "pos": "L"
+   },
+   {
+    "id": 8482155,
+    "name": "Alex Laferriere",
+    "pos": "R"
+   },
+   {
+    "id": 8476455,
+    "name": "Gabriel Landeskog",
+    "pos": "L"
+   },
+   {
+    "id": 8484221,
+    "name": "Calum Ritchie",
+    "pos": "C"
+   }
+  ]
+ },
+ {
+  "owner": "Frank",
+  "players": [
+   {
+    "id": 8482699,
+    "name": "Dylan Guenther",
+    "pos": "R",
+    "round": 1
+   },
+   {
+    "id": 8484227,
+    "name": "Will Smith",
+    "pos": "C",
+    "round": 2
+   },
+   {
+    "id": 8482149,
+    "name": "Cole Perfetti",
+    "pos": "C",
+    "round": 3
+   },
+   {
+    "id": 8477476,
+    "name": "Artturi Lehkonen",
+    "pos": "L",
+    "round": 4
+   },
+   {
+    "id": 8481656,
+    "name": "Aliaksei Protas",
+    "pos": "L",
+    "round": 5
+   },
+   {
+    "id": 8480893,
+    "name": "Kirill Marchenko",
+    "pos": "R",
+    "round": 6
+   },
+   {
+    "id": 8481605,
+    "name": "Jackson LaCombe",
+    "pos": "D",
+    "round": 7
+   },
+   {
+    "id": 8482079,
+    "name": "Marco Rossi",
+    "pos": "C",
+    "round": 8
+   },
+   {
+    "id": 8481557,
+    "name": "Matt Boldy",
+    "pos": "L",
+    "round": 9
+   },
+   {
+    "id": 8485402,
+    "name": "Michael Misa",
+    "pos": "C",
+    "round": 10
+   },
+   {
+    "id": 8480208,
+    "name": "Drake Batherson",
+    "pos": "R",
+    "round": 11
+   },
+   {
+    "id": 8484768,
+    "name": "Zayne Parekh",
+    "pos": "D",
+    "round": 12
+   },
+   {
+    "id": 8480830,
+    "name": "Andrei Svechnikov",
+    "pos": "R",
+    "round": 13
+   },
+   {
+    "id": 8481604,
+    "name": "Pavel Dorofeyev",
+    "pos": "R",
+    "round": 14
+   },
+   {
+    "id": 8477940,
+    "name": "Nikolaj Ehlers",
+    "pos": "L",
+    "round": 15
+   },
+   {
+    "id": 8481535,
+    "name": "Nils Hoglander",
+    "pos": "L",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8482146,
+    "name": "Luke Evangelista",
+    "pos": "R"
+   },
+   {
+    "id": 8479425,
+    "name": "Filip Hronek",
+    "pos": "D"
+   },
+   {
+    "id": 8481528,
+    "name": "Dylan Cozens",
+    "pos": "C"
+   },
+   {
+    "id": 8481024,
+    "name": "Linus Karlsson",
+    "pos": "C"
+   },
+   {
+    "id": 8484145,
+    "name": "Zach Benson",
+    "pos": "L"
+   },
+   {
+    "id": 8481554,
+    "name": "Kaapo Kakko",
+    "pos": "R"
+   },
+   {
+    "id": 8480802,
+    "name": "Ryan McLeod",
+    "pos": "C"
+   },
+   {
+    "id": 8482713,
+    "name": "Mackie Samoskevich",
+    "pos": "R"
+   }
+  ]
+ },
+ {
+  "owner": "Luke",
+  "players": [
+   {
+    "id": 8481559,
+    "name": "Jack Hughes",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8484153,
+    "name": "Leo Carlsson",
+    "pos": "C",
+    "round": 2
+   },
+   {
+    "id": 8485366,
+    "name": "Matthew Schaefer",
+    "pos": "D",
+    "round": 3
+   },
+   {
+    "id": 8483516,
+    "name": "Jimmy Snuggerud",
+    "pos": "R",
+    "round": 4
+   },
+   {
+    "id": 8477955,
+    "name": "Jared McCann",
+    "pos": "L",
+    "round": 5
+   },
+   {
+    "id": 8478449,
+    "name": "Roope Hintz",
+    "pos": "C",
+    "round": 6
+   },
+   {
+    "id": 8486067,
+    "name": "Gavin McKenna",
+    "pos": "L",
+    "round": 7
+   },
+   {
+    "id": 8482078,
+    "name": "Lucas Raymond",
+    "pos": "L",
+    "round": 8
+   },
+   {
+    "id": 8482745,
+    "name": "Mason McTavish",
+    "pos": "C",
+    "round": 9
+   },
+   {
+    "id": 8481601,
+    "name": "Simon Holmstrom",
+    "pos": "R",
+    "round": 10
+   },
+   {
+    "id": 8482730,
+    "name": "Brandt Clarke",
+    "pos": "D",
+    "round": 11
+   },
+   {
+    "id": 8480002,
+    "name": "Nico Hischier",
+    "pos": "C",
+    "round": 12
+   },
+   {
+    "id": 8476459,
+    "name": "Mika Zibanejad",
+    "pos": "C",
+    "round": 13
+   },
+   {
+    "id": 8475798,
+    "name": "Mikael Granlund",
+    "pos": "C",
+    "round": 14
+   },
+   {
+    "id": 8476905,
+    "name": "Chandler Stephenson",
+    "pos": "C",
+    "round": 15
+   },
+   {
+    "id": 8477451,
+    "name": "Ryan Hartman",
+    "pos": "R",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8481528,
+    "name": "Dylan Cozens",
+    "pos": "C"
+   },
+   {
+    "id": 8475726,
+    "name": "Tyler Toffoli",
+    "pos": "C"
+   },
+   {
+    "id": 8476483,
+    "name": "Rickard Rakell",
+    "pos": "R"
+   },
+   {
+    "id": 8482659,
+    "name": "Josh Doan",
+    "pos": "R"
+   },
+   {
+    "id": 8473419,
+    "name": "Brad Marchand",
+    "pos": "L"
+   },
+   {
+    "id": 8478498,
+    "name": "Jake DeBrusk",
+    "pos": "L"
+   },
+   {
+    "id": 8481542,
+    "name": "Moritz Seider",
+    "pos": "D"
+   },
+   {
+    "id": 8480817,
+    "name": "K'Andre Miller",
+    "pos": "D"
+   }
+  ]
+ },
+ {
+  "owner": "Gerry",
+  "players": [
+   {
+    "id": 8478403,
+    "name": "Jack Eichel",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8477939,
+    "name": "William Nylander",
+    "pos": "R",
+    "round": 2
+   },
+   {
+    "id": 8478483,
+    "name": "Mitch Marner",
+    "pos": "R",
+    "round": 3
+   },
+   {
+    "id": 8479420,
+    "name": "Tage Thompson",
+    "pos": "C",
+    "round": 4
+   },
+   {
+    "id": 8480023,
+    "name": "Robert Thomas",
+    "pos": "C",
+    "round": 5
+   },
+   {
+    "id": 8484166,
+    "name": "Adam Fantilli",
+    "pos": "C",
+    "round": 6
+   },
+   {
+    "id": 8482077,
+    "name": "Dylan Holloway",
+    "pos": "L",
+    "round": 7
+   },
+   {
+    "id": 8477447,
+    "name": "Shea Theodore",
+    "pos": "D",
+    "round": 8
+   },
+   {
+    "id": 8480865,
+    "name": "Noah Dobson",
+    "pos": "D",
+    "round": 9
+   },
+   {
+    "id": 8483515,
+    "name": "Juraj Slafkovský",
+    "pos": "L",
+    "round": 10
+   },
+   {
+    "id": 8483524,
+    "name": "Shane Wright",
+    "pos": "C",
+    "round": 11
+   },
+   {
+    "id": 8477497,
+    "name": "Sean Monahan",
+    "pos": "C",
+    "round": 12
+   },
+   {
+    "id": 8475768,
+    "name": "Jaden Schwartz",
+    "pos": "L",
+    "round": 13
+   },
+   {
+    "id": 8480849,
+    "name": "Barrett Hayton",
+    "pos": "C",
+    "round": 14
+   },
+   {
+    "id": 8477987,
+    "name": "Ryan Donato",
+    "pos": "C",
+    "round": 15
+   },
+   {
+    "id": 8482259,
+    "name": "Bobby McMann",
+    "pos": "C",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8475786,
+    "name": "Zach Hyman",
+    "pos": "L"
+   },
+   {
+    "id": 8477479,
+    "name": "Tyler Bertuzzi",
+    "pos": "L"
+   },
+   {
+    "id": 8473419,
+    "name": "Brad Marchand",
+    "pos": "L"
+   },
+   {
+    "id": 8482679,
+    "name": "Matt Coronato",
+    "pos": "R"
+   },
+   {
+    "id": 8476483,
+    "name": "Rickard Rakell",
+    "pos": "R"
+   },
+   {
+    "id": 8476880,
+    "name": "Tom Wilson",
+    "pos": "R"
+   },
+   {
+    "id": 8476853,
+    "name": "Morgan Rielly",
+    "pos": "D"
+   },
+   {
+    "id": 8476875,
+    "name": "Mike Matheson",
+    "pos": "D"
+   }
+  ]
+ },
+ {
+  "owner": "Darrin",
+  "players": [
+   {
+    "id": 8477934,
+    "name": "Leon Draisaitl",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8479343,
+    "name": "Clayton Keller",
+    "pos": "R",
+    "round": 2
+   },
+   {
+    "id": 8483445,
+    "name": "Cutter Gauthier",
+    "pos": "L",
+    "round": 3
+   },
+   {
+    "id": 8479400,
+    "name": "Pierre-Luc Dubois",
+    "pos": "C",
+    "round": 4
+   },
+   {
+    "id": 8482124,
+    "name": "Quinton Byfield",
+    "pos": "R",
+    "round": 5
+   },
+   {
+    "id": 8480027,
+    "name": "Jason Robertson",
+    "pos": "L",
+    "round": 6
+   },
+   {
+    "id": 8479323,
+    "name": "Adam Fox",
+    "pos": "D",
+    "round": 7
+   },
+   {
+    "id": 8477949,
+    "name": "Alex Tuch",
+    "pos": "R",
+    "round": 8
+   },
+   {
+    "id": 8475170,
+    "name": "Brayden Schenn",
+    "pos": "C",
+    "round": 9
+   },
+   {
+    "id": 8484152,
+    "name": "Luca Cagnoni",
+    "pos": "D",
+    "round": 10
+   },
+   {
+    "id": 8482145,
+    "name": "Mavrik Bourque",
+    "pos": "C",
+    "round": 11
+   },
+   {
+    "id": 8478038,
+    "name": "Devon Toews",
+    "pos": "D",
+    "round": 12
+   },
+   {
+    "id": 8471215,
+    "name": "Evgeni Malkin",
+    "pos": "C",
+    "round": 13
+   },
+   {
+    "id": 8481032,
+    "name": "Paul Cotter",
+    "pos": "L",
+    "round": 14
+   },
+   {
+    "id": 8478439,
+    "name": "Travis Konecny",
+    "pos": "R",
+    "round": 15
+   },
+   {
+    "id": 8484797,
+    "name": "Konsta Helenius",
+    "pos": "C",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8476455,
+    "name": "Gabriel Landeskog",
+    "pos": "L"
+   },
+   {
+    "id": 8478854,
+    "name": "Ryan Shea",
+    "pos": "D"
+   },
+   {
+    "id": 8474600,
+    "name": "Roman Josi",
+    "pos": "D"
+   },
+   {
+    "id": 8481024,
+    "name": "Linus Karlsson",
+    "pos": "C"
+   },
+   {
+    "id": 8484145,
+    "name": "Zach Benson",
+    "pos": "L"
+   },
+   {
+    "id": 8476880,
+    "name": "Tom Wilson",
+    "pos": "R"
+   },
+   {
+    "id": 8476483,
+    "name": "Rickard Rakell",
+    "pos": "R"
+   },
+   {
+    "id": 8482155,
+    "name": "Alex Laferriere",
+    "pos": "R"
+   }
+  ]
+ },
+ {
+  "owner": "Leon",
+  "players": [
+   {
+    "id": 8480803,
+    "name": "Evan Bouchard",
+    "pos": "D",
+    "round": 1
+   },
+   {
+    "id": 8478864,
+    "name": "Kirill Kaprizov",
+    "pos": "L",
+    "round": 2
+   },
+   {
+    "id": 8478427,
+    "name": "Sebastian Aho",
+    "pos": "C",
+    "round": 3
+   },
+   {
+    "id": 8478440,
+    "name": "Dylan Strome",
+    "pos": "C",
+    "round": 4
+   },
+   {
+    "id": 8483457,
+    "name": "Lane Hutson",
+    "pos": "D",
+    "round": 5
+   },
+   {
+    "id": 8482702,
+    "name": "Logan Stankoven",
+    "pos": "C",
+    "round": 6
+   },
+   {
+    "id": 8479542,
+    "name": "Brandon Hagel",
+    "pos": "L",
+    "round": 7
+   },
+   {
+    "id": 8482809,
+    "name": "Jackson Blake",
+    "pos": "R",
+    "round": 8
+   },
+   {
+    "id": 8482475,
+    "name": "Egor Chinakhov",
+    "pos": "R",
+    "round": 9
+   },
+   {
+    "id": 8482665,
+    "name": "Matty Beniers",
+    "pos": "C",
+    "round": 10
+   },
+   {
+    "id": 8479407,
+    "name": "Jesper Bratt",
+    "pos": "L",
+    "round": 11
+   },
+   {
+    "id": 8483499,
+    "name": "Liam Ohgren",
+    "pos": "L",
+    "round": 12
+   },
+   {
+    "id": 8477409,
+    "name": "Carter Verhaeghe",
+    "pos": "C",
+    "round": 13
+   },
+   {
+    "id": 8480842,
+    "name": "Filip Hallander",
+    "pos": "C",
+    "round": 14
+   },
+   {
+    "id": 8481553,
+    "name": "Bobby Brink",
+    "pos": "R",
+    "round": 15
+   },
+   {
+    "id": 8484803,
+    "name": "Trevor Connelly",
+    "pos": "L",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8477951,
+    "name": "Nick Schmaltz",
+    "pos": "C"
+   },
+   {
+    "id": 8484145,
+    "name": "Zach Benson",
+    "pos": "L"
+   },
+   {
+    "id": 8477504,
+    "name": "Josh Morrissey",
+    "pos": "D"
+   },
+   {
+    "id": 8477496,
+    "name": "Elias Lindholm",
+    "pos": "C"
+   },
+   {
+    "id": 8481554,
+    "name": "Kaapo Kakko",
+    "pos": "R"
+   },
+   {
+    "id": 8471724,
+    "name": "Kris Letang",
+    "pos": "D"
+   },
+   {
+    "id": 8475745,
+    "name": "Charlie Coyle",
+    "pos": "C"
+   },
+   {
+    "id": 8482146,
+    "name": "Luke Evangelista",
+    "pos": "R"
+   }
+  ]
+ },
+ {
+  "owner": "Joe",
+  "players": [
+   {
+    "id": 8478398,
+    "name": "Kyle Connor",
+    "pos": "L",
+    "round": 1
+   },
+   {
+    "id": 8480039,
+    "name": "Martin Necas",
+    "pos": "C",
+    "round": 2
+   },
+   {
+    "id": 8484186,
+    "name": "Ryan Leonard",
+    "pos": "R",
+    "round": 3
+   },
+   {
+    "id": 8485391,
+    "name": "Anton Frondell",
+    "pos": "C",
+    "round": 4
+   },
+   {
+    "id": 8482667,
+    "name": "William Eklund",
+    "pos": "L",
+    "round": 5
+   },
+   {
+    "id": 8484762,
+    "name": "Beckett Sennecke",
+    "pos": "R",
+    "round": 6
+   },
+   {
+    "id": 8478460,
+    "name": "Zach Werenski",
+    "pos": "D",
+    "round": 7
+   },
+   {
+    "id": 8479410,
+    "name": "Mikhail Sergachev",
+    "pos": "D",
+    "round": 8
+   },
+   {
+    "id": 8484210,
+    "name": "Gabe Perreault",
+    "pos": "R",
+    "round": 9
+   },
+   {
+    "id": 8484994,
+    "name": "Igor Chernyshov",
+    "pos": "L",
+    "round": 10
+   },
+   {
+    "id": 8471675,
+    "name": "Sidney Crosby",
+    "pos": "C",
+    "round": 11
+   },
+   {
+    "id": 8485395,
+    "name": "James Hagens",
+    "pos": "C",
+    "round": 12
+   },
+   {
+    "id": 8479987,
+    "name": "Morgan Geekie",
+    "pos": "C",
+    "round": 13
+   },
+   {
+    "id": 8482775,
+    "name": "Oliver Kapanen",
+    "pos": "C",
+    "round": 14
+   },
+   {
+    "id": 8484999,
+    "name": "Ilya Protas",
+    "pos": "L",
+    "round": 15
+   },
+   {
+    "id": 8483482,
+    "name": "Tristan Luneau",
+    "pos": "D",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8484145,
+    "name": "Zach Benson",
+    "pos": "L"
+   },
+   {
+    "id": 8483493,
+    "name": "Frank Nazar",
+    "pos": "C"
+   },
+   {
+    "id": 8475786,
+    "name": "Zach Hyman",
+    "pos": "L"
+   },
+   {
+    "id": 8471214,
+    "name": "Alex Ovechkin",
+    "pos": "L"
+   },
+   {
+    "id": 8477504,
+    "name": "Josh Morrissey",
+    "pos": "D"
+   },
+   {
+    "id": 8482146,
+    "name": "Luke Evangelista",
+    "pos": "R"
+   },
+   {
+    "id": 8473512,
+    "name": "Claude Giroux",
+    "pos": "R"
+   },
+   {
+    "id": 8480015,
+    "name": "Owen Tippett",
+    "pos": "R"
+   }
+  ]
+ },
+ {
+  "owner": "Chad",
+  "players": [
+   {
+    "id": 8479318,
+    "name": "Auston Matthews",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8477956,
+    "name": "David Pastrnak",
+    "pos": "R",
+    "round": 2
+   },
+   {
+    "id": 8478550,
+    "name": "Artemi Panarin",
+    "pos": "L",
+    "round": 3
+   },
+   {
+    "id": 8476460,
+    "name": "Mark Scheifele",
+    "pos": "C",
+    "round": 4
+   },
+   {
+    "id": 8477933,
+    "name": "Sam Reinhart",
+    "pos": "C",
+    "round": 5
+   },
+   {
+    "id": 8480800,
+    "name": "Quinn Hughes",
+    "pos": "D",
+    "round": 6
+   },
+   {
+    "id": 8476468,
+    "name": "J.T. Miller",
+    "pos": "C",
+    "round": 7
+   },
+   {
+    "id": 8476887,
+    "name": "Filip Forsberg",
+    "pos": "L",
+    "round": 8
+   },
+   {
+    "id": 8477960,
+    "name": "Adrian Kempe",
+    "pos": "R",
+    "round": 9
+   },
+   {
+    "id": 8484386,
+    "name": "Dmitri Simashev",
+    "pos": "D",
+    "round": 10
+   },
+   {
+    "id": 8477404,
+    "name": "Jake Guentzel",
+    "pos": "C",
+    "round": 11
+   },
+   {
+    "id": 8482460,
+    "name": "Matt Rempe",
+    "pos": "C",
+    "round": 12
+   },
+   {
+    "id": 8480014,
+    "name": "Gabriel Vilardi",
+    "pos": "C",
+    "round": 13
+   },
+   {
+    "id": 8477903,
+    "name": "Garnet Hathaway",
+    "pos": "R",
+    "round": 14
+   },
+   {
+    "id": 8485388,
+    "name": "Victor Eklund",
+    "pos": "R",
+    "round": 15
+   },
+   {
+    "id": 8486025,
+    "name": "Viggo Björck",
+    "pos": "C",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8475786,
+    "name": "Zach Hyman",
+    "pos": "L"
+   },
+   {
+    "id": 8471214,
+    "name": "Alex Ovechkin",
+    "pos": "L"
+   },
+   {
+    "id": 8476880,
+    "name": "Tom Wilson",
+    "pos": "R"
+   },
+   {
+    "id": 8476483,
+    "name": "Rickard Rakell",
+    "pos": "R"
+   },
+   {
+    "id": 8477951,
+    "name": "Nick Schmaltz",
+    "pos": "C"
+   },
+   {
+    "id": 8475158,
+    "name": "Ryan O'Reilly",
+    "pos": "C"
+   },
+   {
+    "id": 8479425,
+    "name": "Filip Hronek",
+    "pos": "D"
+   },
+   {
+    "id": 8474600,
+    "name": "Roman Josi",
+    "pos": "D"
+   }
+  ]
+ },
+ {
+  "owner": "Phil",
+  "players": [
+   {
+    "id": 8478010,
+    "name": "Brayden Point",
+    "pos": "C",
+    "round": 1
+   },
+   {
+    "id": 8484387,
+    "name": "Matvei Michkov",
+    "pos": "R",
+    "round": 2
+   },
+   {
+    "id": 8483431,
+    "name": "Logan Cooley",
+    "pos": "C",
+    "round": 3
+   },
+   {
+    "id": 8480012,
+    "name": "Elias Pettersson",
+    "pos": "C",
+    "round": 4
+   },
+   {
+    "id": 8477942,
+    "name": "Kevin Fiala",
+    "pos": "L",
+    "round": 5
+   },
+   {
+    "id": 8481581,
+    "name": "Thomas Harley",
+    "pos": "D",
+    "round": 6
+   },
+   {
+    "id": 8478414,
+    "name": "Timo Meier",
+    "pos": "R",
+    "round": 7
+   },
+   {
+    "id": 8475167,
+    "name": "Victor Hedman",
+    "pos": "D",
+    "round": 8
+   },
+   {
+    "id": 8481580,
+    "name": "Connor McMichael",
+    "pos": "L",
+    "round": 9
+   },
+   {
+    "id": 8486103,
+    "name": "Ivar Stenberg",
+    "pos": "L",
+    "round": 10
+   },
+   {
+    "id": 8484144,
+    "name": "Connor Bedard",
+    "pos": "C",
+    "round": 11
+   },
+   {
+    "id": 8476453,
+    "name": "Nikita Kucherov",
+    "pos": "R",
+    "round": 12
+   },
+   {
+    "id": 8483525,
+    "name": "Danila Yurov",
+    "pos": "R",
+    "round": 13
+   },
+   {
+    "id": 8480839,
+    "name": "Rasmus Dahlin",
+    "pos": "D",
+    "round": 14
+   },
+   {
+    "id": 8475166,
+    "name": "John Tavares",
+    "pos": "C",
+    "round": 15
+   },
+   {
+    "id": 8484390,
+    "name": "Roman Kantserov",
+    "pos": "R",
+    "round": 16
+   }
+  ],
+  "bench": [
+   {
+    "id": 8484798,
+    "name": "Zeev Buium",
+    "pos": "D"
+   },
+   {
+    "id": 8482093,
+    "name": "Seth Jarvis",
+    "pos": "R"
+   },
+   {
+    "id": 8475786,
+    "name": "Zach Hyman",
+    "pos": "L"
+   },
+   {
+    "id": 8479425,
+    "name": "Filip Hronek",
+    "pos": "D"
+   },
+   {
+    "id": 8477496,
+    "name": "Elias Lindholm",
+    "pos": "C"
+   },
+   {
+    "id": 8477479,
+    "name": "Tyler Bertuzzi",
+    "pos": "L"
+   },
+   {
+    "id": 8481542,
+    "name": "Moritz Seider",
+    "pos": "D"
+   },
+   {
+    "id": 8477501,
+    "name": "Valeri Nichushkin",
+    "pos": "R"
+   }
+  ]
+ }
+]
