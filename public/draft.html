@@ -36,7 +36,7 @@ function render() {
         <a href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}</a>
         <div class="pinfo">
           <a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener"><b>${p.name}</b></a>
-          <span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}</span>
+          <span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${price(p.cost)}</span>
         </div>
         <span class="chip">${p.owner}</span>
       </div>`).join("")}</div>`).join("");

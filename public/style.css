@@ -69,7 +69,7 @@
     .detail td.pname { white-space: normal; min-width: 0; }
     .pinfo b { font-size: .85rem; white-space: nowrap; }
     .photo { width: 34px; height: 34px; }
-    .pmeta { font-size: .72rem; gap: 4px; }
+    .pmeta { font-size: .7rem; gap: 4px; }
     .logo { width: 18px; height: 18px; }
     .detail th, .detail td { padding: 8px 2px; }
     .detail td.pname { padding-left: 8px; }

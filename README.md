@@ -8,7 +8,7 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 
 - `public/` is the frontend: `index.html` (standings), `overnight.html` (everyone who scored last night, with their pool owner) and `draft.html` (recap of the draft, read from the static `draft.json`), sharing `style.css` and `common.js`. No framework or build step.
 - `netlify/functions/standings.mjs` and `overnight.mjs` are Netlify functions (shared helpers in `netlify/lib/nhl.mjs`). On each page load they pull stats, last night's games and today's schedule from the public NHL API and return JSON; `standings` totals each owner's active players, `overnight` lists last night's scorers and who owns them. (The NHL API can't be called straight from a browser, which is why the function exists.)
-- `dataFeed.csv` is the source of truth for who owns whom. `bibleFeed.csv` lists every player with their draft price and is the source of truth for positions.
+- `dataFeed.csv` is the source of truth for who owns whom. `bibleFeed.csv` lists every player with their draft price and position, and is the source of truth for both. A drafted player listed at $0.00 is a "freebie" priced by draft position: (owners × 16 + 1 − pick) / 100.
 - `scripts/build-bible.mjs` turns the bible into `netlify/lib/bible.json`; `scripts/build-rosters.mjs` turns `dataFeed.csv` into `netlify/functions/rosters.json`, using bible positions.
 - `server.mjs` is a local stand-in for Netlify, for testing only.
 

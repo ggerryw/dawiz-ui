@@ -4,7 +4,7 @@
 // Names/positions aren't in the feed, so they're looked up from the NHL API.
 import { readFileSync, writeFileSync } from "node:fs";
 
-// Positions come from the bible (run build-bible.mjs first), not from the NHL API.
+// Positions and prices come from the bible (run build-bible.mjs first), not from the NHL API.
 const bible = JSON.parse(readFileSync(new URL("../netlify/lib/bible.json", import.meta.url), "utf8"));
 
 const rows = readFileSync(new URL("../dataFeed.csv", import.meta.url), "utf8")
@@ -54,14 +54,28 @@ for (const id of ids.filter((id) => !info.has(id))) {
   await sleep(150);
 }
 
-const player = ({ id, round }) => {
+// Draft position (snake: column order in odd rounds, reversed in even rounds).
+const nOwners = ownerNames.length;
+const nRounds = Math.max(...Object.values(active).map((l) => l.length));
+const pickNumber = (round, col) => (round - 1) * nOwners + (round % 2 ? col + 1 : nOwners - col);
+
+// A bible price of $0.00 marks a "freebie": its price depends on how deep in the draft it
+// was taken, (owners x rounds + 1 - pick) / 100. Only drafted players have a pick number.
+const price = (id, pick) => {
+  const cost = bible[id]?.cost;
+  if (cost === 0 && pick) return Math.round(nOwners * nRounds + 1 - pick) / 100;
+  return cost;
+};
+
+const player = ({ id, round }, col) => {
+  const pick = round ? pickNumber(round, col) : undefined;
   if (!bible[id]) console.warn(`! ${info.get(id)?.name ?? id} is not in the bible; using NHL position`);
-  return { id, name: info.get(id)?.name ?? `Unknown (${id})`, pos: bible[id] ?? info.get(id)?.pos ?? "?", ...(round && { round }) };
+  return { id, name: info.get(id)?.name ?? `Unknown (${id})`, pos: bible[id]?.pos ?? info.get(id)?.pos ?? "?", cost: price(id, pick), ...(round && { round, pick }) };
 };
 const out = ownerNames.map((owner) => ({
   owner,
-  players: active[owner].map(player),
-  bench: bench[owner].map(player),
+  players: active[owner].map((e) => player(e, ownerNames.indexOf(owner))),
+  bench: bench[owner].map((e) => player(e, ownerNames.indexOf(owner))),
 }));
 
 writeFileSync(new URL("../netlify/functions/rosters.json", import.meta.url), JSON.stringify(out, null, 1));

@@ -4,8 +4,8 @@
 // midseason drop/pick. This refuses to overwrite an existing snapshot unless --force.
 //
 // Reads netlify/functions/rosters.json (run build-rosters.mjs first), which holds each
-// owner's active players in draft-round order. Snake draft: column order in odd rounds,
-// reversed in even rounds. Team is the player's team at snapshot time.
+// owner's active players with their draft pick number and price (freebies priced by pick).
+// Team is the player's team at snapshot time.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 const out = new URL("../public/draft.json", import.meta.url);
@@ -35,8 +35,7 @@ for (let i = 0; i < n; i++) {
       team.set(p.id, r.ok ? (await r.json()).currentTeamAbbrev ?? null : null);
       await sleep(150);
     }
-    const pick = p.round % 2 ? (p.round - 1) * n + i + 1 : (p.round - 1) * n + (n - i);
-    picks.push({ pick, round: p.round, owner: rosters[i].owner, id: p.id, name: p.name, pos: p.pos, team: team.get(p.id) });
+    picks.push({ pick: p.pick, round: p.round, owner: rosters[i].owner, id: p.id, name: p.name, pos: p.pos, cost: p.cost, team: team.get(p.id) });
   }
 }
 picks.sort((a, b) => a.pick - b.pick);

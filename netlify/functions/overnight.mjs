@@ -15,7 +15,7 @@ export default async () => {
     .map((p) => ({
       id: p.playerId,
       name: p.skaterFullName,
-      pos: bible[p.playerId] ?? p.positionCode, // bible is the source of truth
+      pos: bible[p.playerId]?.pos ?? p.positionCode, // bible is the source of truth
       team: p.teamAbbrev,
       opp: p.opponentTeamAbbrev,
       home: p.homeRoad === "H",
