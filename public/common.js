@@ -16,6 +16,9 @@ const logo = (t) => t ? `<picture><source media="(prefers-color-scheme: dark)" s
 const gamePill = (g) => {
   if (!g) return "";
   const t = new Date(g.start);
-  const time = t.toLocaleTimeString([], t.getMinutes() ? { hour: "numeric", minute: "2-digit" } : { hour: "numeric" });
+  // Locales differ ("7 p.m." in en-CA, "7 PM" in en-US), so normalize to "7 PM".
+  const fmt = (o) => t.toLocaleTimeString([], o).replace(/\s*([ap])\.?\s?m\.?/i, (_, x) => " " + x.toUpperCase() + "M");
+  let time = fmt(t.getMinutes() ? { hour: "numeric", minute: "2-digit" } : { hour: "numeric" });
+  if (!/[AP]M$/.test(time)) time = fmt({ hour: "numeric", minute: "2-digit" }); // 24-hour locales: "19:00", not "19"
   return `<span class="gm">${time} ${g.home ? "vs" : "@"} ${g.opp}</span>`;
 };

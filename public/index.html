@@ -25,8 +25,7 @@
   </div>
   <div class="legend">
     <span><i style="background:var(--good)"></i>At or above avg</span>
-    <span><i style="background:var(--bad)"></i>Below avg</span>
-    <span><span class="gm" style="margin:0 6px 0 0">7 PM vs OTT</span>Playing tonight</span>  </div>
+    <span><i style="background:var(--bad)"></i>Below avg</span>  </div>
 </main>
 <script src="/common.js"></script>
 <script>
@@ -57,11 +56,11 @@ function render() {
       <td class="sep">${o.tonight}</td></tr>`;
     if (isOpen) {
       const prow = (p, cls = "") => `<tr class="${cls}"><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${cls === "bench" ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
-        <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td class="ln"${p.otp ? ' data-l="Last Night:"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
+        <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td data-l="PPG">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</td><td class="ln"${p.otp ? ' data-l="Last Night:"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
       const bench = o.bench?.length
-        ? `<tr class="benchhead"><td colspan="6">Bench</td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
+        ? `<tr class="benchhead"><td colspan="7">Bench</td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
         : "";
-      html += `<tr class="detail"><td colspan="10"><table><thead><tr><th style="text-align:left">Player</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th class="ln">Last night</th></tr></thead><tbody>${o.players.map((p) => prow(p)).join("")}${bench}</tbody></table></td></tr>`;
+      html += `<tr class="detail"><td colspan="10"><table><thead><tr><th style="text-align:left">Player</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th>PPG</th><th class="ln">Last night</th></tr></thead><tbody>${o.players.map((p) => prow(p)).join("")}${bench}</tbody></table></td></tr>`;
     }
     return html;
   });

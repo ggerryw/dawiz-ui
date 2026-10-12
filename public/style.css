@@ -96,7 +96,7 @@
     .detail td.pname { flex: 1 0 calc(100% + 50px); margin-left: -50px; padding: 0 0 6px; white-space: normal; min-width: 0; }
     .detail .pinfo b { white-space: nowrap; }
     .detail td[data-l]::before { content: attr(data-l); color: var(--muted); font-size: .85rem; font-weight: 400; margin-right: 5px; }
-    .detail td.ln { flex-basis: 100%; text-align: left; margin-top: 2px; }
+    .detail td.ln { text-align: left; }
     .detail td.ln:empty { display: none; }
     .detail tr.benchhead td { flex: 1 0 calc(100% + 50px); margin-left: -50px; padding: 16px 0 2px; font-size: .85rem; }
     /* the row already draws a top border on phones; make that the bench divider and drop the cell's own */
