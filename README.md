@@ -4,6 +4,15 @@ Standings page for a 12-team NHL pool. One NHL point = one pool point. Skaters o
 
 Each owner has 16 active players (one per draft round) and 8 bench players. Bench players are shown but never count toward totals.
 
+- Live site: https://dawiz-ui.netlify.app
+- Repo: https://github.com/luketorti/dawiz-ui
+
+## What each page shows
+
+- **Standings**: owners ranked by total points, with GP, G, A, TP, PPG (hidden on phones), last night's GP and TP, and how many of their players have a game today. Tap an owner to open their roster: each active player (in draft-round order) with team, position, round, draft price, a grey game pill when the team plays today (e.g. `7:00 PM vs OTT`, in the viewer's time zone), and GP/G/A/TP/PPG. Last night's points show as a green `+N` pill. Below the active players is the bench, with "Times Picked: N" (how many owners have that player on their bench) instead of a price.
+- **Overnight**: everyone in the NHL who scored a point on the previous day, with their pool owner if they are on an active roster. Bench players are ignored here.
+- **Draft**: round-by-round recap of the original draft (pick number, player, team, position, price, owner), with an owner filter. It is a frozen snapshot (see Draft snapshot).
+
 ## How it works
 
 - `public/` is the frontend: `index.html` (standings), `overnight.html` (everyone who scored last night, with their pool owner) and `draft.html` (recap of the draft, read from the static `draft.json`), sharing `style.css` and `common.js`. No framework or build step.
@@ -63,7 +72,7 @@ Player names come from the NHL API (the build script looks them up). Positions a
 
 ## Run locally
 
-Requires Node 18+. No install step.
+Requires Node 20 or newer (the functions import JSON files with `with { type: "json" }`). No install step.
 
 ```bash
 node server.mjs
@@ -76,6 +85,14 @@ Then open http://localhost:8888. Restart the server after changing the function 
 Hosted on Netlify's free tier. `netlify.toml` sets `public/` as the site and `netlify/functions/` as the functions folder, so importing the repo into Netlify needs no extra settings.
 
 Auto-publish is turned off. Pushing to GitHub does not change the live site; publish from the site's Deploys tab in Netlify when you're ready. Production deploys cost 15 of the 300 free monthly credits, so release in batches rather than per change.
+
+## Known behavior
+
+- **Standings are live.** Season totals come straight from the NHL stats, so a point appears shortly after a game ends, including games finished earlier today. "Last Night" is only the previous day's games (Eastern time), so TP minus Last Night is not strictly "yesterday's standings" until the day rolls over. This was considered and deliberately left as is.
+- **No auto-refresh.** Each page fetches its data once when opened; reload to update. A tab left open from before a deploy keeps running the old code until reloaded.
+- **"Playing Tonight" / game pills** use the NHL schedule for today (Eastern date) and count every game today, played or not. Postponed games are ignored.
+- **Netlify badge.** Netlify adds its own "Powered by Netlify" badge and script to every page; it is not in this repo and can't be removed from the code.
+- **No automated tests.** To sanity-check after changes: run it locally, and confirm the points of owned players on Overnight add up to the Standings "Last Night" TP column.
 
 ## Data sources
 
