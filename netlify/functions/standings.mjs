@@ -37,12 +37,14 @@ export default async () => {
 
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
   const lastNight = new Map(overnight.data.map((p) => [p.playerId, p]));
-  const playingToday = new Set(
-    (schedule.gameWeek.find((w) => w.date === today)?.games ?? []).flatMap((g) => [
-      g.awayTeam.abbrev,
-      g.homeTeam.abbrev,
-    ])
-  );
+  // team -> that team's game today: opponent, home/away and UTC start time.
+  // Postponed games are ignored. Finished games still count; we just show today's games.
+  const todaysGames = new Map();
+  for (const g of schedule.gameWeek.find((w) => w.date === today)?.games ?? []) {
+    if (g.gameScheduleState && g.gameScheduleState !== "OK") continue;
+    todaysGames.set(g.awayTeam.abbrev, { start: g.startTimeUTC, opp: g.homeTeam.abbrev, home: false });
+    todaysGames.set(g.homeTeam.abbrev, { start: g.startTimeUTC, opp: g.awayTeam.abbrev, home: true });
+  }
 
   const withStats = (list) =>
     Promise.all(
@@ -50,6 +52,7 @@ export default async () => {
         const s = byId.get(pl.id);
         const o = lastNight.get(pl.id);
         const team = s ? s.teamAbbrevs.split(",").pop().trim() : await currentTeam(pl.id);
+        const game = team ? todaysGames.get(team) : undefined;
         return {
           ...pl,
           team,
@@ -59,7 +62,8 @@ export default async () => {
           tp: s?.points ?? 0,
           ogp: o?.gamesPlayed ?? 0,
           otp: o?.points ?? 0,
-          tonight: team ? playingToday.has(team) : false,
+          tonight: !!game, // has a game today
+          ...(game && { game }),
         };
       })
     );

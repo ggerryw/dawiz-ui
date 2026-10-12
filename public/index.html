@@ -26,7 +26,7 @@
   <div class="legend">
     <span><i style="background:var(--good)"></i>At or above avg</span>
     <span><i style="background:var(--bad)"></i>Below avg</span>
-    <span><span class="dot" style="margin:0 5px 0 0"></span>Playing tonight</span>  </div>
+    <span><span class="gm" style="margin:0 6px 0 0">7 PM vs OTT</span>Playing tonight</span>  </div>
 </main>
 <script src="/common.js"></script>
 <script>
@@ -56,7 +56,7 @@ function render() {
       <td class="sep og">${o.ogp}</td><td>${o.otp ? `<span class="plus">+${o.otp}</span>` : 0}</td>
       <td class="sep">${o.tonight}</td></tr>`;
     if (isOpen) {
-      const prow = (p, cls = "") => `<tr class="${cls}"><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><b>${p.name}${p.tonight ? '<span class="dot" title="Playing tonight"></span>' : ""}</b><span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${cls === "bench" ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
+      const prow = (p, cls = "") => `<tr class="${cls}"><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${cls === "bench" ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
         <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td class="ln"${p.otp ? ' data-l="Last Night:"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
       const bench = o.bench?.length
         ? `<tr class="benchhead"><td colspan="6">Bench</td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
