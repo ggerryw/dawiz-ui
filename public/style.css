@@ -88,9 +88,9 @@
     .detail tr.benchhead td { flex: 1 0 calc(100% + 50px); margin-left: -50px; padding: 16px 0 2px; font-size: .85rem; }
   }
   .nav { display: flex; gap: 8px; margin: 0 0 16px; }
-  .nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; }
+  .nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; background: color-mix(in srgb, var(--accent) 10%, transparent); }
   .nav a[aria-current] { background: var(--accent); color: var(--card); }
-  .nav a:not([aria-current]):hover { color: var(--text); }
+  .nav a:not([aria-current]):hover { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
 /* Overnight page */
 .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; color: var(--muted); }
 .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; color: var(--text); }

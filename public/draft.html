@@ -9,14 +9,10 @@
 <body>
 <main>
   <nav class="nav" id="nav"></nav>
-  <header>
+  <header style="align-items:center">
     <h1>Draft</h1>
-    <div class="sub" id="sub">Loading…</div>
-  </header>
-  <div class="toolbar">
-    <span id="summary"></span>
     <select id="owner" class="filter" aria-label="Filter by owner"><option value="">All owners</option></select>
-  </div>
+  </header>
   <div id="rounds"></div>
 </main>
 <script src="/common.js"></script>
@@ -27,7 +23,6 @@ function render() {
   const who = $("#owner").value;
   const shown = who ? picks.filter((p) => p.owner === who) : picks;
   const rounds = [...new Set(shown.map((p) => p.round))];
-  $("#summary").textContent = who ? `${who}'s picks` : "";
   $("#rounds").innerHTML = rounds.map((r) => `
     <div class="roundhead">Round ${r}</div>
     <div class="card">${shown.filter((p) => p.round === r).map((p) => `
@@ -49,11 +44,9 @@ async function load() {
     picks = (await r.json()).picks;
     const owners = [...new Set(picks.map((p) => p.owner))].sort();
     $("#owner").insertAdjacentHTML("beforeend", owners.map((o) => `<option>${o}</option>`).join(""));
-    $("#sub").textContent = "";
     render();
   } catch (e) {
     $("#rounds").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the draft. Try refreshing.</div>`;
-    $("#sub").textContent = "";
   }
 }
 $("#owner").addEventListener("change", render);

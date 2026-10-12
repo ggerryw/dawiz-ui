@@ -15,7 +15,7 @@
   </header>
   <div class="toolbar">
     <span id="summary"></span>
-    <label class="toggle"><input type="checkbox" id="owned"> Pool players only</label>
+    <label class="toggle"><input type="checkbox" id="owned"> Rostered players only</label>
   </div>
   <div class="card" id="list"></div>
 </main>
@@ -28,7 +28,7 @@ function render() {
   const all = data.scorers;
   const shown = ownedOnly.checked ? all.filter((s) => s.owners.length) : all;
   const owned = all.filter((s) => s.owners.length).length;
-  $("#summary").textContent = `${all.length} players with a point · ${owned} on pool rosters`;
+  $("#summary").textContent = `${all.length} players with a point · ${owned} on rosters`;
   $("#sub").textContent = new Date(data.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
   $("#list").innerHTML = shown.length
