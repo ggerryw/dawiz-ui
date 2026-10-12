@@ -1,4 +1,4 @@
-# DaWiz L
+# DaWiz
 
 NHL pool standings page. See README.md for the overview and file layout.
 

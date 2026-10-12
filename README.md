@@ -1,4 +1,4 @@
-# DaWiz L
+# DaWiz
 
 Standings page for a 12-team NHL pool. One NHL point = one pool point. Skaters only, no goalies, no other scoring.
 
