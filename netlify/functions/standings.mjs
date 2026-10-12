@@ -1,24 +1,10 @@
 import rosters from "./rosters.json" with { type: "json" };
-
-const STATS = "https://api.nhle.com/stats/rest/en/skater/summary";
-const WEB = "https://api-web.nhle.com/v1";
-
-// Dates in NHL "hockey time" (Eastern).
-const etDate = (offsetDays = 0) => {
-  const d = new Date(Date.now() + offsetDays * 864e5);
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(d);
-};
+import { STATS, WEB, etDate, getJson, gameLines } from "../lib/nhl.mjs";
 
 const seasonId = () => {
   const [y, m] = etDate().split("-").map(Number);
   const start = m >= 9 ? y : y - 1;
   return `${start}${start + 1}`;
-};
-
-const getJson = async (url) => {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`${r.status} ${url}`);
-  return r.json();
 };
 
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
@@ -41,11 +27,7 @@ export default async () => {
 
   const [totals, overnight, schedule] = await Promise.all([
     getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`),
-    getJson(
-      `${STATS}?limit=-1&isGame=true&cayenneExp=${encodeURIComponent(
-        `gameDate>="${yesterday}" and gameDate<="${yesterday}" and gameTypeId=2`
-      )}`
-    ),
+    gameLines(yesterday),
     getJson(`${WEB}/schedule/${today}`),
   ]);
 
