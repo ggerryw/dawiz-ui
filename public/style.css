@@ -52,8 +52,8 @@
   .logo { width: 22px; height: 22px; object-fit: contain; }
   .times { font-weight: 700; color: var(--text); }
   /* game-today pill (grey, so it doesn't compete with the green last-night pill); sits on the name line (wraps under the name only if the row is too narrow) */
-  .nameline { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 10px; }
-  .gm { display: inline-block; padding: 1px 12px; border-radius: 999px; font-size: .85rem; font-weight: 700; white-space: nowrap;
+  .nameline { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 8px; }
+  .gm { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: .8rem; font-weight: 700; white-space: nowrap;
     color: var(--muted); background: color-mix(in srgb, var(--muted) 20%, transparent); }
   .benchhead td { text-align: left; padding: 18px 14px 6px; font-size: .75rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: .06em; color: var(--muted); border-top: 2px solid var(--line); }
