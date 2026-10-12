@@ -20,6 +20,10 @@ async function currentTeam(id) {
   return teamCache.get(id);
 }
 
+// How many benches each player is on (the same player can sit on several owners' benches).
+const benchCounts = new Map();
+for (const r of rosters) for (const p of r.bench ?? []) benchCounts.set(p.id, (benchCounts.get(p.id) ?? 0) + 1);
+
 export default async () => {
   const today = etDate();
   const yesterday = etDate(-1);
@@ -78,7 +82,7 @@ export default async () => {
         otp: sum("otp"),
         tonight: detailed.filter((p) => p.tonight).length,
         players: detailed, // feed order (draft round 1..n)
-        bench: benchDetailed, // feed order (B1..Bn)
+        bench: benchDetailed.map((p) => ({ ...p, timesPicked: benchCounts.get(p.id) })), // feed order (B1..Bn)
       };
     })
   );

@@ -23,6 +23,9 @@
   thead th { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
     border-bottom: 1px solid var(--line); }
   thead tr.grp th { border: 0; padding-bottom: 0; }
+  th.pt { white-space: normal; line-height: 1.15; width: 5.5em; }
+  th.s4 { display: none; }
+  th.own { text-align: left; }
   th.sep, td.sep { border-left: 1px solid var(--line); }
   tbody tr.row { cursor: pointer; border-top: 1px solid var(--line); }
   tbody tr.row:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
@@ -47,6 +50,7 @@
   .detail th.ln { white-space: normal; width: 3.2em; line-height: 1.15; }
   .pmeta { white-space: nowrap; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .8rem; }
   .logo { width: 22px; height: 22px; object-fit: contain; }
+  .times { font-weight: 700; color: var(--text); }
   .dot { display: inline-block; width: .6em; height: .6em; border-radius: 50%; background: var(--best); margin-left: 4px; }
   .benchhead td { text-align: left; padding: 18px 14px 6px; font-size: .75rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: .06em; color: var(--muted); border-top: 2px solid var(--line); }
@@ -66,6 +70,12 @@
     .chev { margin-right: 4px; }
     td.rank, #main > thead tr th:first-child, #main .pp, #main td.ppg { display: none; }
     td.name { padding-left: 8px; font-size: 1.05rem; }
+    th.own { padding-left: 8px; }
+    /* PPG is hidden on phones, so "Season" spans 4 columns, not 5 */
+    th.s5 { display: none; }
+    th.s4 { display: table-cell; }
+    th.pt { width: 1%; } /* let it shrink to its longest word on phones */
+    thead tr.grp th { white-space: normal; line-height: 1.15; } /* group headers may wrap when space is tight */
     #main .plus { padding: 1px 6px; }
     .player { gap: 10px; }
     .pinfo b { font-size: 1rem; }
@@ -91,6 +101,13 @@
   .nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; background: color-mix(in srgb, var(--accent) 10%, transparent); }
   .nav a[aria-current] { background: var(--accent); color: var(--card); }
   .nav a:not([aria-current]):hover { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
+/* Very narrow windows (< 350px, narrower than current phones): trim padding so the standings table still fits */
+@media (max-width: 350px) {
+  main { padding: 8px; }
+  #main th, #main td { padding-left: 1px; padding-right: 1px; }
+  #main td.name, #main th.own { padding-left: 4px; }
+  .chev { margin-right: 2px; }
+}
 /* Overnight page */
 .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; color: var(--muted); }
 .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; color: var(--text); }
@@ -113,9 +130,9 @@
 }
 /* Draft page */
 .roundhead { margin: 22px 4px 8px; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-.pick { display: grid; grid-template-columns: 2.4em auto 1fr auto; align-items: center; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.pick { display: grid; grid-template-columns: 2em auto 1fr auto; align-items: center; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
 .pick:first-child { border-top: 0; }
-.pick .num { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.pick .num { color: var(--muted); font-variant-numeric: tabular-nums; text-align: left; }
 .pick .pinfo { min-width: 0; }
 .filter { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
 @media (max-width: 600px) { .pick { gap: 8px; padding: 9px 10px; grid-template-columns: 2em auto 1fr auto; } }
