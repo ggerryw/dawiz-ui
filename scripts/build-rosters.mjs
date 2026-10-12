@@ -1,4 +1,4 @@
-// Converts dataFeed.csv -> netlify/functions/rosters.json
+// Converts data/dataFeed.csv -> netlify/functions/rosters.json
 // Feed layout: row 2 = owner names; numeric rows = active picks; B1..Bn rows = bench.
 // Sheet IDs drop the leading "84" (sheet 78402 -> NHL API 8478402).
 // Names/positions aren't in the feed, so they're looked up from the NHL API.
@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 // Positions and prices come from the bible (run build-bible.mjs first), not from the NHL API.
 const bible = JSON.parse(readFileSync(new URL("../netlify/lib/bible.json", import.meta.url), "utf8"));
 
-const rows = readFileSync(new URL("../dataFeed.csv", import.meta.url), "utf8")
+const rows = readFileSync(new URL("../data/dataFeed.csv", import.meta.url), "utf8")
   .split(/\r?\n/)
   .filter((l) => l.trim())
   .map((l) => l.split(",").map((c) => c.trim()));

@@ -1,6 +1,6 @@
 // One-time snapshot of the draft -> public/draft.json
 //
-// The draft is history, so it must NOT change when dataFeed.csv is updated after the
+// The draft is history, so it must NOT change when data/dataFeed.csv is updated after the
 // midseason drop/pick. This refuses to overwrite an existing snapshot unless --force.
 //
 // Reads netlify/functions/rosters.json (run build-rosters.mjs first), which holds each
