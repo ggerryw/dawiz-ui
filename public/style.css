@@ -96,6 +96,10 @@
     .detail td.ln { flex-basis: 100%; text-align: left; margin-top: 2px; }
     .detail td.ln:empty { display: none; }
     .detail tr.benchhead td { flex: 1 0 calc(100% + 50px); margin-left: -50px; padding: 16px 0 2px; font-size: .85rem; }
+    /* the row already draws a top border on phones; make that the bench divider and drop the cell's own */
+    .detail tr.benchhead { border-top-width: 2px; }
+    .detail tr.benchhead td { border-top: 0; }
+    .detail tr.benchhead + tr { border-top: 0; } /* label sits directly on its first player */
   }
   .nav { display: flex; gap: 8px; margin: 0 0 16px; }
   .nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; background: color-mix(in srgb, var(--accent) 10%, transparent); }
