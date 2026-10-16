@@ -1,11 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, WEB, etDate, getJson, gameLines } from "../lib/nhl.mjs";
-
-const seasonId = () => {
-  const [y, m] = etDate().split("-").map(Number);
-  const start = m >= 9 ? y : y - 1;
-  return `${start}${start + 1}`;
-};
+import { STATS, WEB, etDate, getJson, gameLines, seasonId } from "../lib/nhl.mjs";
 
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
 
@@ -23,6 +17,32 @@ async function currentTeam(id) {
 // How many benches each player is on (the same player can sit on several owners' benches).
 const benchCounts = new Map();
 for (const r of rosters) for (const p of r.bench ?? []) benchCounts.set(p.id, (benchCounts.get(p.id) ?? 0) + 1);
+
+// Round money: in each draft round, the active players with at least 1 point are ranked by TP and the
+// top four places pay these amounts. Tied players share the pool of the places they cover, rounded to
+// the cent (e.g. two tied for 2nd each get (2.26 + 1.50) / 2 = 1.88). Returns playerId -> payout.
+const ROUND_PAY = [3.0, 2.26, 1.5, 0.74];
+const cents = (x) => Math.round(x * 100) / 100;
+
+function roundMoney(owners) {
+  const pay = new Map();
+  const rounds = new Set(owners.flatMap((o) => o.players.map((p) => p.round)));
+  for (const r of rounds) {
+    const ranked = owners
+      .map((o) => o.players.find((p) => p.round === r))
+      .filter((p) => p && p.tp > 0)
+      .sort((x, y) => y.tp - x.tp);
+    for (let i = 0, place = 0; i < ranked.length && place < ROUND_PAY.length; ) {
+      let j = i;
+      while (j < ranked.length && ranked[j].tp === ranked[i].tp) j++;
+      const each = cents(ROUND_PAY.slice(place, place + j - i).reduce((n, v) => n + v, 0) / (j - i));
+      for (let k = i; k < j; k++) pay.set(ranked[k].id, cents((pay.get(ranked[k].id) ?? 0) + each));
+      place += j - i;
+      i = j;
+    }
+  }
+  return pay;
+}
 
 export default async () => {
   const today = etDate();
@@ -90,6 +110,12 @@ export default async () => {
       };
     })
   );
+
+  const rm = roundMoney(owners);
+  for (const o of owners) {
+    for (const p of o.players) p.rm = rm.get(p.id) ?? 0;
+    o.rm = cents(o.players.reduce((n, p) => n + p.rm, 0));
+  }
 
   owners.sort((x, y) => y.tp - x.tp || y.ppg - x.ppg || x.owner.localeCompare(y.owner));
 
