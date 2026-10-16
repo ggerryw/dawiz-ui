@@ -9,9 +9,11 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 
 ## What each page shows
 
-- **Standings**: owners ranked by total points, with GP, G, A, TP, PPG (hidden on phones), last night's GP and TP, and how many of their players have a game today. Tap an owner to open their roster: each active player (in draft-round order) with team, position, round, draft price, a grey game pill when the team plays today (e.g. `7:00 PM vs OTT`, in the viewer's time zone), and GP/G/A/TP/PPG. Last night's points show as a green `+N` pill. Below the active players is the bench, with "Times Picked: N" (how many owners have that player on their bench) instead of a price.
+- **Standings**: owners ranked by total points, with GP, G, A, TP, PPG (hidden on phones), last night's GP and TP, how many of their players have a game today, and round money (RM, hidden on phones). Tap an owner to open their roster: each active player (in draft-round order) with team, position, round, draft price, a grey game pill when the team plays today (e.g. `7:00 PM vs OTT`, in the viewer's time zone), GP/G/A/TP/PPG and round money, with a Total row. Last night's points show as a green `+N` pill. Below the active players is the bench, with "Times Picked: N" (how many owners have that player on their bench) instead of a price.
 - **Overnight**: everyone in the NHL who scored a point on the previous day, with their pool owner if they are on an active roster. Bench players are ignored here.
 - **Draft**: round-by-round recap of the original draft (pick number, player, team, position, price, owner), with an owner filter. It is a frozen snapshot (see Draft snapshot).
+
+Round money: in each draft round, the active players with at least 1 point are ranked by points and the top four places pay $3.00, $2.26, $1.50 and $0.74. Tied players share the money for the places they cover.
 
 ## How it works
 

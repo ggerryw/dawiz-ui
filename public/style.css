@@ -58,6 +58,8 @@
   .benchhead td { text-align: left; padding: 18px 14px 6px; font-size: .75rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: .06em; color: var(--muted); border-top: 2px solid var(--line); }
   tr.bench td { opacity: .72; }
+  .detail tr.total td { font-weight: 700; border-top: 2px solid var(--line); }
+  .detail td.rm { font-weight: 600; } /* not green: green is reserved for points scored */
   .legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 16px 4px; color: var(--muted); font-size: .9rem; }
   .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
   #err { color: var(--worst); padding: 20px; }
@@ -71,7 +73,7 @@
     th, td { padding: 13px 3px; }
     thead th { font-size: .83rem; letter-spacing: 0; }
     .chev { margin-right: 4px; }
-    td.rank, #main > thead tr th:first-child, #main .pp, #main td.ppg { display: none; }
+    td.rank, #main > thead tr th:first-child, #main .pp, #main td.ppg, #main .rmc { display: none; }
     td.name { padding-left: 8px; font-size: 1.05rem; }
     th.own { padding-left: 8px; }
     /* PPG is hidden on phones, so "Season" spans 4 columns, not 5 */
@@ -96,8 +98,11 @@
     .detail td.pname { flex: 1 0 calc(100% + 50px); margin-left: -50px; padding: 0 0 6px; white-space: normal; min-width: 0; }
     .detail .pinfo b { white-space: nowrap; }
     .detail td[data-l]::before { content: attr(data-l); color: var(--muted); font-size: .85rem; font-weight: 400; margin-right: 5px; }
-    .detail td.ln { text-align: left; }
-    .detail td.ln:empty { display: none; }
+    .detail td.ln { text-align: left; flex-basis: 100%; } /* Last Night badge always on its own line */
+    .detail td.ln:empty, .detail td.rm:empty { display: none; }
+    .detail tr.total { border-top-width: 2px; }
+    .detail tr.total td { border-top: 0; }
+    .detail tr.total td.pname { padding-bottom: 2px; }
     .detail tr.benchhead td { flex: 1 0 calc(100% + 50px); margin-left: -50px; padding: 16px 0 2px; font-size: .85rem; }
     /* the row already draws a top border on phones; make that the bench divider and drop the cell's own */
     .detail tr.benchhead { border-top-width: 2px; }
