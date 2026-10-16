@@ -1,27 +1,38 @@
+  /* Themes: light by default, dark when the device prefers it, unless the visitor picked one with the
+     header toggle (html[data-theme], saved in localStorage; see common.js). The dark values appear twice
+     because a media query and an attribute selector can't share one rule. */
   :root {
-    --bg: #f4f6fb; --card: #fff; --text: #14213d; --muted: #5d6985; --line: #e3e8f2;
+    --bg: #edf2fb; --card: #fff; --text: #14213d; --muted: #56627e; --line: #e0e6f1;
     --accent: #1a56c9; --good: #dff6dd; --bad: #fde0e0; --best: #1f8a3b; --worst: #c0392b;
-    --photo: #dfe5f1;
+    --photo: #dfe5f1; --head: #f3f7fe; --frame: #d9e2f2;
+    --wash: linear-gradient(180deg, #d6e3fb 0, #e6eefb 220px, var(--bg) 480px);
+    --shadow: 0 6px 18px rgba(26, 60, 140, .08), 0 1px 3px rgba(20, 33, 61, .08);
+    color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
+    :root:not([data-theme="light"]) { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
       --accent: #7ba8ff; --good: #1d3a2a; --bad: #43222a; --best: #5fd27f; --worst: #ff7b7b;
-      --photo: #2a3858; }
+      --photo: #2a3858; --head: transparent; --frame: transparent; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
+      color-scheme: dark; }
   }
+  :root[data-theme="dark"] { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
+    --accent: #7ba8ff; --good: #1d3a2a; --bad: #43222a; --best: #5fd27f; --worst: #ff7b7b;
+    --photo: #2a3858; --head: transparent; --frame: transparent; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
+    color-scheme: dark; }
   * { box-sizing: border-box; }
   html { font-size: 19px; }
-  body { margin: 0; background: var(--bg); color: var(--text);
+  body { margin: 0; background: var(--wash) no-repeat, var(--bg); color: var(--text); min-height: 100vh;
     font: 1rem/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
   main { max-width: 900px; margin: 0 auto; padding: 20px; }
   header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
   h1 { margin: 0; font-size: 2.1rem; color: var(--accent); letter-spacing: .5px; }
   .sub { color: var(--muted); font-size: .95rem; text-align: right; }
-  .card { background: var(--card); border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.15); overflow: hidden; }
+  .card { background: var(--card); border-radius: 16px; border: 1px solid var(--frame); box-shadow: var(--shadow); overflow: hidden; }
   .scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
   th, td { padding: 14px 10px; text-align: center; white-space: nowrap; }
   thead th { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
-    border-bottom: 1px solid var(--line); }
+    border-bottom: 1px solid var(--line); background: var(--head); }
   thead tr.grp th { border: 0; padding-bottom: 0; }
   th.pt { white-space: normal; line-height: 1.15; width: 5.5em; }
   th.s4 { display: none; }
@@ -112,6 +123,11 @@
     .detail tr.benchhead + tr { border-top: 0; } /* label sits directly on its first player */
   }
   .nav { display: flex; gap: 8px; margin: 0 0 16px; }
+  /* light/dark toggle at the right end of the page header */
+  header .sub, header .filter { margin-left: auto; }
+  .theme { flex: none; align-self: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--frame); cursor: pointer;
+    background: var(--card); color: var(--text); font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow); }
+  .theme:hover { color: var(--accent); }
   .nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; background: color-mix(in srgb, var(--accent) 10%, transparent); }
   .nav a[aria-current] { background: var(--accent); color: var(--card); }
   .nav a:not([aria-current]):hover { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
