@@ -236,6 +236,7 @@
 .filter { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
 @media (max-width: 600px) { .pick { gap: 8px; padding: 9px 10px; grid-template-columns: 2em auto 1fr auto; } }
 .pick .wd, .roundhead .wd { display: none; }
+@media (max-width: 600px) { .asof { display: none; } } /* Teams summary line: drop the date so the line fits on one row */
 /* Wide screens: columns for position, team and price. The round label is the header row, on the same grid (in rem,
    so its smaller font doesn't shift the columns). */
 @media (min-width: 1000px) {

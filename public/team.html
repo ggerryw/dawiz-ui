@@ -28,7 +28,8 @@ function render() {
   const i = Math.max(0, data.owners.findIndex((o) => o.owner === $("#owner").value));
   const o = data.owners[i];
   const d = new Date(data.asOf + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
-  $("#summary").textContent = `${o.owner} · ${ordinal(i + 1)} of ${data.owners.length} · ${o.tp} TP · RM ${money(o.rm)} · As of ${d}`;
+  // the date (.asof) is hidden on phones so the line fits on one row
+  $("#summary").innerHTML = `${o.owner} · ${ordinal(i + 1)} of ${data.owners.length} · ${o.tp} TP · RM ${money(o.rm)}<span class="asof"> · As of ${d}</span>`;
   $("#team").innerHTML = rosterTable(o);
 }
 
