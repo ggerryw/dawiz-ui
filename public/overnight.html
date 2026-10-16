@@ -33,8 +33,9 @@ function render() {
   $("#summary").textContent = `${scored} players with a point · ${owned} rostered players played`;
   $("#sub").textContent = new Date(data.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
-  // Season columns (.sz) only show on wide screens; the header row is wide-only too.
-  const head = `<div class="scorer head"><span></span><span>Season</span>${["GP", "G", "A", "TP", "PPG"].map((h) => `<span class="sz">${h}</span>`).join("")}<span>Last night</span></div>`;
+  // Season columns (.sz) only show on wide screens; the header row is wide-only too. The first two header cells are
+  // empty placeholders for the photo and name columns.
+  const head = `<div class="scorer head"><span></span><span></span>${["GP", "G", "A", "TP", "PPG"].map((h) => `<span class="sz">${h}</span>`).join("")}<span>Last night</span></div>`;
   $("#list").innerHTML = shown.length
     ? head + shown.map((s) => {
         const z = s.season;

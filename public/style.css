@@ -35,6 +35,10 @@
     border-bottom: 1px solid var(--line); background: var(--head); }
   thead tr.grp th { border: 0; padding-bottom: 0; }
   th.pt { white-space: normal; line-height: 1.15; width: 5.5em; }
+  /* Last night GP and TP get the same fixed width (just wide enough for the "+11" pill); otherwise the table
+     piles its spare width onto TP and the "Last night" group header drifts off-center from the two values.
+     The width differs per breakpoint because padding and font size do. */
+  #main .og, #main .og + * { width: 4.1em; }
   th.s4 { display: none; }
   th.own { text-align: left; }
   th.sep, td.sep { border-left: 1px solid var(--line); }
@@ -97,6 +101,7 @@
     th.pt { width: 1%; } /* let it shrink to its longest word on phones */
     thead tr.grp th { white-space: normal; line-height: 1.15; } /* group headers may wrap when space is tight */
     #main .plus { padding: 1px 6px; }
+    #main .og, #main .og + * { width: 3.4em; }
     .player { gap: 10px; }
     .pinfo b { font-size: 1rem; }
     .pmeta { font-size: .85rem; gap: 5px; }
@@ -149,6 +154,8 @@
   main { padding: 12px 20px; }
   #main > thead th { padding-top: 6px; padding-bottom: 6px; }
   #main > tbody > tr.row > td { padding-top: 7px; padding-bottom: 7px; }
+  .chev { display: none; } /* rows open the Teams page here instead of expanding, so no expand arrow */
+  #main .og, #main .og + * { width: 4.7em; }
   .legend { padding: 8px 4px; }
   /* one top row: title, tabs, then date/filter and theme toggle on the right. The header's children join
      main's grid (display: contents) so they can share the row with the tab bar. */
@@ -162,6 +169,11 @@
   main > header > .theme { grid-column: 4; }
 
   .nav a.wide-only { display: inline-block; } /* Teams tab */
+}
+/* Phones under ~400px have no spare width, so the Last night columns shrink to their contents (GP narrower than
+   the TP pill) and the group header drifts ~5px right of the two values. Nudge it back. */
+@media (max-width: 400px) {
+  #main thead th.og-grp { padding-right: 11px; }
 }
 /* Very narrow windows (< 350px, narrower than current phones): trim padding so the standings table still fits */
 @media (max-width: 350px) {
@@ -188,7 +200,6 @@
 /* Wide screens: season totals in their own columns, under a header row */
 @media (min-width: 1000px) {
   .scorer { grid-template-columns: 52px 1fr repeat(5, 4.5rem) 6rem; } /* rem, so the smaller-font header row lines up */
-  .scorer.head span:nth-child(2) { text-align: right; }
   .scorer .sz { display: block; text-align: center; font-variant-numeric: tabular-nums; }
   .scorer.head { display: grid; padding-top: 14px; padding-bottom: 10px; font-size: .75rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: .05em; color: var(--muted); text-align: center; }
