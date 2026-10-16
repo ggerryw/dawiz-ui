@@ -74,6 +74,7 @@
   .detail td.rm { font-weight: 600; } /* not green: green is reserved for points scored */
   /* columns only shown on wide screens (see the min-width: 1000px block) */
   .detail .wd, .detail tr.benchhead.wd { display: none; }
+  .nav a.wide-only { display: none; } /* Teams tab: wide screens only */
   .legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 16px 4px; color: var(--muted); font-size: .9rem; }
   .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
   #err { color: var(--worst); padding: 20px; }
@@ -159,6 +160,8 @@
   main > nav { grid-column: 2; }
   main > header > .sub, main > header > .filter { grid-column: 3; justify-self: end; }
   main > header > .theme { grid-column: 4; }
+
+  .nav a.wide-only { display: inline-block; } /* Teams tab */
 }
 /* Very narrow windows (< 350px, narrower than current phones): trim padding so the standings table still fits */
 @media (max-width: 350px) {

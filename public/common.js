@@ -6,9 +6,10 @@ const $ = (s) => document.querySelector(s);
 const isDark = () => (document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
 
 // Tab bar shared by every page; add new pages here.
-const TABS = [["/", "Standings"], ["/overnight.html", "Overnight"], ["/draft.html", "Draft"]];
-$("#nav").innerHTML = TABS.map(([href, label]) =>
-  `<a href="${href}"${location.pathname === href || (href === "/" && location.pathname === "/index.html") ? ' aria-current="page"' : ""}>${label}</a>`
+// Teams is wide-screen only (phones expand a team in place on Standings, and have no room for a 4th tab).
+const TABS = [["/", "Standings"], ["/overnight.html", "Overnight"], ["/draft.html", "Draft"], ["/team.html", "Teams", "wide-only"]];
+$("#nav").innerHTML = TABS.map(([href, label, cls]) =>
+  `<a href="${href}"${cls ? ` class="${cls}"` : ""}${location.pathname === href || (href === "/" && location.pathname === "/index.html") ? ' aria-current="page"' : ""}>${label}</a>`
 ).join("");
 
 // Theme toggle, at the right end of the page header. Its icon shows the theme it switches to.
@@ -48,3 +49,32 @@ const gamePill = (g) => {
   const time = fmt({ hour: "numeric", minute: "2-digit" }); // always with minutes: "1:00 PM", "7:30 PM"
   return `<span class="gm">${time} ${g.home ? "vs" : "@"} ${g.opp}</span>`;
 };
+
+const money = (v) => `$${v.toFixed(2)}`;
+
+// Screens wide enough for the full tables (matches the min-width: 1000px block in style.css).
+const WIDE = matchMedia("(min-width: 1000px)");
+const teamUrl = (owner) => `/team.html?owner=${encodeURIComponent(owner)}`;
+
+// One owner's roster table (active players, Total row, bench), used by the Standings page (expanded in
+// place on phones and tablets) and the Teams page. Expects a .detail container for its styling.
+function rosterTable(o) {
+  // Wide screens (.wd cells) split round, position, team and price into their own columns;
+  // narrower screens show them in the line under the name instead.
+  const prow = (p, cls = "") => {
+    const onBench = cls === "bench";
+    return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${p.team ? logo(p.team, true) : "— ·"} ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
+    <td class="wd">${p.pos}</td><td class="wd tm">${p.team ? logo(p.team, true) : "—"}</td>
+    <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td data-l="PPG">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</td>
+    <td class="rm"${p.rm ? ' data-l="RM"' : ""}>${p.rm ? money(p.rm) : ""}</td><td class="wd">${onBench ? p.timesPicked : p.cost == null ? "" : money(p.cost)}</td><td class="ln"${p.otp ? ' data-l="Last Night:"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
+  };
+  const cost = o.players.reduce((n, p) => n + (p.cost ?? 0), 0);
+  const total = `<tr class="total"><td class="wd"></td><td class="pname"><b>Total</b></td><td class="wd"></td><td class="wd"></td>
+    <td data-l="GP">${o.gp}</td><td data-l="G">${o.g}</td><td data-l="A">${o.a}</td><td data-l="TP">${o.tp}</td><td data-l="PPG">${o.ppg.toFixed(2)}</td>
+    <td class="rm" data-l="RM">${money(o.rm)}</td><td class="wd">${money(cost)}</td><td class="ln"${o.otp ? ' data-l="Last Night:"' : ""}>${o.otp ? `<span class="plus">+${o.otp}</span>` : ""}</td></tr>`;
+  // CSS can't change colspan, so the bench label row has a narrow version (8 columns) and a wide one (12).
+  const bench = o.bench?.length
+    ? `<tr class="benchhead nw"><td colspan="8">Bench</td></tr><tr class="benchhead wd"><td colspan="10">Bench</td><td>Times Picked</td><td></td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
+    : "";
+  return `<table><thead><tr><th class="wd">Rd</th><th style="text-align:left">Player</th><th class="wd">Pos</th><th class="wd">Team</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th>PPG</th><th title="Round money">RM</th><th class="wd">Cost</th><th class="ln">Last night</th></tr></thead><tbody>${o.players.map((p) => prow(p)).join("")}${total}${bench}</tbody></table>`;
+}
