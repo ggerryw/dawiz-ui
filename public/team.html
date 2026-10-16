@@ -42,10 +42,11 @@ async function load() {
     const r = await fetch("/api/standings");
     if (!r.ok) throw new Error(r.status);
     data = await r.json();
-    // Owners in standings order; default to the leader when the URL names no (known) owner.
-    $("#owner").innerHTML = data.owners.map((o, i) => `<option value="${o.owner}">${i + 1}. ${o.owner}</option>`).join("");
+    // Owners alphabetically, like the Draft filter (the rank shows in the summary line). Default to the leader when
+    // the URL names no (known) owner.
+    $("#owner").innerHTML = data.owners.map((o) => o.owner).sort().map((n) => `<option>${n}</option>`).join("");
     const want = new URLSearchParams(location.search).get("owner");
-    if (data.owners.some((o) => o.owner === want)) $("#owner").value = want;
+    $("#owner").value = data.owners.some((o) => o.owner === want) ? want : data.owners[0].owner;
     render();
   } catch (e) {
     $("#summary").textContent = "";
