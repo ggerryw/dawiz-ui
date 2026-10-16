@@ -61,6 +61,7 @@
   .detail th.ln { white-space: normal; width: 3.2em; line-height: 1.15; }
   .pmeta { white-space: nowrap; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .8rem; }
   .logo { width: 22px; height: 22px; object-fit: contain; }
+  .logo.big { width: 40px; height: 40px; margin: -6px 0; } /* roster logos, shown without the abbreviation */
   .times { font-weight: 700; color: var(--text); }
   /* game-today pill (grey, so it doesn't compete with the green last-night pill); sits on the name line (wraps under the name only if the row is too narrow) */
   .nameline { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 8px; }
@@ -100,6 +101,7 @@
     .pmeta { font-size: .85rem; gap: 5px; }
     .photo { width: 40px; height: 40px; }
     .logo { width: 20px; height: 20px; }
+    .logo.big { width: 36px; height: 36px; }
 
     /* open roster: name + info on top, stats on a second line */
     .detail thead { display: none; }
@@ -138,9 +140,25 @@
   .detail th.wd, .detail td.wd { display: table-cell; }
   .detail tr.benchhead.wd { display: table-row; }
   .detail tr.benchhead.nw, .detail .pmeta { display: none; }
-  .detail td.tm .logo { vertical-align: middle; margin-right: 6px; }
-  .detail td.tm { text-align: left; }
+  .detail td.tm .logo.big { width: 56px; height: 56px; margin: -8px 0; vertical-align: middle; }
 
+  /* Large-screen sizing: 80% text (large screens are read up close) and tighter owner rows and page chrome,
+     so all 12 owners fit on one screen (~700px tall) without scrolling. */
+  html { font-size: 15px; }
+  main { padding: 12px 20px; }
+  #main > thead th { padding-top: 6px; padding-bottom: 6px; }
+  #main > tbody > tr.row > td { padding-top: 7px; padding-bottom: 7px; }
+  .legend { padding: 8px 4px; }
+  /* one top row: title, tabs, then date/filter and theme toggle on the right. The header's children join
+     main's grid (display: contents) so they can share the row with the tab bar. */
+  main { display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 24px; align-items: center; }
+  main > * { grid-column: 1 / -1; }
+  main > header { display: contents; }
+  main > nav, main > header > * { grid-row: 1; margin: 0 0 12px; }
+  main > header > h1 { grid-column: 1; min-width: 5em; } /* fits "Overnight", so the tabs don't shift between pages */
+  main > nav { grid-column: 2; }
+  main > header > .sub, main > header > .filter { grid-column: 3; justify-self: end; }
+  main > header > .theme { grid-column: 4; }
 }
 /* Very narrow windows (< 350px, narrower than current phones): trim padding so the standings table still fits */
 @media (max-width: 350px) {

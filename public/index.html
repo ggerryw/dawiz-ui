@@ -53,8 +53,8 @@ function rosterTable(o) {
   // narrower screens show them in the line under the name instead.
   const prow = (p, cls = "") => {
     const onBench = cls === "bench";
-    return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
-    <td class="wd">${p.pos}</td><td class="wd tm">${logo(p.team)}${p.team ?? "—"}</td>
+    return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${p.team ? logo(p.team, true) : "— ·"} ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
+    <td class="wd">${p.pos}</td><td class="wd tm">${p.team ? logo(p.team, true) : "—"}</td>
     <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td data-l="PPG">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</td>
     <td class="rm"${p.rm ? ' data-l="RM"' : ""}>${p.rm ? money(p.rm) : ""}</td><td class="wd">${onBench ? p.timesPicked : p.cost == null ? "" : money(p.cost)}</td><td class="ln"${p.otp ? ' data-l="Last Night:"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
   };

@@ -32,7 +32,11 @@ const price = (c) => (c == null ? "" : ` · $${c.toFixed(2)}`);
 const initials = (n) => n.split(" ").map((w) => w[0]).slice(0, 2).join("");
 const photo = (p) => `<span class="photo"><img loading="lazy" alt="" src="https://assets.nhle.com/mugs/nhl/latest/${p.id}.png" onerror="this.parentNode.textContent='${initials(p.name)}'"></span>`;
 const logoSrc = (t) => `https://assets.nhle.com/logos/nhl/svg/${t}_${isDark() ? "dark" : "light"}.svg`;
-const logo = (t) => t ? `<img class="logo" loading="lazy" alt="${t}" src="${logoSrc(t)}" onerror="this.remove()">` : "";
+// big: a larger logo that stands alone (no abbreviation next to it), so if it fails to load it's
+// replaced by the abbreviation instead of just disappearing.
+const logo = (t, big = false) => t
+  ? `<img class="logo${big ? " big" : ""}" loading="lazy" alt="${t}" title="${t}" src="${logoSrc(t)}" onerror="${big ? "this.replaceWith(this.alt)" : "this.remove()"}">`
+  : "";
 
 // "7:00 PM vs OTT" / "7:30 PM @ MIN" pill for a player's game today. The start time is shown
 // in the viewer's own time zone.
