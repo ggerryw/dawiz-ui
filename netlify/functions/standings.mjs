@@ -1,11 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, WEB, etDate, getJson, gameLines } from "../lib/nhl.mjs";
-
-const seasonId = () => {
-  const [y, m] = etDate().split("-").map(Number);
-  const start = m >= 9 ? y : y - 1;
-  return `${start}${start + 1}`;
-};
+import { STATS, WEB, etDate, getJson, gameLines, seasonId } from "../lib/nhl.mjs";
 
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
 
