@@ -146,6 +146,16 @@
   .detail th.wd, .detail td.wd { display: table-cell; }
   .detail tr.benchhead.wd { display: table-row; }
   .detail tr.benchhead.nw, .detail .pmeta { display: none; }
+  /* "Times Picked" sits over the Cost column: centered like its values, and wrapped so it doesn't widen that column */
+  /* fixed widths for the roster columns so spare width goes to the Player column instead of piling unevenly onto
+     Cost and RM; Rd, Pos, Team, GP G A TP PPG, RM, Cost, Last night */
+  .detail thead th:nth-child(1) { width: 3.5rem; }
+  .detail thead th:nth-child(3) { width: 4.5rem; }
+  .detail thead th:nth-child(4) { width: 6rem; }
+  .detail thead th:nth-child(n+5):nth-child(-n+9) { width: 4.5rem; }
+  .detail thead th:nth-child(10), .detail thead th:nth-child(11) { width: 6rem; }
+  .detail thead th:nth-child(12) { width: 6.5rem; }
+  .detail tr.benchhead.wd td:nth-child(2) { text-align: center; white-space: normal; line-height: 1.15; }
   .detail td.tm .logo.big { width: 56px; height: 56px; margin: -8px 0; vertical-align: middle; }
 
   /* Large-screen sizing: 80% text (large screens are read up close) and tighter owner rows and page chrome,
