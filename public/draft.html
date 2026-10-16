@@ -18,6 +18,8 @@
 </main>
 <script src="/common.js"></script>
 <script>
+// Pos, Team and Price (.wd) only show on wide screens, where each pick is a table-like row (matching the Teams and
+// Overnight pages) and the round label doubles as the column header row.
 let picks = [];
 
 function render() {
@@ -25,7 +27,7 @@ function render() {
   const shown = who ? picks.filter((p) => p.owner === who) : picks;
   const rounds = [...new Set(shown.map((p) => p.round))];
   $("#rounds").innerHTML = rounds.map((r) => `
-    <div class="roundhead">Round ${r}</div>
+    <div class="roundhead"><span>Round ${r}</span>${["", "Player", "Pos", "Team", "Price", "Owner"].map((h) => `<span class="wd">${h}</span>`).join("")}</div>
     <div class="card">${shown.filter((p) => p.round === r).map((p) => `
       <div class="pick">
         <span class="num">${p.pick}</span>
@@ -34,6 +36,7 @@ function render() {
           <a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener"><b>${p.name}</b></a>
           <span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${price(p.cost)}</span>
         </div>
+        <span class="wd">${p.pos}</span><span class="wd">${logo(p.team, true)}</span><span class="wd">${p.cost == null ? "" : money(p.cost)}</span>
         <span class="chip">${p.owner}</span>
       </div>`).join("")}</div>`).join("");
 }

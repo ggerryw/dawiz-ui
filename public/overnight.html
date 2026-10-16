@@ -33,9 +33,9 @@ function render() {
   $("#summary").textContent = `${scored} players with a point · ${owned} rostered players played`;
   $("#sub").textContent = new Date(data.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
-  // Season columns (.sz) only show on wide screens; the header row is wide-only too. The first two header cells are
-  // empty placeholders for the photo and name columns.
-  const head = `<div class="scorer head"><span></span><span></span>${["GP", "G", "A", "TP", "PPG"].map((h) => `<span class="sz">${h}</span>`).join("")}<span>Last night</span></div>`;
+  // Pos, Team and season columns (.sz) only show on wide screens, where each player is a table-like row (matching
+  // the Teams page); the header row is wide-only too. The first header cell is the photo column.
+  const head = `<div class="scorer head"><span></span><span>Player</span>${["Pos", "Team", "GP", "G", "A", "TP", "PPG"].map((h) => `<span class="sz">${h}</span>`).join("")}<span>Last night</span></div>`;
   $("#list").innerHTML = shown.length
     ? head + shown.map((s) => {
         const z = s.season;
@@ -47,6 +47,7 @@ function render() {
             <span class="pmeta">${logo(s.team)}${s.team} ${s.home ? "vs" : "@"} ${s.opp} · ${s.pos}</span>
             ${chips ? `<div class="chips">${chips}</div>` : ""}
           </div>
+          <span class="sz">${s.pos}</span><span class="sz tm">${logo(s.team, true)}<small>${s.home ? "vs" : "@"} ${s.opp}</small></span>
           <span class="sz">${z.gp}</span><span class="sz">${z.g}</span><span class="sz">${z.a}</span><span class="sz"><b>${z.tp}</b></span><span class="sz">${z.gp ? (z.tp / z.gp).toFixed(2) : "0.00"}</span>
           <div class="stat"><b>${s.tp}</b><span>${s.g}G ${s.a}A</span></div>
         </div>`;
