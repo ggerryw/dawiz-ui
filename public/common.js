@@ -14,9 +14,14 @@ $("#nav").innerHTML = TABS.map(([href, label, cls]) =>
 
 // Theme toggle, at the right end of the page header. Its icon shows the theme it switches to.
 $("header").insertAdjacentHTML("beforeend", `<button class="theme" id="theme"></button>`);
+// Inline SVGs on the same 24px grid, so both icons come out the same size (the ☀︎ and ☾ characters don't).
+const ICON = {
+  sun: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`,
+  moon: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.6 8.6 0 0 1 9.8 3.5a8.6 8.6 0 1 0 10.7 10.7z" fill="currentColor"/></svg>`,
+};
 const themeLabel = () => {
   const b = $("#theme");
-  b.textContent = isDark() ? "☀︎" : "☾";
+  b.innerHTML = isDark() ? ICON.sun : ICON.moon;
   b.title = isDark() ? "Light theme" : "Dark theme";
   b.setAttribute("aria-label", `Switch to ${b.title.toLowerCase()}`);
 };
