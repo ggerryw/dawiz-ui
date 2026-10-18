@@ -144,6 +144,7 @@
    columns instead of the line under the name. */
 @media (min-width: 1000px) {
   main { max-width: 1180px; }
+  .nameline { flex-direction: column; align-items: flex-start; } /* game pill always under the name on wide screens, so rows line up */
   .detail th.wd, .detail td.wd { display: table-cell; }
   .detail tr.benchhead.wd { display: table-row; }
   .detail tr.benchhead.nw, .detail .pmeta { display: none; }
