@@ -28,19 +28,23 @@ const ownedOnly = $("#owned");
 function render() {
   const all = data.scorers;
   const shown = ownedOnly.checked ? all.filter((s) => s.owners.length) : all;
-  const scored = all.filter((s) => s.tp > 0).length;
+  const scored = all.filter((s) => s.tp > 0);
+  const scoredOwned = scored.filter((s) => s.owners.length).length;
   const owned = all.filter((s) => s.owners.length).length;
-  $("#summary").textContent = `${scored} players with a point · ${owned} rostered players played`;
+  $("#summary").textContent = `${scored.length} players with a point (${scoredOwned} rostered, ${scored.length - scoredOwned} not) · ${owned} rostered players played`;
   $("#sub").textContent = new Date(data.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
   // Pos, Team and season columns (.sz) only show on wide screens, where each player is a table-like row (matching
   // the Teams page); the header row is wide-only too. The first header cell is the photo column.
   const head = `<div class="scorer head"><span></span><span>Player</span>${["Pos", "Team", "GP", "G", "A", "TP", "PPG"].map((h) => `<span class="sz">${h}</span>`).join("")}<span>Last night</span></div>`;
   $("#list").innerHTML = shown.length
-    ? head + shown.map((s) => {
+    ? head + shown.map((s, i) => {
         const z = s.season;
+        // Heavier line where the points total or owner changes, so each owner's group stands out.
+        const prev = shown[i - 1];
+        const grp = prev && (prev.tp !== s.tp || prev.owners[0] !== s.owners[0]);
         const chips = s.owners.map((o) => `<span class="chip">${o}</span>`).join("");
-        return `<div class="scorer ${s.owners.length ? "owned" : ""}">
+        return `<div class="scorer${s.owners.length ? " owned" : ""}${grp ? " grp" : ""}">
           <a href="https://www.nhl.com/player/${s.id}" target="_blank" rel="noopener">${photo(s)}</a>
           <div class="pinfo">
             <a class="player" href="https://www.nhl.com/player/${s.id}" target="_blank" rel="noopener"><b>${s.name}</b></a>
