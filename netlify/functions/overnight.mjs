@@ -31,10 +31,18 @@ export default async () => {
       g: p.goals,
       a: p.assists,
       tp: p.points,
-      owners: active.get(p.playerId) ?? [],
+      owners: [...(active.get(p.playerId) ?? [])].sort((x, y) => x.localeCompare(y)),
       season: season(p.playerId),
     }))
-    .sort((x, y) => y.tp - x.tp || y.g - x.g || x.name.localeCompare(y.name));
+    // Last-night points desc, then owner (unowned last), then NHL team, then name.
+    .sort(
+      (x, y) =>
+        y.tp - x.tp ||
+        !x.owners.length - !y.owners.length ||
+        (x.owners[0] ?? "").localeCompare(y.owners[0] ?? "") ||
+        x.team.localeCompare(y.team) ||
+        x.name.localeCompare(y.name)
+    );
 
   return new Response(JSON.stringify({ date, played: data.length, scorers }), {
     headers: {

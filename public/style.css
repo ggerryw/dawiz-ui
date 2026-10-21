@@ -176,6 +176,7 @@
 .toggle input { width: 1.2rem; height: 1.2rem; accent-color: var(--accent); }
 .scorer { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid var(--line); }
 .scorer:first-child { border-top: 0; }
+.scorer.grp { border-top: 3px solid color-mix(in srgb, var(--muted) 55%, transparent); }
 .scorer.owned { background: color-mix(in srgb, var(--accent) 7%, transparent); }
 .scorer .player { min-width: 0; }
 .scorer .pinfo { min-width: 0; }
