@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · Benches</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header style="align-items:center">
+    <h1>Benches</h1>
+    <select id="owner" class="filter" aria-label="Filter by owner"><option value="">All owners</option></select>
+  </header>
+  <div class="card" id="list"></div>
+</main>
+<script src="/common.js"></script>
+<script>
+// Who has whom on their bench, best scorers first. Built from the standings data (every owner's bench, with season
+// stats), so there's no extra function. Wide screens show a grid with one column per owner and a check mark where
+// that owner picked the player (Pos, Team, GP/G/A and the grid are .bz, wide-only); phones show a chip per owner.
+let owners = []; // alphabetical
+let players = []; // one per distinct bench player, best TP first
+
+function render() {
+  const who = $("#owner").value;
+  const shown = who ? players.filter((p) => p.owners.includes(who)) : players;
+  $("#list").style.setProperty("--cols", owners.length);
+
+  const head = `<div class="bp head"><span></span><span>Player</span>${["Pos", "Team", "GP", "G", "A", "TP"].map((h) => `<span class="bz">${h}</span>`).join("")}${owners.map((o) => `<span class="bz oc">${o}</span>`).join("")}<span class="bz ct">Count</span></div>`;
+  $("#list").innerHTML = shown.length
+    ? head + shown.map((p) => `
+      <div class="bp">
+        <a href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}</a>
+        <div class="pinfo">
+          <a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener"><b>${p.name}</b></a>
+          <span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}</span>
+          <div class="chips">${p.owners.map((o) => `<span class="chip">${o}</span>`).join("")}</div>
+        </div>
+        <span class="bz">${p.pos}</span><span class="bz">${logo(p.team, true)}</span>
+        <span class="bz">${p.gp}</span><span class="bz">${p.g}</span><span class="bz">${p.a}</span><span class="bz"><b>${p.tp}</b></span>
+        ${owners.map((o) => `<span class="bz oc">${p.owners.includes(o) ? "✓" : ""}</span>`).join("")}
+        <span class="bz ct">${p.owners.length}</span>
+        <div class="stat"><b>${p.tp}</b><span>${p.gp} GP</span></div>
+      </div>`).join("")
+    : `<div class="empty">No bench players to show.</div>`;
+}
+
+async function load() {
+  try {
+    const r = await fetch("/api/standings");
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    owners = data.owners.map((o) => o.owner).sort();
+    const byId = new Map();
+    for (const o of data.owners) {
+      for (const p of o.bench) {
+        if (!byId.has(p.id)) byId.set(p.id, { ...p, owners: [] });
+        byId.get(p.id).owners.push(o.owner);
+      }
+    }
+    players = [...byId.values()].map((p) => ({ ...p, owners: p.owners.sort() }))
+      .sort((x, y) => y.tp - x.tp || y.g - x.g || x.name.localeCompare(y.name));
+    $("#owner").insertAdjacentHTML("beforeend", owners.map((o) => `<option>${o}</option>`).join(""));
+    render();
+  } catch (e) {
+    $("#list").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the benches. Try refreshing.</div>`;
+  }
+}
+$("#owner").addEventListener("change", render);
+load();
+</script>
+</body>
+</html>

@@ -140,6 +140,10 @@
   .nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; background: color-mix(in srgb, var(--accent) 10%, transparent); }
   .nav a[aria-current] { background: var(--accent); color: var(--card); }
   .nav a:not([aria-current]):hover { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
+  /* four tabs don't fit one row on phones: the bar scrolls sideways (scrollbar hidden), same text size; the
+     negative margin lets it run to the screen edge so a cut-off tab shows there is more */
+  @media (max-width: 600px) { .nav { overflow-x: auto; scrollbar-width: none; margin-left: -10px; margin-right: -10px; padding: 0 10px; }
+    .nav::-webkit-scrollbar { display: none; } .nav a { flex: none; } }
 /* Wide screens: open rosters become a full table, with round, position, team and price in their own
    columns instead of the line under the name. */
 @media (min-width: 1000px) {
@@ -190,6 +194,7 @@
 /* Very narrow windows (< 350px, narrower than current phones): trim padding so the standings table still fits */
 @media (max-width: 350px) {
   main { padding: 8px; }
+  .nav { margin-left: -8px; margin-right: -8px; padding: 0 8px; }
   #main th, #main td { padding-left: 1px; padding-right: 1px; }
   #main td.name, #main th.own { padding-left: 4px; }
   .chev { margin-right: 2px; }
@@ -251,4 +256,28 @@
   .roundhead > span:first-child { white-space: nowrap; } /* spills over the empty photo column */
   .roundhead .wd { display: block; text-align: center; }
   .roundhead .wd:nth-child(3) { text-align: left; }
+}
+/* Benches page */
+.bp { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.bp:first-child { border-top: 0; }
+.bp .pinfo { min-width: 0; }
+.bp .bz, .bp.head { display: none; }
+@media (max-width: 600px) { .bp { gap: 8px; padding: 10px; } .bp .chip { font-size: .85rem; } .bp .stat span { font-size: .85rem; } }
+/* Wide screens: a column per owner with a check mark, under a header row (rem widths so the small header font lines up) */
+@media (min-width: 1150px) { /* 12 owner columns need more room than the other wide tables; narrower screens keep the chip layout */
+  .bp { grid-template-columns: 52px minmax(0, 1fr) 2.2rem 3.2rem repeat(4, 2.3rem) repeat(var(--cols), 3rem) 3.6rem; gap: 4px; padding: 8px 14px; }
+  .bp .pmeta, .bp .chips, .bp .stat { display: none; }
+  .bp .pinfo, .bp.head span:nth-child(2) { margin-left: 8px; } /* this grid's gap is 4px (12 owner columns), so add back the 12px the other pages put between photo and name */
+  .bp .bz { display: block; text-align: center; font-variant-numeric: tabular-nums; }
+  .bp .logo.big { width: 44px; height: 44px; margin: -4px auto; }
+  .bp .oc { font-weight: 700; color: var(--best); font-size: 1.35rem; }
+  /* faint vertical lines between owner columns (cells stretch over the row padding so the lines run unbroken) */
+  .bp .oc, .bp .ct { align-self: stretch; margin: -8px 0; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--line); padding-left: 4px; } /* the 4px grid gap sits to the right of each line, so shift content to center between lines */
+  .bp.head .oc, .bp.head .ct { margin: -14px 0 -10px; padding-top: 4px; } /* padding evens out the 14px / 10px header padding so the labels sit level with Pos, Team... */
+  .bp.head .oc { font-size: .68rem; letter-spacing: 0; } /* so DARRIN doesn't touch its column lines */
+  .bp.head { display: grid; padding-top: 14px; padding-bottom: 10px; font-size: .75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .03em; color: var(--muted); text-align: center; }
+  .bp.head .oc { color: var(--muted); font-weight: 700; overflow: hidden; text-overflow: clip; }
+  .bp.head span:nth-child(2) { text-align: left; }
+  .bp.head + .bp { border-top: 1px solid var(--line); }
 }

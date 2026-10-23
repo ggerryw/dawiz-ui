@@ -7,10 +7,13 @@ const isDark = () => (document.documentElement.dataset.theme ?? (matchMedia("(pr
 
 // Tab bar shared by every page; add new pages here.
 // Teams is wide-screen only (phones expand a team in place on Standings, and have no room for a 4th tab).
-const TABS = [["/", "Standings"], ["/overnight.html", "Overnight"], ["/draft.html", "Draft"], ["/team.html", "Teams", "wide-only"]];
+const TABS = [["/", "Standings"], ["/overnight.html", "Overnight"], ["/draft.html", "Draft"], ["/benches.html", "Benches"], ["/team.html", "Teams", "wide-only"]];
 $("#nav").innerHTML = TABS.map(([href, label, cls]) =>
   `<a href="${href}"${cls ? ` class="${cls}"` : ""}${location.pathname === href || (href === "/" && location.pathname === "/index.html") ? ' aria-current="page"' : ""}>${label}</a>`
 ).join("");
+
+// On phones the tab bar scrolls sideways; make sure the current tab is in view.
+$("#nav [aria-current]")?.scrollIntoView({ inline: "nearest", block: "nearest" });
 
 // Theme toggle, at the right end of the page header. Its icon shows the theme it switches to.
 $("header").insertAdjacentHTML("beforeend", `<button class="theme" id="theme"></button>`);
