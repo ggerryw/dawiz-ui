@@ -6,8 +6,8 @@ const $ = (s) => document.querySelector(s);
 const isDark = () => (document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
 
 // Tab bar shared by every page; add new pages here.
-// Teams is wide-screen only (phones expand a team in place on Standings, and have no room for a 4th tab).
-const TABS = [["/", "Standings"], ["/overnight.html", "Overnight"], ["/draft.html", "Draft"], ["/benches.html", "Benches"], ["/team.html", "Teams", "wide-only"]];
+// Teams is wide-screen only (phones expand a team in place on Standings); it sits right after Standings.
+const TABS = [["/", "Standings"], ["/team.html", "Teams", "wide-only"], ["/overnight.html", "Overnight"], ["/draft.html", "Draft"], ["/undrafted.html", "Undrafted"], ["/benches.html", "Benches"]];
 $("#nav").innerHTML = TABS.map(([href, label, cls]) =>
   `<a href="${href}"${cls ? ` class="${cls}"` : ""}${location.pathname === href || (href === "/" && location.pathname === "/index.html") ? ' aria-current="page"' : ""}>${label}</a>`
 ).join("");
@@ -64,6 +64,10 @@ const money = (v) => `$${v.toFixed(2)}`;
 const WIDE = matchMedia("(min-width: 1000px)");
 const teamUrl = (owner) => `/team.html?owner=${encodeURIComponent(owner)}`;
 
+// Last-night cell: green +N pill when points were scored; a muted 0 when the player(s) played but didn't score
+// (never green: green is for points); blank when nobody played.
+const lastNight = (pts, gp) => (pts ? `<span class="plus">+${pts}</span>` : gp ? `<span class="nopts">0</span>` : "");
+
 // One owner's roster table (active players, Total row, bench), used by the Standings page (expanded in
 // place on phones and tablets) and the Teams page. Expects a .detail container for its styling.
 function rosterTable(o) {
@@ -74,12 +78,12 @@ function rosterTable(o) {
     return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${p.team ? logo(p.team, true) : "— ·"} ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
     <td class="wd">${p.pos}</td><td class="wd tm">${p.team ? logo(p.team, true) : "—"}</td>
     <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td data-l="PPG">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</td>
-    <td class="rm"${p.rm ? ' data-l="RM"' : ""}>${p.rm ? money(p.rm) : ""}</td><td class="wd">${onBench ? p.timesPicked : p.cost == null ? "" : money(p.cost)}</td><td class="ln"${p.otp ? ' data-l="Last Night:"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
+    <td class="rm"${p.rm ? ' data-l="RM"' : ""}>${p.rm ? money(p.rm) : ""}</td><td class="wd">${onBench ? p.timesPicked : p.cost == null ? "" : money(p.cost)}</td><td class="ln"${p.otp || (!onBench && p.ogp) ? ' data-l="Last Night:"' : ""}>${lastNight(p.otp, !onBench && p.ogp)}</td></tr>`;
   };
   const cost = o.players.reduce((n, p) => n + (p.cost ?? 0), 0);
   const total = `<tr class="total"><td class="wd"></td><td class="pname"><b>Total</b></td><td class="wd"></td><td class="wd"></td>
     <td data-l="GP">${o.gp}</td><td data-l="G">${o.g}</td><td data-l="A">${o.a}</td><td data-l="TP">${o.tp}</td><td data-l="PPG">${o.ppg.toFixed(2)}</td>
-    <td class="rm" data-l="RM">${money(o.rm)}</td><td class="wd">${money(cost)}</td><td class="ln"${o.otp ? ' data-l="Last Night:"' : ""}>${o.otp ? `<span class="plus">+${o.otp}</span>` : ""}</td></tr>`;
+    <td class="rm" data-l="RM">${money(o.rm)}</td><td class="wd">${money(cost)}</td><td class="ln"${o.otp || o.ogp ? ' data-l="Last Night:"' : ""}>${lastNight(o.otp, o.ogp)}</td></tr>`;
   // CSS can't change colspan, so the bench label row has a narrow version (8 columns) and a wide one (12).
   const bench = o.bench?.length
     ? `<tr class="benchhead nw"><td colspan="8">Bench</td></tr><tr class="benchhead wd"><td colspan="10">Bench</td><td>Times Picked</td><td></td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`

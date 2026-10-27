@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · Undrafted</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header style="align-items:center">
+    <h1>Undrafted</h1>
+    <div class="sub" id="sub"></div>
+  </header>
+  <div class="toolbar">
+    <div class="notice" id="notice"></div>
+    <label class="toggle"><input type="checkbox" id="eligible"> Eligible players only</label>
+  </div>
+  <div class="card" id="list"></div>
+</main>
+<script src="/common.js"></script>
+<script>
+// The best scorers who aren't on an owner's active roster, for the midseason drop/pick. Bench spots don't count, so
+// owners who have a player on their bench are shown as chips (same as the Benches page).
+// Anyone priced above the bible limit (maxCost) can't be picked: the row is dimmed, the price is red and an
+// "Ineligible" pill sits under the name. Pos, Team and the season columns (.uz) only show on wide screens; phones
+// get the compact name / meta / TP layout.
+let data;
+const only = $("#eligible");
+
+function render() {
+  const shown = only.checked ? data.players.filter((p) => p.eligible) : data.players;
+  const head = `<div class="ud head"><span></span><span>Player</span>${["Pos", "Team", "GP", "G", "A", "TP", "PPG", "Cost", "On bench"].map((h) => `<span class="uz">${h}</span>`).join("")}</div>`;
+  $("#list").innerHTML = shown.length
+    ? head + shown.map((p) => {
+        const tag = p.eligible ? "" : `<span class="inel">Ineligible</span>`;
+        const bench = p.bench.map((o) => `<span class="chip">${o}</span>`).join("");
+        return `<div class="ud${p.eligible ? "" : " out"}">
+          <a href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}</a>
+          <div class="pinfo">
+            <a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener"><b>${p.name}</b></a>
+            <span class="pmeta">${logo(p.team)}${p.team} · ${p.pos}${price(p.cost)}</span>
+            ${tag ? `<div class="chips">${tag}</div>` : ""}
+            ${bench ? `<div class="chips nw-only"><small>Bench:</small>${bench}</div>` : ""}
+          </div>
+          <span class="uz">${p.pos}</span><span class="uz">${logo(p.team, true)}</span>
+          <span class="uz">${p.gp}</span><span class="uz">${p.g}</span><span class="uz">${p.a}</span><span class="uz"><b>${p.tp}</b></span><span class="uz">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</span>
+          <span class="uz cost">${p.cost == null ? "—" : money(p.cost)}</span>
+          <span class="uz chips">${bench}</span>
+          <div class="stat"><b>${p.tp}</b><span>${p.gp} GP</span></div>
+        </div>`;
+      }).join("")
+    : `<div class="empty">No players to show.</div>`;
+}
+
+only.addEventListener("change", render);
+
+async function load() {
+  try {
+    const r = await fetch("/api/undrafted");
+    if (!r.ok) throw new Error(r.status);
+    data = await r.json();
+    $("#sub").textContent = `As of ${new Date(data.asOf + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`;
+    $("#notice").innerHTML = `<b>Drop/Pick:</b> Players priced over ${money(data.maxCost)} are ineligible!`;
+    render();
+  } catch (e) {
+    $("#list").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the undrafted scorers. Try refreshing.</div>`;
+  }
+}
+load();
+</script>
+</body>
+</html>

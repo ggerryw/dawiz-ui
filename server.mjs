@@ -3,8 +3,9 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import standings from "./netlify/functions/standings.mjs";
 import overnight from "./netlify/functions/overnight.mjs";
+import undrafted from "./netlify/functions/undrafted.mjs";
 
-const api = { "/api/standings": standings, "/api/overnight": overnight };
+const api = { "/api/standings": standings, "/api/overnight": overnight, "/api/undrafted": undrafted };
 const types = { html: "text/html", css: "text/css", js: "text/javascript", json: "application/json" };
 
 createServer(async (req, res) => {
