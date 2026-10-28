@@ -317,7 +317,7 @@
 .bp .bz, .bp.head { display: none; }
 @media (max-width: 600px) { .bp { gap: 8px; padding: 10px; } .bp .chip { font-size: .85rem; } .bp .stat span { font-size: .85rem; } }
 /* Wide screens: a column per owner with a check mark, under a header row (rem widths so the small header font lines up) */
-@media (min-width: 1150px) { /* 12 owner columns need more room than the other wide tables; narrower screens keep the chip layout */
+@media (min-width: 1000px) {
   .bp { grid-template-columns: 52px minmax(0, 1fr) 2.2rem 3.2rem repeat(4, 2.3rem) repeat(var(--cols), 3rem) 3.6rem; gap: 4px; padding: 8px 14px; }
   .bp .pmeta, .bp .chips, .bp .stat { display: none; }
   .bp .pinfo, .bp.head span:nth-child(2) { margin-left: 8px; } /* this grid's gap is 4px (12 owner columns), so add back the 12px the other pages put between photo and name */
@@ -336,6 +336,16 @@
   /* header stays on screen while scrolling; the card's overflow: hidden would stop sticky, so the header rounds its own corners */
   .card:has(> .bp.head) { overflow: visible; }
   .bp.head { position: sticky; top: 0; z-index: 1; background: var(--card); border-radius: 16px 16px 0 0; box-shadow: 0 1px 0 var(--line); }
+}
+/* 1000-1149px: 12 owner columns only fit if they're narrower, so the owner names in the header turn upright (read
+   bottom to top, like the old site) and the photo and logo shrink a little. Wider screens keep level names. */
+@media (min-width: 1000px) and (max-width: 1149px) {
+  .bp { grid-template-columns: 40px minmax(0, 1fr) 2rem 2.8rem repeat(4, 2.1rem) repeat(var(--cols), 2.2rem) 3rem; gap: 3px; padding: 8px 10px; }
+  .bp .photo { width: 40px; height: 40px; }
+  .bp .logo.big { width: 34px; height: 34px; margin: -2px auto; }
+  .bp .pinfo b { white-space: normal; }
+  .bp.head .oc, .bp.head .ct { writing-mode: vertical-rl; transform: rotate(180deg); padding: 6px 0; font-size: .75rem; letter-spacing: .03em; }
+  .bp.head { align-items: end; }
 }
 /* Undrafted page */
 .notice { padding: 8px 14px; border-radius: 10px; color: var(--text); background: color-mix(in srgb, var(--worst) 14%, transparent); } /* sits in the toolbar, left of the checkbox */
