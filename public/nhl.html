@@ -19,37 +19,51 @@
 </main>
 <script src="/common.js"></script>
 <script>
-// Every pool player on one NHL team, in the Teams page's table with an Owner column in place of Team. Reached by
-// clicking any team logo; the team is in the URL (?team=EDM). Active players in draft-round order, then a Total
-// row (active players only, like the owners' totals), then players on owners' benches.
+// Every skater on one NHL team, in the Teams page's table with an Owner column in place of Team. Reached by clicking
+// any team logo; the team is in the URL (?team=EDM). Owners' active players come first (from /api/standings, with
+// their round money), in draft-round order, then a Total row (active players only, like the owners' totals), then
+// everyone else on the team's current roster (/api/nhlteam), best scorers first, with price and any bench owners.
 let data;
+const teamCache = new Map(); // team -> /api/nhlteam result, so switching back is instant
 
-function teamRoster(team) {
+function teamRoster(team, nhl) {
   const players = data.owners
     .flatMap((o) => o.players.filter((p) => p.team === team).map((p) => ({ ...p, owner: o.owner })))
     .sort((x, y) => (x.round ?? 99) - (y.round ?? 99) || x.owner.localeCompare(y.owner));
-  const bench = new Map(); // a player can sit on several benches: one row, every owner listed
-  for (const o of data.owners) for (const p of o.bench ?? []) if (p.team === team) {
-    bench.set(p.id, { ...p, round: null, owners: [...(bench.get(p.id)?.owners ?? []), o.owner] });
+  const active = new Set(players.map((p) => p.id));
+  const benched = new Map(); // id -> owners who have the player on their bench
+  const benchInfo = new Map();
+  for (const o of data.owners) for (const p of o.bench ?? []) if (p.team === team && !active.has(p.id)) {
+    benched.set(p.id, [...(benched.get(p.id) ?? []), o.owner]);
+    benchInfo.set(p.id, p);
   }
+  // the team's roster, plus any benched player the roster call doesn't list (e.g. just traded)
+  const rest = new Map((nhl?.players ?? []).filter((p) => !active.has(p.id)).map((p) => [p.id, { ...p, game: nhl.game }]));
+  for (const [id, p] of benchInfo) if (!rest.has(id)) rest.set(id, { ...p, cost: null });
   const sum = (k) => players.reduce((n, p) => n + (p[k] ?? 0), 0);
   const gp = sum("gp");
   return {
     players, gp, g: sum("g"), a: sum("a"), tp: sum("tp"), ppg: gp ? sum("tp") / gp : 0,
     rm: Math.round(sum("rm") * 100) / 100, otp: sum("otp"), ogp: sum("ogp"),
-    bench: [...bench.values()].sort((x, y) => x.name.localeCompare(y.name)),
+    rest: [...rest.values()].map((p) => ({ ...p, round: null, owners: (benched.get(p.id) ?? []).sort() }))
+      .sort((x, y) => y.tp - x.tp || y.g - x.g || x.name.localeCompare(y.name)),
   };
 }
 
-function render() {
+async function render() {
   const team = $("#team").value;
-  const r = teamRoster(team);
-  const game = [...r.players, ...r.bench].find((p) => p.game)?.game;
+  if (!teamCache.has(team)) {
+    $("#roster").innerHTML = `<div class="empty">Loading ${team}…</div>`;
+    teamCache.set(team, await fetch(`/api/nhlteam?team=${team}`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+    if ($("#team").value !== team) return; // switched again while loading
+  }
+  const nhl = teamCache.get(team);
+  const r = teamRoster(team, nhl);
+  const game = nhl?.game ?? r.players.find((p) => p.game)?.game;
   const n = r.players.length;
-  $("#summary").innerHTML = `${logo(team, true)}<span>${team} · ${n} active player${n === 1 ? "" : "s"} · ${r.tp} TP${game ? ` ${gamePill(game)}` : ""}</span>`;
-  $("#roster").innerHTML = n || r.bench.length
-    ? rosterTable(r, true)
-    : `<div class="empty">No owner has a ${team} player.</div>`;
+  $("#summary").innerHTML = `${logo(team, true)}<span>${team} · ${n} active pool player${n === 1 ? "" : "s"} · ${r.tp} TP${game ? ` ${gamePill(game)}` : ""}</span>`;
+  $("#roster").innerHTML = (n || r.rest.length ? rosterTable(r, true) : "")
+    + (nhl ? "" : `<div class="empty" style="color:var(--worst)">Couldn't load the rest of the ${team} roster. Try refreshing.</div>`);
 }
 
 $("#team").addEventListener("change", () => {
@@ -62,17 +76,23 @@ async function load() {
     const res = await fetch("/api/standings");
     if (!res.ok) throw new Error(res.status);
     data = await res.json();
-    const want = new URLSearchParams(location.search).get("team")?.toUpperCase();
+    // every NHL team can be picked (owners' teams are added too, in case the league list is ever out of date)
+    const raw = new URLSearchParams(location.search).get("team")?.toUpperCase();
+    const want = /^[A-Z]{3}$/.test(raw ?? "") ? raw : null; // it goes into the page, so only a 3-letter code
     const teams = new Set(data.owners.flatMap((o) => [...o.players, ...(o.bench ?? [])].map((p) => p.team)).filter(Boolean));
-    if (want) teams.add(want); // a logo from a team no owner has (e.g. on Undrafted) still opens, with a note
-    $("#team").innerHTML = [...teams].sort().map((t) => `<option>${t}</option>`).join("");
-    $("#team").value = want ?? [...teams].sort()[0];
+    for (const t of NHL_TEAMS) teams.add(t);
+    if (want) teams.add(want);
+    const sorted = [...teams].sort();
+    $("#team").innerHTML = sorted.map((t) => `<option>${t}</option>`).join("");
+    $("#team").value = want ?? sorted[0];
     render();
   } catch (e) {
     $("#summary").textContent = "";
     $("#roster").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the team. Try refreshing.</div>`;
   }
 }
+const NHL_TEAMS = ["ANA", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI", "COL", "DAL", "DET", "EDM", "FLA", "LAK", "MIN", "MTL", "NJD",
+  "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA", "SJS", "STL", "TBL", "TOR", "UTA", "VAN", "VGK", "WPG", "WSH"];
 load();
 </script>
 </body>

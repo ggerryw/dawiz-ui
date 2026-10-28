@@ -5,15 +5,16 @@ import standings from "./netlify/functions/standings.mjs";
 import overnight from "./netlify/functions/overnight.mjs";
 import undrafted from "./netlify/functions/undrafted.mjs";
 import hot from "./netlify/functions/hot.mjs";
+import nhlteam from "./netlify/functions/nhlteam.mjs";
 
-const api = { "/api/standings": standings, "/api/overnight": overnight, "/api/undrafted": undrafted, "/api/hot": hot };
+const api = { "/api/standings": standings, "/api/overnight": overnight, "/api/undrafted": undrafted, "/api/hot": hot, "/api/nhlteam": nhlteam };
 const types = { html: "text/html", css: "text/css", js: "text/javascript", json: "application/json", png: "image/png" };
 
 createServer(async (req, res) => {
   const path = req.url.split("?")[0];
   if (api[path]) {
     try {
-      const r = await api[path]();
+      const r = await api[path](new Request(`http://localhost${req.url}`)); // like Netlify: the request, for ?query
       res.writeHead(r.status, { "content-type": "application/json" });
       return res.end(await r.text());
     } catch (e) {
