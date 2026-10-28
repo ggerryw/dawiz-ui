@@ -165,8 +165,11 @@
   .nav .menu a { background: none; border-radius: 10px; padding: 12px 14px; color: var(--text); }
   .nav .menu a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .nav .menu a[aria-current] { background: var(--accent); color: var(--card); }
-  .mgroup { padding: 10px 14px 4px; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .mgroup ~ .mgroup { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 14px; }
+  /* group headings: a shaded band across the panel (a little darker than the page background, in both themes) */
+  .mgroup { margin: 0 -8px 6px; padding: 9px 22px; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); background: color-mix(in srgb, var(--bg) 92%, #000); border-block: 1px solid var(--line); }
+  .mgroup:first-child { margin-top: -8px; border-top: 0; border-radius: 15px 15px 0 0; }
+  .mgroup ~ .mgroup { margin-top: 6px; }
   @media (max-width: 999px) { .more.cur-narrow summary { background: var(--accent); color: var(--card); } }
   @media (max-width: 600px) { .nav a, .nav summary { padding: 8px 14px; } }
 /* Wide screens: open rosters become a full table, with round, position, team and price in their own
