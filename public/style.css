@@ -382,3 +382,8 @@
 .legend i.bar { width: 18px; background: var(--accent); }
 .legend i.usual { width: 4px; height: 18px; border-radius: 2px; background: var(--text); vertical-align: -4px; }
 @media (max-width: 600px) { .hot .crow { grid-template-columns: 1fr; } }
+/* Footer on every page (added by common.js): cartoon player and a tongue-in-cheek credit */
+.credits { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 28px 0 8px; color: var(--muted); font-size: .9rem; line-height: 1.35; }
+.credits svg { flex: none; width: 56px; height: 56px; }
+.credits small { display: block; font-size: .85rem; font-style: italic; }
+@media (min-width: 1000px) { .credits { margin-top: 16px; } }

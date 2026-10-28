@@ -62,6 +62,25 @@ $("#theme").addEventListener("click", () => {
   for (const img of document.querySelectorAll("img.logo")) img.src = logoSrc(img.alt);
   themeLabel();
 });
+// Footer on every page: a gap-toothed cartoon player (helmet and jersey in the accent color) and a straight-faced credit.
+$("main").insertAdjacentHTML("beforeend", `<footer class="credits">
+  <svg viewBox="0 0 64 64" aria-hidden="true">
+    <ellipse cx="13" cy="59" rx="6" ry="2.2" style="fill:var(--text)"/>
+    <path d="M20 42q12-9 24 0v17H20z" style="fill:var(--accent)"/>
+    <path d="M27 47h10M27 52h10" stroke="#fff" stroke-width="2" opacity=".7"/>
+    <path d="M47 18 33 58H19" fill="none" stroke="#b07a43" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="32" cy="27" r="13" fill="#f3c7a0"/>
+    <path d="M19 26a13 13 0 0 1 26 0z" style="fill:var(--accent)"/>
+    <path d="M19 26h26" style="stroke:var(--text)" stroke-width="1.5"/>
+    <circle cx="27" cy="29" r="1.7" style="fill:var(--text)"/>
+    <path d="M35 29h4" style="stroke:var(--text)" stroke-width="1.7" stroke-linecap="round"/>
+    <path d="M26 33q6 6.5 12 0z" fill="#fff" style="stroke:var(--text)" stroke-width="1.2" stroke-linejoin="round"/>
+    <rect x="30.6" y="33" width="2.6" height="2.6" style="fill:var(--text)"/>
+  </svg>
+  <div>Brought to you by the tireless efforts of the DaWiz IT professionals.
+    <small>No teeth were harmed in the making of these standings. Most of them, anyway.</small></div>
+</footer>`);
+
 const price = (c) => (c == null ? "" : ` · $${c.toFixed(2)}`);
 const initials = (n) => n.split(" ").map((w) => w[0]).slice(0, 2).join("");
 const photo = (p) => `<span class="photo"><img loading="lazy" alt="" src="https://assets.nhle.com/mugs/nhl/latest/${p.id}.png" onerror="this.parentNode.textContent='${initials(p.name)}'"></span>`;
