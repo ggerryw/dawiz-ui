@@ -160,8 +160,11 @@
   .nav summary::-webkit-details-marker { display: none; }
   .nav summary:hover, .more[open] summary { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
   .more.cur summary { background: var(--accent); color: var(--card); }
+  /* The panel floats above the page: a lifted surface (a touch lighter than the cards in dark mode, where the same
+     colour made it blend into the table behind), an accent-tinted edge and a deep shadow. */
   .more .menu { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 10; padding: 8px; display: flex; flex-direction: column;
-    background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+    background: color-mix(in srgb, var(--card) 92%, #fff); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 16px; box-shadow: 0 14px 40px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .2); }
   .nav .menu a { background: none; border-radius: 10px; padding: 12px 14px; color: var(--text); }
   .nav .menu a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .nav .menu a[aria-current] { background: var(--accent); color: var(--card); }
@@ -173,11 +176,15 @@
     background: color-mix(in srgb, var(--bg) 92%, #000); border-top: 1px solid var(--line); }
   .nav .mgroup:first-child > summary { border-top: 0; }
   .nav .mgroup > summary:hover { color: var(--text); }
-  .nav .mgroup[open] > summary { color: var(--text); border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+  .nav .mgroup[open] > summary { color: var(--accent); border-bottom: 1px solid var(--line); }
   .mchev { font-size: 1.1em; transition: transform .15s; }
   .mgroup[open] .mchev { transform: rotate(90deg); }
-  .nav .mgroup a { display: block; margin: 4px 8px; }
-  .nav .mgroup[open] a:last-child { margin-bottom: 8px; }
+  /* destinations: indented under their heading, hung off a thin accent guide line */
+  .nav .mgroup a { display: block; margin: 0 10px 0 30px; padding: 11px 14px; border-left: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 0 10px 10px 0; font-weight: 600; }
+  .nav .mgroup[open] > summary + a { margin-top: 8px; }
+  .nav .mgroup[open] a:last-child { margin-bottom: 10px; }
+  .nav .mgroup a[aria-current] { border-left-color: var(--accent); }
   @media (max-width: 999px) { .more.cur-narrow summary { background: var(--accent); color: var(--card); } }
   @media (max-width: 600px) { .nav a, .nav summary { padding: 8px 14px; } }
 /* Wide screens: open rosters become a full table, with round, position, team and price in their own
