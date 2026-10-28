@@ -370,3 +370,15 @@
   .crow { grid-template-columns: 1fr; gap: 6px; padding: 10px 20px 12px 12px; }
   .crow.head { display: none; } /* phones: the numbers are in each row's text line */
 }
+/* Who's Hot page: same rows as The Chase. A bar for the last 14 days' points; the upright line marks what the
+   owner's usual (season) pace would have scored, in the text color so it stands out in both themes. */
+.hot .crow { grid-template-columns: 17rem 1fr; }
+.hot .cname > span { white-space: normal; }
+.hot .track .bar { position: absolute; left: 0; top: 5px; height: 18px; border-radius: 0 4px 4px 0;
+  background: color-mix(in srgb, var(--accent) 45%, var(--card)); }
+.hot .track .bar.up { background: var(--accent); }
+.hot .track .usual { position: absolute; top: -1px; height: 30px; width: 4px; margin-left: -2px; border-radius: 2px;
+  background: var(--text); box-shadow: 0 0 0 2px var(--card); }
+.legend i.bar { width: 18px; background: var(--accent); }
+.legend i.usual { width: 4px; height: 18px; border-radius: 2px; background: var(--text); vertical-align: -4px; }
+@media (max-width: 600px) { .hot .crow { grid-template-columns: 1fr; } }

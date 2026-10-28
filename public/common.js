@@ -19,6 +19,7 @@ const TABS = [
   ["/undrafted.html", "Undrafted", "more", "Draft"],
   ["/benches.html", "Benches", "more", "Draft"],
   ["/chase.html", "The Chase", "more", "Charts"],
+  ["/hot.html", "Who's Hot", "more", "Charts"],
 ];
 {
   const here = (href) => location.pathname === href || (href === "/" && location.pathname === "/index.html");
