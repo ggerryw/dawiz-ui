@@ -4,7 +4,7 @@
   :root {
     --bg: #edf2fb; --card: #fff; --text: #14213d; --muted: #56627e; --line: #e0e6f1;
     --accent: #1a56c9; --good: #dff6dd; --bad: #fde0e0; --best: #1f8a3b; --worst: #c0392b;
-    --photo: #dfe5f1; --head: #f3f7fe; --frame: #d9e2f2;
+    --photo: #dfe5f1; --head: #f3f7fe; --frame: #d9e2f2; --bar: #d7e4fb;
     --wash: linear-gradient(180deg, #d6e3fb 0, #e6eefb 220px, var(--bg) 480px);
     --shadow: 0 6px 18px rgba(26, 60, 140, .08), 0 1px 3px rgba(20, 33, 61, .08);
     color-scheme: light;
@@ -12,12 +12,12 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
       --accent: #7ba8ff; --good: #1d3a2a; --bad: #43222a; --best: #5fd27f; --worst: #ff7b7b;
-      --photo: #2a3858; --head: transparent; --frame: transparent; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
+      --photo: #2a3858; --head: transparent; --frame: transparent; --bar: #0e1424; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
       color-scheme: dark; }
   }
   :root[data-theme="dark"] { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
     --accent: #7ba8ff; --good: #1d3a2a; --bad: #43222a; --best: #5fd27f; --worst: #ff7b7b;
-    --photo: #2a3858; --head: transparent; --frame: transparent; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
+    --photo: #2a3858; --head: transparent; --frame: transparent; --bar: #0e1424; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
     color-scheme: dark; }
   * { box-sizing: border-box; }
   html { font-size: 19px; }
@@ -216,16 +216,30 @@
   .chev { display: none; } /* rows open the Teams page here instead of expanding, so no expand arrow */
   #main .og, #main .og + * { width: 4.7em; }
   .legend { padding: 8px 4px; }
-  /* one top row: title, tabs, then date/filter and theme toggle on the right. The header's children join
-     main's grid (display: contents) so they can share the row with the tab bar. */
-  main { display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 24px; align-items: center; }
-  main > * { grid-column: 1 / -1; }
-  main > header { display: contents; }
-  main > nav, main > header > * { grid-row: 1; margin: 0 0 12px; }
-  main > header > h1 { grid-column: 1; min-width: 5em; } /* fits "Overnight", so the tabs don't shift between pages */
-  main > nav { grid-column: 2; }
-  main > header > .sub, main > header > .filter, main > header > .filters { grid-column: 3; justify-self: end; }
-  main > header > .theme { grid-column: 4; }
+  /* one top row: title, tabs, then date/filter and theme toggle on the right. The tab bar and header sit in one
+     wrapper (.topbar, added by common.js); the header's children join its grid (display: contents) so they can share
+     the row with the tab bar. The band stays pinned to the top of the window while the page scrolls under it. */
+  main { padding-top: 0; }
+  .topbar { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 24px;
+    align-items: center; padding-top: 12px; }
+  .topbar > header { display: contents; }
+  .topbar > nav, .topbar > header > * { grid-row: 1; margin: 0 0 12px; }
+  .topbar > header > h1 { grid-column: 1; min-width: 5em; } /* fits "Overnight", so the tabs don't shift between pages */
+  .topbar > nav { grid-column: 2; }
+  .topbar > header > .sub, .topbar > header > .filter, .topbar > header > .filters { grid-column: 3; justify-self: end; }
+  .topbar > header > .theme { grid-column: 4; }
+  /* the band's background runs the full window width, not just main's: a huge box-shadow spread, clipped to the band's
+     height (a shadow adds no scroll width; on a pseudo-element so the clip doesn't cut off the More menu) */
+  .topbar::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--bar);
+    box-shadow: 0 0 0 100vmax var(--bar); clip-path: inset(0 -100vmax); }
+
+  /* Column header rows stick just under the band (--bar-h, set by common.js). Cards clip instead of hiding overflow:
+     same rounded corners, but overflow: hidden would stop sticky from working. */
+  .card, .card.scroll { overflow: clip; }
+  .card thead { position: sticky; top: var(--bar-h, 0); z-index: 2; } /* the whole block, so Standings' two header rows stay stacked */
+  .card thead th { background: linear-gradient(var(--head), var(--head)), var(--card); }
+  .scorer.head, .ud.head { position: sticky; top: var(--bar-h, 0); z-index: 2; background: var(--card); box-shadow: 0 1px 0 var(--line); }
+  .roundhead { position: sticky; top: var(--bar-h, 0); z-index: 2; background: var(--bg); padding-top: 6px; padding-bottom: 6px; margin-top: 16px; margin-bottom: 2px; }
 
   .nav a.wide-only { display: inline-block; } /* Teams tab */
   .nav .narrow-only { display: none; } /* in the More menu on phones only: a tab here */
@@ -234,7 +248,7 @@
 }
 /* Draft's two menus don't fit the top row until ~1160px: below that they get their own row, still on the right */
 @media (min-width: 1000px) and (max-width: 1159px) {
-  main > header > .filters { grid-row: 2; grid-column: 1 / -1; }
+  .topbar > header > .filters { grid-row: 2; grid-column: 1 / -1; }
 }
 /* Phones under ~400px have no spare width, so the Last night columns shrink to their contents (GP narrower than
    the TP pill) and the group header drifts ~5px right of the two values. Nudge it back. */
@@ -333,9 +347,8 @@
   .bp.head .oc { color: var(--muted); font-weight: 700; overflow: hidden; text-overflow: clip; }
   .bp.head span:nth-child(2) { text-align: left; }
   .bp.head + .bp { border-top: 1px solid var(--line); }
-  /* header stays on screen while scrolling; the card's overflow: hidden would stop sticky, so the header rounds its own corners */
-  .card:has(> .bp.head) { overflow: visible; }
-  .bp.head { position: sticky; top: 0; z-index: 1; background: var(--card); border-radius: 16px 16px 0 0; box-shadow: 0 1px 0 var(--line); }
+  /* header stays on screen while scrolling, just under the pinned top band */
+  .bp.head { position: sticky; top: var(--bar-h, 0); z-index: 2; background: var(--card); box-shadow: 0 1px 0 var(--line); }
 }
 /* 1000-1149px: 12 owner columns only fit if they're narrower, so the owner names in the header turn upright (read
    bottom to top, like the old site) and the photo and logo shrink a little. Wider screens keep level names. */

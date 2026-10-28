@@ -49,6 +49,16 @@ const TABS = [
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") more.open = false; });
 }
 
+// Top band: the tab bar and the page header in one wrapper, which wide screens pin to the top of the window (see
+// .topbar in style.css). Its height goes in --bar-h so table header rows can stick just below it.
+{
+  const bar = document.createElement("div");
+  bar.className = "topbar";
+  $("main").prepend(bar);
+  bar.append($("#nav"), $("header"));
+  new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", `${bar.offsetHeight}px`)).observe(bar);
+}
+
 // Theme toggle, at the right end of the page header. Its icon shows the theme it switches to.
 $("header").insertAdjacentHTML("beforeend", `<button class="theme" id="theme"></button>`);
 // Inline SVGs on the same 24px grid, so both icons come out the same size (the ☀︎ and ☾ characters don't).
