@@ -7,7 +7,7 @@ import undrafted from "./netlify/functions/undrafted.mjs";
 import hot from "./netlify/functions/hot.mjs";
 
 const api = { "/api/standings": standings, "/api/overnight": overnight, "/api/undrafted": undrafted, "/api/hot": hot };
-const types = { html: "text/html", css: "text/css", js: "text/javascript", json: "application/json" };
+const types = { html: "text/html", css: "text/css", js: "text/javascript", json: "application/json", png: "image/png" };
 
 createServer(async (req, res) => {
   const path = req.url.split("?")[0];

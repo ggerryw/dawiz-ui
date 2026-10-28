@@ -62,27 +62,10 @@ $("#theme").addEventListener("click", () => {
   for (const img of document.querySelectorAll("img.logo")) img.src = logoSrc(img.alt);
   themeLabel();
 });
-// Footer on every page: a gap-toothed cartoon player and a straight-faced credit. The helmet is modelled on Butch
-// Goring's old Swedish SPAPS: a padded headband and padded ribs over the crown, with hair showing between them.
+// Footer on every page: a cartoon player in an old-school helmet (goring.png, background made transparent so it sits
+// on either theme) and a straight-faced credit.
 $("main").insertAdjacentHTML("beforeend", `<footer class="credits">
-  <svg viewBox="0 0 64 64" aria-hidden="true">
-    <ellipse cx="13" cy="59" rx="6" ry="2.2" style="fill:var(--text)"/>
-    <path d="M20 42q12-9 24 0v17H20z" style="fill:var(--accent)"/>
-    <path d="M27 47h10M27 52h10" stroke="#fff" stroke-width="2" opacity=".7"/>
-    <path d="M47 18 33 58H19" fill="none" stroke="#b07a43" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="32" cy="27" r="13" fill="#f3c7a0"/>
-    <path d="M19 26a13 13 0 0 1 26 0z" fill="#6b4a2e"/>
-    <g fill="none" stroke-linecap="round" style="stroke:var(--text)" stroke-width="4.6">
-      <path d="M21.5 23Q22 15.5 30 14.5M42.5 23Q42 15.5 34 14.5M32 14.5V23M19.5 24.5h25"/>
-    </g>
-    <g fill="none" stroke-linecap="round" stroke="#f4f1ea" stroke-width="3">
-      <path d="M21.5 23Q22 15.5 30 14.5M42.5 23Q42 15.5 34 14.5M32 14.5V23M19.5 24.5h25"/>
-    </g>
-    <circle cx="27" cy="29" r="1.7" style="fill:var(--text)"/>
-    <path d="M35 29h4" style="stroke:var(--text)" stroke-width="1.7" stroke-linecap="round"/>
-    <path d="M26 33q6 6.5 12 0z" fill="#fff" style="stroke:var(--text)" stroke-width="1.2" stroke-linejoin="round"/>
-    <rect x="30.6" y="33" width="2.6" height="2.6" style="fill:var(--text)"/>
-  </svg>
+  <img src="/goring.png" alt="" width="53" height="60">
   <div>Brought to you by the tireless efforts of the DaWiz IT professionals.
     <small>No teeth were harmed in the making of these standings. Most of them, anyway.</small></div>
 </footer>`);
