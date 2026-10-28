@@ -5,15 +5,39 @@ const $ = (s) => document.querySelector(s);
 // localStorage and applied early by the one-line script in each page's <head> (so the page doesn't flash).
 const isDark = () => (document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
 
-// Tab bar shared by every page; add new pages here.
-// Teams is wide-screen only (phones expand a team in place on Standings); it sits right after Standings.
-const TABS = [["/", "Standings"], ["/team.html", "Teams", "wide-only"], ["/overnight.html", "Overnight"], ["/draft.html", "Draft"], ["/undrafted.html", "Undrafted"], ["/benches.html", "Benches"]];
-$("#nav").innerHTML = TABS.map(([href, label, cls]) =>
-  `<a href="${href}"${cls ? ` class="${cls}"` : ""}${location.pathname === href || (href === "/" && location.pathname === "/index.html") ? ' aria-current="page"' : ""}>${label}</a>`
-).join("");
-
-// On phones the tab bar scrolls sideways; make sure the current tab is in view.
-$("#nav [aria-current]")?.scrollIntoView({ inline: "nearest", block: "nearest" });
+// Tab bar shared by every page; add new pages here. Only the daily pages are tabs on phones; the rest sit in the
+// More menu, under a group heading. Where a page shows:
+//   tab       a tab everywhere
+//   wide      a tab on wide screens, not on phones at all (Teams: phones expand a team in place on Standings)
+//   wide-tab  a tab on wide screens, in More on phones
+//   more      in More everywhere
+const TABS = [
+  ["/", "Standings", "tab"],
+  ["/team.html", "Teams", "wide"],
+  ["/overnight.html", "Overnight", "tab"],
+  ["/draft.html", "Draft", "wide-tab", "Draft"],
+  ["/undrafted.html", "Undrafted", "more", "Draft"],
+  ["/benches.html", "Benches", "more", "Draft"],
+  ["/chase.html", "The Chase", "more", "Charts"],
+];
+{
+  const here = (href) => location.pathname === href || (href === "/" && location.pathname === "/index.html");
+  const cur = (href) => (here(href) ? ' aria-current="page"' : "");
+  const tabs = TABS.filter(([, , w]) => w !== "more").map(([href, label, w]) =>
+    `<a href="${href}"${w === "tab" ? "" : ' class="wide-only"'}${cur(href)}>${label}</a>`);
+  const inMore = TABS.filter(([, , w]) => w === "more" || w === "wide-tab");
+  const groups = [...new Set(inMore.map((t) => t[3]))].map((g) => `<div class="mgroup${inMore.every((t) => t[3] !== g || t[2] === "wide-tab") ? " narrow-only" : ""}">${g}</div>` +
+    inMore.filter((t) => t[3] === g).map(([href, label, w]) => `<a href="${href}"${w === "wide-tab" ? ' class="narrow-only"' : ""}${cur(href)}>${label}</a>`).join(""));
+  // The More button is highlighted when the current page is inside it (on phones only, for a page that is a tab on wide screens).
+  const curIn = inMore.find(([href]) => here(href));
+  const moreCls = curIn ? (curIn[2] === "more" ? " cur" : " cur-narrow") : "";
+  $("#nav").innerHTML = tabs.join("") +
+    `<details class="more${moreCls}"><summary>More <span aria-hidden="true">▾</span></summary><div class="menu">${groups.join("")}</div></details>`;
+  // Close the menu on a click outside it or on Escape.
+  const more = $("#nav .more");
+  document.addEventListener("click", (e) => { if (!more.contains(e.target)) more.open = false; });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") more.open = false; });
+}
 
 // Theme toggle, at the right end of the page header. Its icon shows the theme it switches to.
 $("header").insertAdjacentHTML("beforeend", `<button class="theme" id="theme"></button>`);

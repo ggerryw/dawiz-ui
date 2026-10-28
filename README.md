@@ -14,7 +14,10 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 - **Benches**: every player on any owner's bench, best scorers first, with season GP/G/A/TP. Wide screens show a grid with a column per owner and a check mark where that owner picked the player; phones show an owner chip per player. Owner filter at the top. Built in the browser from the standings data, so there is no extra function.
 - **Undrafted**: the top 200 scorers who aren't on any owner's active roster, for the midseason drop/pick. Bench spots don't count as drafted, so owners who have a player on their bench show as owner chips, same as the Benches page (a column on wide screens, under the name on phones). Players priced over $2.50 in the bible are dimmed, with a red price and an "Ineligible" pill under the name; a banner at the top says so and a checkbox hides them. Served by `netlify/functions/undrafted.mjs` (one NHL stats call).
 - **Teams** (wide screens only): one owner's full roster table, picked from an alphabetical list of owners (like the Draft filter; the owner's rank shows in the summary line). Clicking an owner on Standings on a wide screen opens it; phones expand the roster in place instead.
-- **Draft**: round-by-round recap of the original draft (pick number, player, team, position, price, owner), with an owner filter. It is a frozen snapshot (see Draft snapshot).
+- **Draft**: round-by-round recap of the original draft (pick number, player, team, position, price, owner), with each pick's current GP, TP and round money, and a Round or Owner filter. It is a frozen snapshot (see Draft snapshot).
+- **The Chase** (in More, under Charts): for each owner, points per game so far and the pace needed for the rest of the season to catch the leader, if the leader keeps their pace.
+
+Menu: phones show Standings and Overnight as tabs plus a More menu with everything else, grouped; wide screens also show Teams and Draft as tabs.
 
 Round money: in each draft round, the active players with at least 1 point are ranked by points and the top four places pay $3.00, $2.26, $1.50 and $0.74. Tied players share the money for the places they cover.
 

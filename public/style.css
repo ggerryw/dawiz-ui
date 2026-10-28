@@ -152,8 +152,23 @@
   .nav a:not([aria-current]):hover { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
   /* four tabs don't fit one row on phones: the bar scrolls sideways (scrollbar hidden), same text size; the
      negative margin lets it run to the screen edge so a cut-off tab shows there is more */
-  @media (max-width: 600px) { .nav { overflow-x: auto; scrollbar-width: none; margin-left: -10px; margin-right: -10px; padding: 0 10px; }
-    .nav::-webkit-scrollbar { display: none; } .nav a { flex: none; } }
+  /* More menu: the pages that aren't tabs, under group headings. A <details>, so it opens without any script.
+     On phones the panel spans the tab bar; on wide screens it hangs under the More button. */
+  .nav { position: relative; align-items: center; }
+  .nav summary { padding: 8px 16px; border-radius: 999px; color: var(--muted); font-weight: 600; cursor: pointer; list-style: none;
+    background: color-mix(in srgb, var(--accent) 10%, transparent); white-space: nowrap; }
+  .nav summary::-webkit-details-marker { display: none; }
+  .nav summary:hover, .more[open] summary { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
+  .more.cur summary { background: var(--accent); color: var(--card); }
+  .more .menu { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 10; padding: 8px; display: flex; flex-direction: column;
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+  .nav .menu a { background: none; border-radius: 10px; padding: 12px 14px; color: var(--text); }
+  .nav .menu a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .nav .menu a[aria-current] { background: var(--accent); color: var(--card); }
+  .mgroup { padding: 10px 14px 4px; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .mgroup ~ .mgroup { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 14px; }
+  @media (max-width: 999px) { .more.cur-narrow summary { background: var(--accent); color: var(--card); } }
+  @media (max-width: 600px) { .nav a, .nav summary { padding: 8px 14px; } }
 /* Wide screens: open rosters become a full table, with round, position, team and price in their own
    columns instead of the line under the name. */
 @media (min-width: 1000px) {
@@ -194,7 +209,10 @@
   main > header > .sub, main > header > .filter, main > header > .filters { grid-column: 3; justify-self: end; }
   main > header > .theme { grid-column: 4; }
 
-  .nav a.wide-only { display: inline-block; } /* Teams tab */
+  .nav a.wide-only { display: inline-block; } /* Teams and Draft tabs */
+  .nav .narrow-only { display: none; } /* in the More menu on phones only: a tab here */
+  .more { position: relative; }
+  .more .menu { left: auto; right: auto; min-width: 230px; } /* hangs under the More button */
 }
 /* Draft's two menus don't fit the top row until ~1160px: below that they get their own row, still on the right */
 @media (min-width: 1000px) and (max-width: 1159px) {
@@ -208,7 +226,6 @@
 /* Very narrow windows (< 350px, narrower than current phones): trim padding so the standings table still fits */
 @media (max-width: 350px) {
   main { padding: 8px; }
-  .nav { margin-left: -8px; margin-right: -8px; padding: 0 8px; }
   #main th, #main td { padding-left: 1px; padding-right: 1px; }
   #main td.name, #main th.own { padding-left: 4px; }
   .chev { margin-right: 2px; }
@@ -327,4 +344,29 @@
   .ud.head span:nth-child(2) { text-align: left; }
   .ud.head .uz { display: block; }
   .ud.head + .ud { border-top: 1px solid var(--line); }
+}
+/* The Chase page: one row per owner, a dot for pace so far and one for the pace needed to catch the leader, on a shared
+   scale (dots positioned in % of the track). The dashed line is the leader's pace. */
+.intro { margin: 0 4px 4px; font-size: 1.05rem; }
+.note { margin: 14px 4px; color: var(--muted); font-size: .9rem; }
+.legend .dot, .chase .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
+.legend i.dash { width: 16px; height: 0; border-radius: 0; border-top: 2px dashed var(--muted); vertical-align: 4px; }
+.dot.has { background: color-mix(in srgb, var(--accent) 45%, var(--card)); }
+.dot.need { background: var(--accent); }
+.crow { display: grid; grid-template-columns: 11rem 1fr; align-items: center; gap: 16px; padding: 10px 24px 10px 14px; border-top: 1px solid var(--line); }
+.crow:first-child { border-top: 0; }
+.crow.head { padding-top: 12px; padding-bottom: 4px; }
+.crow.head + .crow { border-top: 0; }
+.cname { display: flex; flex-direction: column; line-height: 1.25; }
+.cname > span { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cname > span b { color: var(--text); }
+.track { position: relative; height: 28px; }
+.crow.head .track { height: 20px; }
+.track .tick { position: absolute; transform: translateX(-50%); color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.track .dot { position: absolute; top: 7px; transform: translateX(-50%); }
+.track .gap { position: absolute; top: 11px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 25%, transparent); }
+.track .lead { position: absolute; top: -10px; bottom: -10px; border-left: 2px dashed color-mix(in srgb, var(--muted) 60%, transparent); }
+@media (max-width: 600px) {
+  .crow { grid-template-columns: 1fr; gap: 6px; padding: 10px 20px 12px 12px; }
+  .crow.head { display: none; } /* phones: the numbers are in each row's text line */
 }

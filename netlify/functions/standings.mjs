@@ -1,6 +1,7 @@
 import rosters from "./rosters.json" with { type: "json" };
 import { STATS, WEB, etDate, getJson, gameLines, seasonId } from "../lib/nhl.mjs";
 
+const SEASON_GAMES = 82;
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
 
 async function currentTeam(id) {
@@ -49,11 +50,14 @@ export default async () => {
   const yesterday = etDate(-1);
   const season = seasonId();
 
-  const [totals, overnight, schedule] = await Promise.all([
+  const [totals, overnight, schedule, nhlStandings] = await Promise.all([
     getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`),
     gameLines(yesterday),
     getJson(`${WEB}/schedule/${today}`),
+    getJson(`${WEB}/standings/${today}`).catch(() => null), // only for games left (The Chase); not worth failing over
   ]);
+  // team -> regular-season games left (82-game season)
+  const teamLeft = new Map((nhlStandings?.standings ?? []).map((t) => [t.teamAbbrev.default, SEASON_GAMES - t.gamesPlayed]));
 
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
   const lastNight = new Map(overnight.data.map((p) => [p.playerId, p]));
@@ -82,6 +86,7 @@ export default async () => {
           tp: s?.points ?? 0,
           ogp: o?.gamesPlayed ?? 0,
           otp: o?.points ?? 0,
+          left: teamLeft.get(team) ?? 0, // team's games left: an upper bound for the player (injuries, scratches)
           tonight: !!game, // has a game today
           ...(game && { game }),
         };
@@ -104,6 +109,7 @@ export default async () => {
         ppg: gp ? Math.round((tp / gp) * 100) / 100 : 0,
         ogp: sum("ogp"),
         otp: sum("otp"),
+        left: sum("left"),
         tonight: detailed.filter((p) => p.tonight).length,
         players: detailed, // feed order (draft round 1..n)
         bench: benchDetailed.map((p) => ({ ...p, timesPicked: benchCounts.get(p.id) })), // feed order (B1..Bn)

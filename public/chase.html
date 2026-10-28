@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · The Chase</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header>
+    <h1>The Chase</h1>
+  </header>
+  <p class="intro" id="intro"></p>
+  <div class="legend">
+    <span><i class="dot has"></i>Pace so far</span>
+    <span><i class="dot need"></i>Pace needed to catch the leader</span>
+    <span id="leadlbl"><i class="dash"></i>Leader's pace</span>
+  </div>
+  <div class="card chase" id="chart"><div class="empty">Loading…</div></div>
+  <p class="note">Pace = points per game for the rest of the season, assuming the leader keeps scoring at the same rate.
+    Games left counts every remaining game of each active player's team, so injuries and scratches only make it harder.</p>
+</main>
+<script src="/common.js"></script>
+<script>
+// For each owner: points per game so far, and the pace needed over their remaining roster games to finish level
+// with the leader, if the leader keeps their own pace. Built from /api/standings (owner tp, gp and games left).
+// Plain HTML rows rather than an SVG, so the text keeps its normal size on phones.
+const pace = (n) => n.toFixed(2);
+
+function render(owners) {
+  const lead = owners[0];
+  const leadPace = lead.gp ? lead.tp / lead.gp : 0;
+  const leadFinal = lead.tp + leadPace * lead.left;
+  const rows = owners.map((o) => ({
+    ...o,
+    has: o.gp ? o.tp / o.gp : 0,
+    need: o === lead ? null : o.left ? (leadFinal - o.tp) / o.left : Infinity,
+  }));
+  // Scale: from a round tenth below the slowest pace to a round tenth above the highest one needed (at most 2.0,
+  // later in the season some owners need more than that; their dot sits at the edge with the real number beside it).
+  const finite = rows.flatMap((r) => [r.has, r.need]).filter((v) => v != null && isFinite(v));
+  const lo = Math.min(0.6, Math.floor(Math.min(...finite) * 10) / 10);
+  const hi = Math.min(2, Math.max(1, Math.ceil(Math.max(...finite) * 10) / 10));
+  const at = (v) => `${((Math.min(Math.max(v, lo), hi) - lo) / (hi - lo)) * 100}%`;
+  const ticks = [];
+  for (let t = Math.ceil(lo * 10); t <= Math.round(hi * 10); t += hi - lo > 0.6 ? 2 : 1) ticks.push(t / 10);
+
+  $("#intro").textContent = `What it would take to catch ${lead.owner}: ${lead.tp} points, ${pace(leadPace)} a game, `
+    + `on pace for about ${Math.round(leadFinal)}.`;
+  $("#leadlbl").innerHTML = `<i class="dash"></i>${lead.owner}'s pace, ${pace(leadPace)}`;
+  const lead1 = `<span class="lead" style="left:${at(leadPace)}"></span>`;
+  $("#chart").innerHTML =
+    `<div class="crow head"><span></span><div class="track">${ticks.map((t) => `<span class="tick" style="left:${at(t)}">${t.toFixed(1)}</span>`).join("")}</div></div>` +
+    rows.map((r) => `
+      <div class="crow">
+        <div class="cname"><b>${r.owner}</b><span>${r.tp} TP · ${pace(r.has)}${r.need == null ? "" : ` → <b>${isFinite(r.need) ? pace(r.need) : "—"}</b>`}</span></div>
+        <div class="track">${lead1}
+          ${r.need == null ? "" : `<span class="gap" style="left:${at(Math.min(r.has, r.need))};right:calc(100% - ${at(Math.max(r.has, r.need))})"></span><span class="dot need" style="left:${at(r.need)}"></span>`}
+          <span class="dot has" style="left:${at(r.has)}"></span>
+        </div>
+      </div>`).join("");
+}
+
+async function load() {
+  try {
+    const r = await fetch("/api/standings");
+    if (!r.ok) throw new Error(r.status);
+    const { owners } = await r.json();
+    if (!owners[0].left) throw new Error("no games-left data");
+    render(owners);
+  } catch (e) {
+    $("#chart").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the standings. Try refreshing.</div>`;
+  }
+}
+load();
+</script>
+</body>
+</html>
