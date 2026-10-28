@@ -76,9 +76,19 @@ const photo = (p) => `<span class="photo"><img loading="lazy" alt="" src="https:
 const logoSrc = (t) => `https://assets.nhle.com/logos/nhl/svg/${t}_${isDark() ? "dark" : "light"}.svg`;
 // big: a larger logo that stands alone (no abbreviation next to it), so if it fails to load it's
 // replaced by the abbreviation instead of just disappearing.
+// Every logo links to that NHL team's page (nhl.html). Logos often sit inside a player's link (to NHL.com), and links
+// can't nest, so one click handler below does the navigating and stops the player link.
+const nhlUrl = (t) => `/nhl.html?team=${encodeURIComponent(t)}`;
 const logo = (t, big = false) => t
-  ? `<img class="logo${big ? " big" : ""}" loading="lazy" alt="${t}" title="${t}" src="${logoSrc(t)}" onerror="${big ? "this.replaceWith(this.alt)" : "this.remove()"}">`
+  ? `<img class="logo${big ? " big" : ""}" data-team="${t}" loading="lazy" alt="${t}" title="${t}: pool players on this team" src="${logoSrc(t)}" onerror="${big ? "this.replaceWith(this.alt)" : "this.remove()"}">`
   : "";
+document.addEventListener("click", (e) => {
+  const img = e.target.closest?.("img.logo[data-team]");
+  if (!img) return;
+  e.preventDefault();
+  e.stopPropagation(); // e.g. Standings rows that open a roster on click
+  location.href = nhlUrl(img.dataset.team);
+}, true);
 
 // "7:00 PM vs OTT" / "7:30 PM @ MIN" pill for a player's game today. The start time is shown
 // in the viewer's own time zone.
@@ -103,13 +113,16 @@ const lastNight = (pts, gp) => (pts ? `<span class="plus">+${pts}</span>` : gp ?
 
 // One owner's roster table (active players, Total row, bench), used by the Standings page (expanded in
 // place on phones and tablets) and the Teams page. Expects a .detail container for its styling.
-function rosterTable(o) {
+// byOwner (the NHL team page): the players come from many owners, so the Team column and the logo in the line
+// under the name become the owner (bench players: every owner who benched them).
+function rosterTable(o, byOwner = false) {
+  const chips = (p) => (p.owners ?? [p.owner]).map((n) => `<span class="chip">${n}</span>`).join(" ");
   // Wide screens (.wd cells) split round, position, team and price into their own columns;
   // narrower screens show them in the line under the name instead.
   const prow = (p, cls = "") => {
     const onBench = cls === "bench";
-    return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${p.team ? logo(p.team, true) : "— ·"} ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
-    <td class="wd">${p.pos}</td><td class="wd tm">${p.team ? logo(p.team, true) : "—"}</td>
+    return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${byOwner ? (onBench ? "" : chips(p)) : p.team ? logo(p.team, true) : "— ·"} ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
+    <td class="wd">${p.pos}</td><td class="wd tm">${byOwner ? chips(p) : p.team ? logo(p.team, true) : "—"}</td>
     <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td data-l="PPG">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</td>
     <td class="rm"${p.rm ? ' data-l="RM"' : ""}>${p.rm ? money(p.rm) : ""}</td><td class="wd">${onBench ? p.timesPicked : p.cost == null ? "" : money(p.cost)}</td><td class="ln"${p.otp || (!onBench && p.ogp) ? ' data-l="Last Night:"' : ""}>${lastNight(p.otp, !onBench && p.ogp)}</td></tr>`;
   };
@@ -121,5 +134,5 @@ function rosterTable(o) {
   const bench = o.bench?.length
     ? `<tr class="benchhead nw"><td colspan="8">Bench</td></tr><tr class="benchhead wd"><td colspan="10">Bench</td><td>Times Picked</td><td></td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
     : "";
-  return `<table><thead><tr><th class="wd">Rd</th><th style="text-align:left">Player</th><th class="wd">Pos</th><th class="wd">Team</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th>PPG</th><th title="Round money">RM</th><th class="wd">Cost</th><th class="ln">Last night</th></tr></thead><tbody>${o.players.map((p) => prow(p)).join("")}${total}${bench}</tbody></table>`;
+  return `<table><thead><tr><th class="wd">Rd</th><th style="text-align:left">Player</th><th class="wd">Pos</th><th class="wd">${byOwner ? "Owner" : "Team"}</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th>PPG</th><th title="Round money">RM</th><th class="wd">Cost</th><th class="ln">Last night</th></tr></thead><tbody>${o.players.map((p) => prow(p)).join("")}${total}${bench}</tbody></table>`;
 }

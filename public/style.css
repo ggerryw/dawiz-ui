@@ -390,3 +390,10 @@
 .credits img { flex: none; width: 53px; height: 60px; }
 .credits small { display: block; font-size: .85rem; font-style: italic; }
 @media (min-width: 1000px) { .credits { margin-top: 16px; } }
+/* NHL team logos everywhere open that team's page (nhl.html) */
+img.logo[data-team] { cursor: pointer; }
+/* NHL team page: big logo at the start of the summary line; owner chips in the Owner column */
+.nhlsum { display: flex; align-items: center; gap: 10px; }
+.nhlsum > span { flex: 1; min-width: 0; } /* text (and game pill) wraps beside the logo, not under it */
+.nhlsum .logo.big { margin: -6px 0; }
+.detail td.tm .chip { white-space: nowrap; }

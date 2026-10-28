@@ -16,6 +16,7 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 - **Teams** (wide screens only): one owner's full roster table, picked from an alphabetical list of owners (like the Draft filter; the owner's rank shows in the summary line). Clicking an owner on Standings on a wide screen opens it; phones expand the roster in place instead.
 - **Draft**: round-by-round recap of the original draft (pick number, player, team, position, price, owner), with each pick's current GP, TP and round money, and a Round or Owner filter. It is a frozen snapshot (see Draft snapshot).
 - **The Chase** (in More, under Charts): for each owner, points per game so far and the pace needed for the rest of the season to catch the leader, if the leader keeps their pace.
+- **NHL team** (click any team logo): every pool player on that NHL team, with the same columns as Teams but an Owner column instead of Team, a Total row, and the players on owners' benches.
 - **Who's Hot** (in More, under Charts): points each owner's team scored over the last 14 days, against what their usual (season) pace would have scored in the same games. Served by `netlify/functions/hot.mjs`.
 
 Menu: phones show Standings and Overnight as tabs plus a More menu with everything else, grouped; wide screens also show Teams and Draft as tabs.
