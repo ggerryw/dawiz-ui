@@ -134,7 +134,15 @@
   }
   .nav { display: flex; gap: 8px; margin: 0 0 16px; }
   /* light/dark toggle at the right end of the page header */
-  header .sub, header .filter { margin-left: auto; }
+  header .sub, header .filter, header .filters { margin-left: auto; }
+  .filters { display: flex; gap: 8px; } /* Draft: Round and Owner menus side by side */
+  /* phones: title and theme toggle on top, the two menus share a row underneath */
+  @media (max-width: 600px) {
+    header:has(> .filters) { flex-wrap: wrap; }
+    header .filters { order: 1; flex-basis: 100%; margin-left: 0; }
+    .filters .filter { flex: 1; min-width: 0; }
+    .filters + .theme { margin-left: auto; }
+  }
   .theme { flex: none; align-self: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--frame); cursor: pointer;
     background: var(--card); color: var(--text); font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow); }
   .theme:hover { color: var(--accent); }
@@ -183,10 +191,14 @@
   main > nav, main > header > * { grid-row: 1; margin: 0 0 12px; }
   main > header > h1 { grid-column: 1; min-width: 5em; } /* fits "Overnight", so the tabs don't shift between pages */
   main > nav { grid-column: 2; }
-  main > header > .sub, main > header > .filter { grid-column: 3; justify-self: end; }
+  main > header > .sub, main > header > .filter, main > header > .filters { grid-column: 3; justify-self: end; }
   main > header > .theme { grid-column: 4; }
 
   .nav a.wide-only { display: inline-block; } /* Teams tab */
+}
+/* Draft's two menus don't fit the top row until ~1160px: below that they get their own row, still on the right */
+@media (min-width: 1000px) and (max-width: 1159px) {
+  main > header > .filters { grid-row: 2; grid-column: 1 / -1; }
 }
 /* Phones under ~400px have no spare width, so the Last night columns shrink to their contents (GP narrower than
    the TP pill) and the group header drifts ~5px right of the two values. Nudge it back. */
@@ -244,17 +256,21 @@
 .pick .pinfo { min-width: 0; }
 .filter { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
 @media (max-width: 600px) { .pick { gap: 8px; padding: 9px 10px; grid-template-columns: 2em auto 1fr auto; } }
-.pick .wd, .roundhead .wd { display: none; }
+.pick .wd, .roundhead .wd, .pick .cur { display: none; }
+.pick .curline b { color: var(--text); }
 @media (max-width: 600px) { .asof { display: none; } } /* Teams summary line: drop the date so the line fits on one row */
 /* Wide screens: columns for position, team and price. The round label is the header row, on the same grid (in rem,
    so its smaller font doesn't shift the columns). */
 @media (min-width: 1000px) {
-  .pick { grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem; }
-  .pick .wd { display: block; text-align: center; font-variant-numeric: tabular-nums; }
-  .pick .pmeta { display: none; }
+  /* draft columns on the left; then the "current" columns (GP, TP, RM) after a divider */
+  .pick { grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem 4rem 4rem 5rem; }
+  .pick .wd, .pick .cur { display: block; text-align: center; font-variant-numeric: tabular-nums; }
+  .pick .cur1, .roundhead .cur1 { border-left: 1px solid var(--line); padding-left: 12px; }
+  .pick .cur1 { align-self: stretch; margin: -10px 0; display: flex; align-items: center; justify-content: center; } /* divider runs the full row height */
+  .pick .pmeta { display: none; } /* includes the phone "current" line */
   .pick .logo.big { width: 44px; height: 44px; margin: -4px auto; }
   .pick .chip { justify-self: center; }
-  .roundhead { display: grid; grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem; gap: 12px; margin: 22px 0 8px; padding: 0 15px; } /* 15 = pick padding + card border */
+  .roundhead { display: grid; grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem 4rem 4rem 5rem; gap: 12px; margin: 22px 0 8px; padding: 0 15px; } /* 15 = pick padding + card border */
   .roundhead > span:first-child { white-space: nowrap; } /* spills over the empty photo column */
   .roundhead .wd { display: block; text-align: center; }
   .roundhead .wd:nth-child(3) { text-align: left; }
