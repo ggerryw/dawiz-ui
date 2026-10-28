@@ -398,3 +398,19 @@ img.logo[data-team] { cursor: pointer; }
 .nhlsum .logo.big { margin: -6px 0; }
 .detail td.tm .chip { white-space: nowrap; }
 .chip.bench { background: none; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); } /* NHL team page: on an owner's bench, not an active spot */
+/* The Money page: one column per pot on wide screens; phones show owner, total and take-home, with the pots on a
+   line under the name. Provisional amounts (if it ended today) in italics; losses in red brackets. */
+.money tbody tr { border-top: 1px solid var(--line); }
+.money tr.total { border-top-width: 2px; font-weight: 700; }
+.money td.tot { font-weight: 700; }
+.money .prov { font-style: italic; color: var(--muted); }
+.money th small { display: block; font-size: 1em; font-weight: 400; font-style: italic; text-transform: none; letter-spacing: 0; }
+.money .parts { display: block; font-size: .9rem; font-weight: 400; color: var(--muted); white-space: normal; }
+.money tr.total .parts { display: none; }
+.money .loss { color: var(--worst); }
+.money .wd { display: none; }
+@media (min-width: 1000px) {
+  .money .wd { display: table-cell; }
+  .money th:not(.own) { width: 13%; } /* the six money columns share the width evenly; Owner gets the rest */
+  .money .parts { display: none; }
+}

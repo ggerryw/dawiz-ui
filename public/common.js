@@ -20,6 +20,7 @@ const TABS = [
   ["/benches.html", "Benches", "more", "Draft"],
   ["/chase.html", "The Chase", "more", "Charts"],
   ["/hot.html", "Who's Hot", "more", "Charts"],
+  ["/money.html", "The Money", "more", "Pool"],
   ["/nhl.html", "NHL Teams", "more", "NHL"],
 ];
 {

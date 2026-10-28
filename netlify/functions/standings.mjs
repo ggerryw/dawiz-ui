@@ -1,7 +1,7 @@
 import rosters from "./rosters.json" with { type: "json" };
 import { STATS, WEB, etDate, getJson, gameLines, seasonId } from "../lib/nhl.mjs";
 
-const SEASON_GAMES = 82;
+export const SEASON_GAMES = 84; // 84-game seasons from 2026-27 (1344 league games)
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
 
 async function currentTeam(id) {
@@ -19,13 +19,26 @@ async function currentTeam(id) {
 const benchCounts = new Map();
 for (const r of rosters) for (const p of r.bench ?? []) benchCounts.set(p.id, (benchCounts.get(p.id) ?? 0) + 1);
 
-// Round money: in each draft round, the active players with at least 1 point are ranked by TP and the
-// top four places pay these amounts. Tied players share the pool of the places they cover, rounded to
-// the cent (e.g. two tied for 2nd each get (2.26 + 1.50) / 2 = 1.88). Returns playerId -> payout.
-const ROUND_PAY = [3.0, 2.26, 1.5, 0.74];
-const cents = (x) => Math.round(x * 100) / 100;
+// Pays places 1..n of a ranked list (best first). Tied entries share the pool of the places they cover, rounded to
+// the cent (e.g. two tied for 2nd each get (2.26 + 1.50) / 2 = 1.88). Adds into `paid` (key -> amount).
+export const cents = (x) => Math.round(x * 100) / 100;
+export function payPlaces(ranked, pay, score, key, paid = new Map()) {
+  for (let i = 0, place = 0; i < ranked.length && place < pay.length; ) {
+    let j = i;
+    while (j < ranked.length && score(ranked[j]) === score(ranked[i])) j++;
+    const each = cents(pay.slice(place, place + j - i).reduce((n, v) => n + v, 0) / (j - i));
+    for (let k = i; k < j; k++) paid.set(key(ranked[k]), cents((paid.get(key(ranked[k])) ?? 0) + each));
+    place += j - i;
+    i = j;
+  }
+  return paid;
+}
 
-function roundMoney(owners) {
+// Round money: in each draft round, the active players with at least 1 point are ranked by TP and the
+// top four places pay these amounts (ties split, see payPlaces). Returns playerId -> payout.
+const ROUND_PAY = [3.0, 2.26, 1.5, 0.74];
+
+export function roundMoney(owners) {
   const pay = new Map();
   const rounds = new Set(owners.flatMap((o) => o.players.map((p) => p.round)));
   for (const r of rounds) {
@@ -33,14 +46,7 @@ function roundMoney(owners) {
       .map((o) => o.players.find((p) => p.round === r))
       .filter((p) => p && p.tp > 0)
       .sort((x, y) => y.tp - x.tp);
-    for (let i = 0, place = 0; i < ranked.length && place < ROUND_PAY.length; ) {
-      let j = i;
-      while (j < ranked.length && ranked[j].tp === ranked[i].tp) j++;
-      const each = cents(ROUND_PAY.slice(place, place + j - i).reduce((n, v) => n + v, 0) / (j - i));
-      for (let k = i; k < j; k++) pay.set(ranked[k].id, cents((pay.get(ranked[k].id) ?? 0) + each));
-      place += j - i;
-      i = j;
-    }
+    payPlaces(ranked, ROUND_PAY, (p) => p.tp, (p) => p.id, pay);
   }
   return pay;
 }
@@ -56,7 +62,7 @@ export default async () => {
     getJson(`${WEB}/schedule/${today}`),
     getJson(`${WEB}/standings/${today}`).catch(() => null), // only for games left (The Chase); not worth failing over
   ]);
-  // team -> regular-season games left (82-game season)
+  // team -> regular-season games left
   const teamLeft = new Map((nhlStandings?.standings ?? []).map((t) => [t.teamAbbrev.default, SEASON_GAMES - t.gamesPlayed]));
 
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
