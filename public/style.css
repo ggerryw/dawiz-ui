@@ -282,6 +282,9 @@
   .bp.head .oc { color: var(--muted); font-weight: 700; overflow: hidden; text-overflow: clip; }
   .bp.head span:nth-child(2) { text-align: left; }
   .bp.head + .bp { border-top: 1px solid var(--line); }
+  /* header stays on screen while scrolling; the card's overflow: hidden would stop sticky, so the header rounds its own corners */
+  .card:has(> .bp.head) { overflow: visible; }
+  .bp.head { position: sticky; top: 0; z-index: 1; background: var(--card); border-radius: 16px 16px 0 0; box-shadow: 0 1px 0 var(--line); }
 }
 /* Undrafted page */
 .notice { padding: 8px 14px; border-radius: 10px; color: var(--text); background: color-mix(in srgb, var(--worst) 14%, transparent); } /* sits in the toolbar, left of the checkbox */
