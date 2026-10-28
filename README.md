@@ -20,7 +20,7 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 - **Who's Hot** (in More, under Charts): points each owner's team scored over the last 14 days, against what their usual (season) pace would have scored in the same games. Served by `netlify/functions/hot.mjs`.
 - **The Money** (in More, under Pool): what each owner has won so far, ranked by total, like the pool's money sheet. Everyone puts in $40; the pots are Half-Way Point ($25 / $15 for 1st / 2nd on the day the league reaches half its games), Regular Season ($100 / $60 / $30 / $10), Round Money and Playoff Money ($60 / $42 / $18, from the separate playoff pool, not built yet). Half-Way and Regular Season show what they would pay if it ended today, in italics, until their date passes. Served by `netlify/functions/money.mjs`.
 
-Menu: phones show Standings and Overnight as tabs plus a More menu with everything else, grouped; wide screens also show Teams and Draft as tabs.
+Menu: phones show Standings and Overnight as tabs plus a More menu with everything else, in groups that open one at a time; wide screens also show Teams as a tab.
 
 Round money: in each draft round, the active players with at least 1 point are ranked by points and the top four places pay $3.00, $2.26, $1.50 and $0.74. Tied players share the money for the places they cover.
 

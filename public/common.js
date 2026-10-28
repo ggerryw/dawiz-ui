@@ -15,7 +15,7 @@ const TABS = [
   ["/", "Standings", "tab"],
   ["/team.html", "Teams", "wide"],
   ["/overnight.html", "Overnight", "tab"],
-  ["/draft.html", "Draft", "wide-tab", "Draft"],
+  ["/draft.html", "Draft", "more", "Draft"],
   ["/undrafted.html", "Undrafted", "more", "Draft"],
   ["/benches.html", "Benches", "more", "Draft"],
   ["/chase.html", "The Chase", "more", "Charts"],
@@ -29,8 +29,15 @@ const TABS = [
   const tabs = TABS.filter(([, , w]) => w !== "more").map(([href, label, w]) =>
     `<a href="${href}"${w === "tab" ? "" : ' class="wide-only"'}${cur(href)}>${label}</a>`);
   const inMore = TABS.filter(([, , w]) => w === "more" || w === "wide-tab");
-  const groups = [...new Set(inMore.map((t) => t[3]))].map((g) => `<div class="mgroup${inMore.every((t) => t[3] !== g || t[2] === "wide-tab") ? " narrow-only" : ""}">${g}</div>` +
-    inMore.filter((t) => t[3] === g).map(([href, label, w]) => `<a href="${href}"${w === "wide-tab" ? ' class="narrow-only"' : ""}${cur(href)}>${label}</a>`).join(""));
+  // Accordion: each group is a <details> that opens to show its pages; the one holding the current page starts open.
+  // The shared name lets only one group be open at a time (browsers without that just allow several).
+  const groups = [...new Set(inMore.map((t) => t[3]))].map((g) => {
+    const items = inMore.filter((t) => t[3] === g);
+    const narrow = items.every((t) => t[2] === "wide-tab") ? " narrow-only" : "";
+    const open = items.some(([href]) => here(href)) ? " open" : "";
+    return `<details class="mgroup${narrow}" name="mgroup"${open}><summary>${g}<span class="mchev" aria-hidden="true">▸</span></summary>` +
+      items.map(([href, label, w]) => `<a href="${href}"${w === "wide-tab" ? ' class="narrow-only"' : ""}${cur(href)}>${label}</a>`).join("") + "</details>";
+  });
   // The More button is highlighted when the current page is inside it (on phones only, for a page that is a tab on wide screens).
   const curIn = inMore.find(([href]) => here(href));
   const moreCls = curIn ? (curIn[2] === "more" ? " cur" : " cur-narrow") : "";
