@@ -69,6 +69,7 @@ $("#team").addEventListener("change", () => {
 });
 
 async function load() {
+  loadInjuries().then(() => data && render()); // injury pills fill in when the report arrives
   try {
     const res = await fetch("/api/standings");
     if (!res.ok) throw new Error(res.status);

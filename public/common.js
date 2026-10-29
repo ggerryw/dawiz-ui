@@ -124,6 +124,25 @@ const gamePill = (g) => {
 
 const money = (v) => `$${v.toFixed(2)}`;
 
+// Injury report by player id (/api/injuries: pool players on ESPN's NHL injury list), for the pill on a roster row's
+// name line. Fetched at most once per page, only by pages that show rosters; a failure just means no pills.
+let injured = new Map();
+let injuryFetch;
+const loadInjuries = () => (injuryFetch ??= fetch("/api/injuries").then((r) => (r.ok ? r.json() : null))
+  .then((d) => { injured = new Map((d?.players ?? []).map((p) => [p.id, p])); }).catch(() => {}));
+const INJURY = { "IR-LT": "Long-term IR", "IR": "IR", "IR-NR": "IR (non-roster)", "OUT": "Out", "Day-To-Day": "Day-to-day" };
+const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+// "IR · Back Nov 3" (red) / "Day-to-day · Back any day" (grey); ESPN's note is the tooltip
+const injuryPill = (p) => {
+  const i = injured.get(p.id);
+  if (!i) return "";
+  const today = new Intl.DateTimeFormat("en-CA").format(new Date());
+  const back = !i.back ? "" : i.back <= today ? " · Back any day"
+    : ` · Back ${new Date(`${i.back}T12:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+  const tip = [i.type, i.note].filter(Boolean).join(": ");
+  return `<span class="ipill${i.status === "Day-To-Day" ? " dtd" : ""}"${tip ? ` title="${esc(tip)}"` : ""}>${INJURY[i.status] ?? esc(i.status)}${back}</span>`;
+};
+
 // Screens wide enough for the full tables (matches the min-width: 1000px block in style.css).
 const WIDE = matchMedia("(min-width: 1000px)");
 const teamUrl = (owner) => `/team.html?owner=${encodeURIComponent(owner)}`;
@@ -145,7 +164,7 @@ function rosterTable(o, byOwner = false) {
   const prow = (p, cls = "") => {
     const onBench = cls === "bench";
     const picked = byOwner && !p.owner && p.owners?.length ? ` · Times Picked: <span class="times">${p.owners.length}</span>` : "";
-    return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${byOwner ? (p.owner ? chips(p) : "") : p.team ? logo(p.team, true) : "— ·"} ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost) + picked}</span></div></a></td>
+    return `<tr class="${cls}"><td class="wd">${p.round ?? ""}</td><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}${injuryPill(p)}</div><span class="pmeta">${byOwner ? (p.owner ? chips(p) : "") : p.team ? logo(p.team, true) : "— ·"} ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${onBench ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost) + picked}</span></div></a></td>
     <td class="wd">${p.pos}</td><td class="wd tm">${byOwner ? chips(p) : p.team ? logo(p.team, true) : "—"}</td>
     <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td data-l="PPG">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</td>
     <td class="rm"${p.rm ? ' data-l="RM"' : ""}>${p.rm ? money(p.rm) : ""}</td><td class="wd">${onBench ? p.timesPicked : p.cost == null ? "" : money(p.cost)}</td><td class="ln"${p.otp || (!onBench && p.ogp) ? ' data-l="Last Night:"' : ""}>${lastNight(p.otp, !onBench && p.ogp)}</td></tr>`;

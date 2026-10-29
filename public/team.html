@@ -39,6 +39,7 @@ $("#owner").addEventListener("change", () => {
 });
 
 async function load() {
+  loadInjuries().then(() => data && render()); // injury pills fill in when the report arrives
   try {
     const r = await fetch("/api/standings");
     if (!r.ok) throw new Error(r.status);

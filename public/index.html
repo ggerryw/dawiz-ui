@@ -72,6 +72,7 @@ $("#body").addEventListener("click", (e) => {
   if (WIDE.matches) return void (location.href = teamUrl(r.dataset.o));
   open.has(r.dataset.o) ? open.delete(r.dataset.o) : open.add(r.dataset.o);
   render();
+  loadInjuries().then(render); // the injury report is only fetched once a roster is opened; its pills fill in then
 });
 
 async function load() {
