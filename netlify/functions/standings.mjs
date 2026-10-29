@@ -34,6 +34,12 @@ export function payPlaces(ranked, pay, score, key, paid = new Map()) {
   return paid;
 }
 
+// DaWiz standings order (rule 9 on the Rules page): total points, then points per game, then goals (all high to
+// low), then games played (low to high). Owners equal on all four are tied.
+const exactPpg = (o) => (o.gp ? o.tp / o.gp : 0);
+export const byStandings = (x, y) => y.tp - x.tp || exactPpg(y) - exactPpg(x) || y.g - x.g || x.gp - y.gp;
+export const standingsKey = (o) => `${o.tp}|${exactPpg(o)}|${o.g}|${o.gp}`;
+
 // Round money: in each draft round, the active players with at least 1 point are ranked by TP and the
 // top four places pay these amounts (ties split, see payPlaces). Returns playerId -> payout.
 const ROUND_PAY = [3.0, 2.26, 1.5, 0.74];
@@ -129,7 +135,7 @@ export default async () => {
     o.rm = cents(o.players.reduce((n, p) => n + p.rm, 0));
   }
 
-  owners.sort((x, y) => y.tp - x.tp || y.ppg - x.ppg || x.owner.localeCompare(y.owner));
+  owners.sort((x, y) => byStandings(x, y) || x.owner.localeCompare(y.owner));
 
   return new Response(JSON.stringify({ asOf: today, overnightDate: yesterday, season, owners }), {
     headers: {

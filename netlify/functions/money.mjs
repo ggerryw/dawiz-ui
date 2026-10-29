@@ -1,6 +1,6 @@
 import rosters from "./rosters.json" with { type: "json" };
 import { STATS, WEB, etDate, getJson, seasonId } from "../lib/nhl.mjs";
-import { SEASON_GAMES, cents, payPlaces, roundMoney } from "./standings.mjs";
+import { SEASON_GAMES, byStandings, cents, payPlaces, roundMoney, standingsKey } from "./standings.mjs";
 
 // The Money: what each owner has won so far. Everyone puts in ENTRY; the pots are paid by place in the owner
 // standings (active players' points, bench never counts):
@@ -17,20 +17,21 @@ const HALFWAY = "2027-01-03";
 // Halfway is computed from game dates with the CURRENT rosters, so it goes wrong once rosters.json changes at the
 // midseason drop/pick. Before that, freeze the winners here, e.g. { Phil: 25, Matt: 15 }.
 const HALFWAY_PAID = null;
-// TODO (owner to confirm): tied owners currently split the places they cover, like Round Money. It may instead be
-// decided by the higher points per game.
+// Places follow the DaWiz standings order (rule 9: TP, then PPG, then goals, then fewest GP); only owners equal on
+// all four share the places they cover, like Round Money.
 
 const totals = (exp) => getJson(`${STATS}?isAggregate=true&limit=-1&cayenneExp=${encodeURIComponent(exp)}`);
 
-// Owners ranked by active players' points (best first), from one set of player totals.
+// Owners in standings order (best first) by their active players' totals, from one set of player totals.
 const ownerPoints = (rows) => {
-  const tp = new Map(rows.map((p) => [p.playerId, p.points]));
+  const byId = new Map(rows.map((p) => [p.playerId, p]));
+  const sum = (players, k) => players.reduce((n, p) => n + (byId.get(p.id)?.[k] ?? 0), 0);
   return rosters
-    .map(({ owner, players }) => ({ owner, tp: players.reduce((n, p) => n + (tp.get(p.id) ?? 0), 0) }))
+    .map(({ owner, players }) => ({ owner, tp: sum(players, "points"), g: sum(players, "goals"), gp: sum(players, "gamesPlayed") }))
     .filter((o) => o.tp > 0)
-    .sort((x, y) => y.tp - x.tp);
+    .sort(byStandings);
 };
-const pay = (ranked, amounts) => payPlaces(ranked, amounts, (o) => o.tp, (o) => o.owner);
+const pay = (ranked, amounts) => payPlaces(ranked, amounts, standingsKey, (o) => o.owner);
 
 export default async () => {
   const today = etDate();
@@ -52,9 +53,11 @@ export default async () => {
   const rmOwners = rosters.map(({ owner, players }) => ({ owner, players: players.map((p) => ({ ...p, tp: tpById.get(p.id) ?? 0 })) }));
   const rm = roundMoney(rmOwners);
 
+  const rank = new Map(ranked.map((o, i) => [o.owner, i]));
   const owners = rmOwners.map(({ owner, players }) => {
     const o = {
       owner,
+      rank: rank.get(owner) ?? ranked.length,
       tp: players.reduce((n, p) => n + p.tp, 0),
       half: half.get(owner) ?? 0,
       reg: reg.get(owner) ?? 0,
@@ -65,7 +68,7 @@ export default async () => {
     o.net = cents(o.total - ENTRY);
     return o;
   });
-  owners.sort((x, y) => y.total - x.total || y.tp - x.tp || x.owner.localeCompare(y.owner));
+  owners.sort((x, y) => y.total - x.total || x.rank - y.rank);
 
   return new Response(
     JSON.stringify({ asOf: today, season, entry: ENTRY, halfway: { date: HALFWAY, final: halfDone }, seasonFinal: seasonDone, owners }),
