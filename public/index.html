@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DaWiz</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -16,8 +17,8 @@
   <div class="card scroll">
     <table id="main">
       <thead>
-        <tr class="grp"><th></th><th></th><th colspan="5" class="s5">Season</th><th colspan="4" class="s4">Season</th><th colspan="2" class="sep og-grp">Last night</th><th class="sep"></th></tr>
-        <tr><th></th><th class="own">Owner</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th class="pp">PPG</th><th class="sep og">GP</th><th>TP</th><th class="sep pt" title="Players with a game today">Playing Tonight</th></tr>
+        <tr class="grp"><th></th><th></th><th colspan="5" class="s5">Season</th><th colspan="4" class="s4">Season</th><th class="sep rmc"></th><th colspan="2" class="sep og-grp">Last night</th><th class="sep"></th></tr>
+        <tr><th></th><th class="own">Owner</th><th class="sep">GP</th><th>G</th><th>A</th><th>TP</th><th class="pp">PPG</th><th class="sep rmc" title="Round money">RM</th><th class="sep og">GP</th><th>TP</th><th class="sep pt" title="Players with a game today">Playing Tonight</th></tr>
       </thead>
       <tbody id="body"></tbody>
     </table>
@@ -35,7 +36,7 @@ let data;
 
 function shade(owners) {
   const st = {};
-  for (const c of COLS) {
+  for (const c of [...COLS, "rm"]) {
     const v = owners.map((o) => o[c]);
     st[c] = { avg: v.reduce((a, b) => a + b, 0) / v.length, max: Math.max(...v), min: Math.min(...v) };
   }
@@ -48,19 +49,14 @@ function shade(owners) {
 function render() {
   const cls = shade(data.owners);
   const rows = data.owners.map((o, i) => {
-    const cells = COLS.map((c) => `<td class="${cls(c, o[c])} ${c}">${c === "ppg" ? o[c].toFixed(2) : o[c]}</td>`).join("");
+    const cells = COLS.map((c) => `<td class="${cls(c, o[c])} ${c}${c === "gp" ? " sep" : ""}">${c === "ppg" ? o[c].toFixed(2) : o[c]}</td>`).join("");
     const isOpen = open.has(o.owner);
     let html = `<tr class="row ${isOpen ? "open" : ""}" data-o="${o.owner}">
-      <td class="rank">${i + 1}</td><td class="name"><span class="chev">▶</span>${o.owner}</td>${cells}
+      <td class="rank">${i + 1}</td><td class="name"><span class="chev">▶</span>${o.owner}</td>${cells}<td class="sep rmc ${cls("rm", o.rm)}">${money(o.rm)}</td>
       <td class="sep og">${o.ogp}</td><td>${o.otp ? `<span class="plus">+${o.otp}</span>` : 0}</td>
       <td class="sep">${o.tonight}</td></tr>`;
     if (isOpen) {
-      const prow = (p, cls = "") => `<tr class="${cls}"><td class="pname"><a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}<div class="pinfo"><div class="nameline"><b>${p.name}</b>${gamePill(p.game)}</div><span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${p.round ? ` · Rd ${p.round}` : ""}${cls === "bench" ? ` · Times Picked: <span class="times">${p.timesPicked}</span>` : price(p.cost)}</span></div></a></td>
-        <td data-l="GP">${p.gp}</td><td data-l="G">${p.g}</td><td data-l="A">${p.a}</td><td data-l="TP"><b>${p.tp}</b></td><td data-l="PPG">${p.gp ? (p.tp / p.gp).toFixed(2) : "0.00"}</td><td class="ln"${p.otp ? ' data-l="Last Night:"' : ""}>${p.otp ? `<span class="plus">+${p.otp}</span>` : ""}</td></tr>`;
-      const bench = o.bench?.length
-        ? `<tr class="benchhead"><td colspan="7">Bench</td></tr>${o.bench.map((p) => prow(p, "bench")).join("")}`
-        : "";
-      html += `<tr class="detail"><td colspan="10"><table><thead><tr><th style="text-align:left">Player</th><th>GP</th><th>G</th><th>A</th><th>TP</th><th>PPG</th><th class="ln">Last night</th></tr></thead><tbody>${o.players.map((p) => prow(p)).join("")}${bench}</tbody></table></td></tr>`;
+      html += `<tr class="detail"><td colspan="11">${rosterTable(o)}</td></tr>`;
     }
     return html;
   });
@@ -72,6 +68,8 @@ function render() {
 $("#body").addEventListener("click", (e) => {
   const r = e.target.closest("tr.row");
   if (!r) return;
+  // Wide screens show a team on its own page (Teams tab); phones and tablets expand it in place.
+  if (WIDE.matches) return void (location.href = teamUrl(r.dataset.o));
   open.has(r.dataset.o) ? open.delete(r.dataset.o) : open.add(r.dataset.o);
   render();
 });

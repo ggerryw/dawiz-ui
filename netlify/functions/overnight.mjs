@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { etDate, gameLines } from "../lib/nhl.mjs";
+import { STATS, etDate, gameLines, getJson, seasonId } from "../lib/nhl.mjs";
 import bible from "../lib/bible.json" with { type: "json" };
 
 // playerId -> owner names, for active roster spots only (bench is ignored here).
@@ -8,10 +8,19 @@ for (const r of rosters) for (const p of r.players) active.set(p.id, [...(active
 
 export default async () => {
   const date = etDate(-1);
-  const { data } = await gameLines(date);
+  const [{ data }, totals] = await Promise.all([
+    gameLines(date),
+    getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${seasonId(date)} and gameTypeId=2`)}`),
+  ]);
+  const byId = new Map(totals.data.map((p) => [p.playerId, p]));
+  const season = (id) => {
+    const s = byId.get(id);
+    return { gp: s?.gamesPlayed ?? 0, g: s?.goals ?? 0, a: s?.assists ?? 0, tp: s?.points ?? 0 };
+  };
 
+  // Everyone with a point, plus rostered (active) players who played without scoring.
   const scorers = data
-    .filter((p) => p.points > 0)
+    .filter((p) => p.points > 0 || active.has(p.playerId))
     .map((p) => ({
       id: p.playerId,
       name: p.skaterFullName,
@@ -22,9 +31,18 @@ export default async () => {
       g: p.goals,
       a: p.assists,
       tp: p.points,
-      owners: active.get(p.playerId) ?? [],
+      owners: [...(active.get(p.playerId) ?? [])].sort((x, y) => x.localeCompare(y)),
+      season: season(p.playerId),
     }))
-    .sort((x, y) => y.tp - x.tp || y.g - x.g || x.name.localeCompare(y.name));
+    // Last-night points desc, then owner (unowned last), then NHL team, then name.
+    .sort(
+      (x, y) =>
+        y.tp - x.tp ||
+        !x.owners.length - !y.owners.length ||
+        (x.owners[0] ?? "").localeCompare(y.owners[0] ?? "") ||
+        x.team.localeCompare(y.team) ||
+        x.name.localeCompare(y.name)
+    );
 
   return new Response(JSON.stringify({ date, played: data.length, scorers }), {
     headers: {

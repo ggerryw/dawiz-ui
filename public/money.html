@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · The Money</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header>
+    <h1>The Money</h1>
+    <div class="sub" id="asof"></div>
+  </header>
+  <p class="intro" id="intro"></p>
+  <div class="card"><table class="money" id="money"><tbody><tr><td class="empty">Loading…</td></tr></tbody></table></div>
+  <p class="note" id="note"></p>
+</main>
+<script src="/common.js"></script>
+<script>
+// What each owner has won so far (/api/money), ranked by total. Wide screens: one column per pot, like the pool's
+// spreadsheet. Phones: owner, total and take-home, with the pots on a line under the name.
+const day = (d) => new Date(`${d}T12:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+const amt = (v) => (v ? money(v) : "");
+// Take-home: green-free on purpose (green is for points); losses in red brackets, like the spreadsheet.
+const net = (v) => (v < 0 ? `<span class="loss">(${(-v).toFixed(2)})</span>` : v.toFixed(2));
+
+function render({ asOf, season, entry, halfway, seasonFinal, owners }) {
+  const prov = { half: !halfway.final, reg: !seasonFinal };
+  $("#asof").textContent = `as of ${day(asOf)}`;
+  $("#intro").textContent = `${season.slice(0, 4)} / ${season.slice(4)}. Everyone puts in ${money(entry)}. Take-home is what you've won minus that.`;
+  const POTS = [
+    ["half", "Half-Way", 40, "Half-Way Point"],
+    ["reg", "Regular Season", 200, "Season"],
+    ["rm", "Round Money", 120, "RM"],
+    ["playoff", "Playoff Money", 120, "Playoff"],
+  ];
+  const cell = (k, v) => `<td class="wd${prov[k] && v ? " prov" : ""}">${amt(v)}</td>`;
+  const sum = (k) => owners.reduce((n, o) => n + o[k], 0);
+  const head = `<thead><tr><th class="own">Owner</th>${POTS.map(([k, label, pot]) =>
+    `<th class="wd pt">${label} (${money(pot)})${prov[k] ? "<small>if it ended today</small>" : ""}</th>`).join("")}<th>Total</th><th class="pt">Take-Home</th></tr></thead>`;
+  const rows = owners.map((o) => {
+    const parts = POTS.filter(([k]) => o[k]).map(([k, , , short]) => `<span${prov[k] ? ' class="prov"' : ""}>${short} ${money(o[k])}</span>`);
+    return `<tr><td class="name">${o.owner}<span class="parts">${parts.join(" · ") || "Nothing yet"}</span></td>${POTS.map(([k]) => cell(k, o[k])).join("")}<td class="tot">${amt(o.total)}</td><td>${net(o.net)}</td></tr>`;
+  }).join("");
+  const total = `<tr class="total"><td class="name">Total</td>${POTS.map(([k]) => `<td class="wd">${money(sum(k))}</td>`).join("")}<td class="tot">${money(sum("total"))}</td><td>${net(sum("net"))}</td></tr>`;
+  $("#money").innerHTML = `${head}<tbody>${rows}${total}</tbody>`;
+
+  const notes = [];
+  if (prov.half) notes.push(`Half-Way pays $25 / $15 to the top two on ${day(halfway.date)}, the day the league reaches half its games.`);
+  if (prov.reg) notes.push("Regular Season pays $100 / $60 / $30 / $10 to the top four when the regular season ends.");
+  if (prov.half || prov.reg) notes.push("Amounts in italics are provisional: what they would pay if it ended today.");
+  notes.push("Round Money: in each draft round, the top four players by points pay $3.00 / $2.26 / $1.50 / $0.74. Playoff Money ($60 / $42 / $18) comes from the separate playoff pool. Tied places are split.");
+  $("#note").textContent = notes.join(" ");
+}
+
+async function load() {
+  try {
+    const r = await fetch("/api/money");
+    if (!r.ok) throw new Error(r.status);
+    render(await r.json());
+  } catch (e) {
+    $("#money").innerHTML = `<tbody><tr><td class="empty" style="color:var(--worst)">Couldn't load the money. Try refreshing.</td></tr></tbody>`;
+  }
+}
+load();
+</script>
+</body>
+</html>

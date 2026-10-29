@@ -8,6 +8,13 @@ export const etDate = (offsetDays = 0) => {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(d);
 };
 
+// NHL season ID for an ET date ("2026-10-16" -> "20262027"); seasons switch on September 1.
+export const seasonId = (date = etDate()) => {
+  const [y, m] = date.split("-").map(Number);
+  const start = m >= 9 ? y : y - 1;
+  return `${start}${start + 1}`;
+};
+
 export const getJson = async (url) => {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`${r.status} ${url}`);

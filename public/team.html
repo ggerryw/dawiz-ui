@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · Teams</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header>
+    <h1>Teams</h1>
+    <select id="owner" class="filter" aria-label="Owner"></select>
+  </header>
+  <div class="toolbar"><span id="summary">Loading…</span></div>
+  <div class="card detail" id="team"></div>
+</main>
+<script src="/common.js"></script>
+<script>
+// One owner's full table. Reached from the Teams tab or by clicking an owner on Standings (wide screens);
+// the owner is in the URL (?owner=Gerry) so a team can be bookmarked.
+let data;
+const ordinal = (n) => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] ?? "th");
+
+function render() {
+  const i = Math.max(0, data.owners.findIndex((o) => o.owner === $("#owner").value));
+  const o = data.owners[i];
+  const d = new Date(data.asOf + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  // the date (.asof) is hidden on phones so the line fits on one row
+  $("#summary").innerHTML = `${o.owner} · ${ordinal(i + 1)} of ${data.owners.length} · ${o.tp} TP · RM ${money(o.rm)}<span class="asof"> · As of ${d}</span>`;
+  $("#team").innerHTML = rosterTable(o);
+}
+
+$("#owner").addEventListener("change", () => {
+  history.replaceState(null, "", teamUrl($("#owner").value));
+  render();
+});
+
+async function load() {
+  try {
+    const r = await fetch("/api/standings");
+    if (!r.ok) throw new Error(r.status);
+    data = await r.json();
+    // Owners alphabetically, like the Draft filter (the rank shows in the summary line). Default to the leader when
+    // the URL names no (known) owner.
+    $("#owner").innerHTML = data.owners.map((o) => o.owner).sort().map((n) => `<option>${n}</option>`).join("");
+    const want = new URLSearchParams(location.search).get("owner");
+    $("#owner").value = data.owners.some((o) => o.owner === want) ? want : data.owners[0].owner;
+    render();
+  } catch (e) {
+    $("#summary").textContent = "";
+    $("#team").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the team. Try refreshing.</div>`;
+  }
+}
+load();
+</script>
+</body>
+</html>

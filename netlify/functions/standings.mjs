@@ -1,12 +1,7 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, WEB, etDate, getJson, gameLines } from "../lib/nhl.mjs";
+import { STATS, WEB, etDate, getJson, gameLines, seasonId } from "../lib/nhl.mjs";
 
-const seasonId = () => {
-  const [y, m] = etDate().split("-").map(Number);
-  const start = m >= 9 ? y : y - 1;
-  return `${start}${start + 1}`;
-};
-
+export const SEASON_GAMES = 84; // 84-game seasons from 2026-27 (1344 league games)
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
 
 async function currentTeam(id) {
@@ -24,16 +19,51 @@ async function currentTeam(id) {
 const benchCounts = new Map();
 for (const r of rosters) for (const p of r.bench ?? []) benchCounts.set(p.id, (benchCounts.get(p.id) ?? 0) + 1);
 
+// Pays places 1..n of a ranked list (best first). Tied entries share the pool of the places they cover, rounded to
+// the cent (e.g. two tied for 2nd each get (2.26 + 1.50) / 2 = 1.88). Adds into `paid` (key -> amount).
+export const cents = (x) => Math.round(x * 100) / 100;
+export function payPlaces(ranked, pay, score, key, paid = new Map()) {
+  for (let i = 0, place = 0; i < ranked.length && place < pay.length; ) {
+    let j = i;
+    while (j < ranked.length && score(ranked[j]) === score(ranked[i])) j++;
+    const each = cents(pay.slice(place, place + j - i).reduce((n, v) => n + v, 0) / (j - i));
+    for (let k = i; k < j; k++) paid.set(key(ranked[k]), cents((paid.get(key(ranked[k])) ?? 0) + each));
+    place += j - i;
+    i = j;
+  }
+  return paid;
+}
+
+// Round money: in each draft round, the active players with at least 1 point are ranked by TP and the
+// top four places pay these amounts (ties split, see payPlaces). Returns playerId -> payout.
+const ROUND_PAY = [3.0, 2.26, 1.5, 0.74];
+
+export function roundMoney(owners) {
+  const pay = new Map();
+  const rounds = new Set(owners.flatMap((o) => o.players.map((p) => p.round)));
+  for (const r of rounds) {
+    const ranked = owners
+      .map((o) => o.players.find((p) => p.round === r))
+      .filter((p) => p && p.tp > 0)
+      .sort((x, y) => y.tp - x.tp);
+    payPlaces(ranked, ROUND_PAY, (p) => p.tp, (p) => p.id, pay);
+  }
+  return pay;
+}
+
 export default async () => {
   const today = etDate();
   const yesterday = etDate(-1);
   const season = seasonId();
 
-  const [totals, overnight, schedule] = await Promise.all([
+  const [totals, overnight, schedule, nhlStandings] = await Promise.all([
     getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`),
     gameLines(yesterday),
     getJson(`${WEB}/schedule/${today}`),
+    getJson(`${WEB}/standings/${today}`).catch(() => null), // only for games left (The Chase); not worth failing over
   ]);
+  // team -> regular-season games left
+  const teamLeft = new Map((nhlStandings?.standings ?? []).map((t) => [t.teamAbbrev.default, SEASON_GAMES - t.gamesPlayed]));
 
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
   const lastNight = new Map(overnight.data.map((p) => [p.playerId, p]));
@@ -62,6 +92,7 @@ export default async () => {
           tp: s?.points ?? 0,
           ogp: o?.gamesPlayed ?? 0,
           otp: o?.points ?? 0,
+          left: teamLeft.get(team) ?? 0, // team's games left: an upper bound for the player (injuries, scratches)
           tonight: !!game, // has a game today
           ...(game && { game }),
         };
@@ -84,12 +115,19 @@ export default async () => {
         ppg: gp ? Math.round((tp / gp) * 100) / 100 : 0,
         ogp: sum("ogp"),
         otp: sum("otp"),
+        left: sum("left"),
         tonight: detailed.filter((p) => p.tonight).length,
         players: detailed, // feed order (draft round 1..n)
         bench: benchDetailed.map((p) => ({ ...p, timesPicked: benchCounts.get(p.id) })), // feed order (B1..Bn)
       };
     })
   );
+
+  const rm = roundMoney(owners);
+  for (const o of owners) {
+    for (const p of o.players) p.rm = rm.get(p.id) ?? 0;
+    o.rm = cents(o.players.reduce((n, p) => n + p.rm, 0));
+  }
 
   owners.sort((x, y) => y.tp - x.tp || y.ppg - x.ppg || x.owner.localeCompare(y.owner));
 

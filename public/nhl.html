@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · NHL Team</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header>
+    <h1>NHL</h1>
+    <select id="team" class="filter" aria-label="NHL team"></select>
+  </header>
+  <div class="toolbar"><span id="summary" class="nhlsum">Loading…</span></div>
+  <div class="card detail" id="roster"></div>
+</main>
+<script src="/common.js"></script>
+<script>
+// Every skater on one NHL team, in the Teams page's table with an Owner column in place of Team. Reached by clicking
+// any team logo or from More; the team is in the URL (?team=EDM). One list, best scorers first: owners' active
+// players (from /api/standings, with their owner and round money) blended with everyone else on the team's current
+// roster (/api/nhlteam, with price and any owners who have them on their bench). Total row of everyone listed.
+let data;
+const teamCache = new Map(); // team -> /api/nhlteam result, so switching back is instant
+
+function teamRoster(team, nhl) {
+  const all = new Map();
+  for (const o of data.owners) for (const p of o.players) if (p.team === team) all.set(p.id, { ...p, owner: o.owner });
+  const benched = new Map(); // id -> owners who have the player on their bench
+  for (const o of data.owners) for (const p of o.bench ?? []) if (p.team === team && !all.has(p.id)) {
+    benched.set(p.id, [...(benched.get(p.id) ?? []), o.owner]);
+  }
+  // the team's current roster, plus any benched player it doesn't list (e.g. just traded)
+  for (const p of nhl?.players ?? []) if (!all.has(p.id)) all.set(p.id, { ...p, game: nhl.game });
+  for (const o of data.owners) for (const p of o.bench ?? []) if (p.team === team && !all.has(p.id)) all.set(p.id, { ...p, cost: null });
+  const players = [...all.values()]
+    .map((p) => (p.owner ? p : { ...p, round: null, owners: (benched.get(p.id) ?? []).sort() }))
+    .sort((x, y) => y.tp - x.tp || y.g - x.g || x.name.localeCompare(y.name));
+  const sum = (k) => players.reduce((n, p) => n + (p[k] ?? 0), 0);
+  const gp = sum("gp");
+  return {
+    players, gp, g: sum("g"), a: sum("a"), tp: sum("tp"), ppg: gp ? sum("tp") / gp : 0,
+    rm: Math.round(sum("rm") * 100) / 100, otp: sum("otp"), ogp: sum("ogp"),
+  };
+}
+
+async function render() {
+  const team = $("#team").value;
+  if (!teamCache.has(team)) {
+    $("#roster").innerHTML = `<div class="empty">Loading ${team}…</div>`;
+    teamCache.set(team, await fetch(`/api/nhlteam?team=${team}`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+    if ($("#team").value !== team) return; // switched again while loading
+  }
+  const nhl = teamCache.get(team);
+  const r = teamRoster(team, nhl);
+  const game = nhl?.game ?? r.players.find((p) => p.game)?.game;
+  const owned = r.players.filter((p) => p.owner).length;
+  $("#summary").innerHTML = `${logo(team, true)}<span>${team} · ${r.players.length} skaters, ${owned} on owners' active rosters${game ? ` ${gamePill(game)}` : ""}</span>`;
+  $("#roster").innerHTML = (r.players.length ? rosterTable(r, true) : "")
+    + (nhl ? "" : `<div class="empty" style="color:var(--worst)">Couldn't load the rest of the ${team} roster. Try refreshing.</div>`);
+}
+
+$("#team").addEventListener("change", () => {
+  history.replaceState(null, "", nhlUrl($("#team").value));
+  render();
+});
+
+async function load() {
+  try {
+    const res = await fetch("/api/standings");
+    if (!res.ok) throw new Error(res.status);
+    data = await res.json();
+    // every NHL team can be picked (owners' teams are added too, in case the league list is ever out of date)
+    const raw = new URLSearchParams(location.search).get("team")?.toUpperCase();
+    const want = /^[A-Z]{3}$/.test(raw ?? "") ? raw : null; // it goes into the page, so only a 3-letter code
+    const teams = new Set(data.owners.flatMap((o) => [...o.players, ...(o.bench ?? [])].map((p) => p.team)).filter(Boolean));
+    for (const t of NHL_TEAMS) teams.add(t);
+    if (want) teams.add(want);
+    const sorted = [...teams].sort();
+    $("#team").innerHTML = sorted.map((t) => `<option>${t}</option>`).join("");
+    $("#team").value = want ?? sorted[0];
+    render();
+  } catch (e) {
+    $("#summary").textContent = "";
+    $("#roster").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the team. Try refreshing.</div>`;
+  }
+}
+const NHL_TEAMS = ["ANA", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI", "COL", "DAL", "DET", "EDM", "FLA", "LAK", "MIN", "MTL", "NJD",
+  "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA", "SJS", "STL", "TBL", "TOR", "UTA", "VAN", "VGK", "WPG", "WSH"];
+load();
+</script>
+</body>
+</html>
