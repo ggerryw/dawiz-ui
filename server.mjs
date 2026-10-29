@@ -7,8 +7,9 @@ import undrafted from "./netlify/functions/undrafted.mjs";
 import hot from "./netlify/functions/hot.mjs";
 import nhlteam from "./netlify/functions/nhlteam.mjs";
 import money from "./netlify/functions/money.mjs";
+import injuries from "./netlify/functions/injuries.mjs";
 
-const api = { "/api/standings": standings, "/api/overnight": overnight, "/api/undrafted": undrafted, "/api/hot": hot, "/api/nhlteam": nhlteam, "/api/money": money };
+const api = { "/api/standings": standings, "/api/overnight": overnight, "/api/undrafted": undrafted, "/api/hot": hot, "/api/nhlteam": nhlteam, "/api/money": money, "/api/injuries": injuries };
 const types = { html: "text/html", css: "text/css", js: "text/javascript", json: "application/json", png: "image/png" };
 
 createServer(async (req, res) => {

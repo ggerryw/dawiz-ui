@@ -18,6 +18,7 @@ const TABS = [
   ["/draft.html", "Draft", "more", "Draft"],
   ["/undrafted.html", "Undrafted", "more", "Draft"],
   ["/benches.html", "Benches", "more", "Draft"],
+  ["/injury.html", "Injury", "more", "Draft"],
   ["/chase.html", "The Chase", "more", "Charts"],
   ["/hot.html", "Who's Hot", "more", "Charts"],
   ["/money.html", "The Money", "more", "Pool"],

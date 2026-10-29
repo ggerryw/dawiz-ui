@@ -463,3 +463,29 @@ img.logo[data-team] { cursor: pointer; }
 .rules li { margin: 6px 0; }
 .rules p { margin: 6px 0; }
 @media (max-width: 600px) { .rules .card { padding: 2px 16px 8px; } }
+/* Injuries page: rows like Undrafted. Phones: status, injury and return, ESPN's note and owner chips under the name.
+   Wide: columns, with the note still under the name. Status pill red (out of the lineup); day-to-day grey. */
+.inj { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.inj:first-child { border-top: 0; }
+.inj .pinfo { min-width: 0; }
+.inj .iz, .inj.head { display: none; }
+.inj .istat { margin-top: 4px; }
+.inj .inote { margin-top: 4px; color: var(--muted); font-size: .9rem; line-height: 1.35; }
+.ipill { font-size: .8rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; white-space: nowrap; color: var(--worst);
+  background: color-mix(in srgb, var(--worst) 16%, transparent); }
+.ipill.dtd { color: var(--muted); background: color-mix(in srgb, var(--muted) 20%, transparent); }
+.legend .chip { margin-right: 4px; }
+@media (max-width: 600px) { .inj { gap: 8px; padding: 10px; } .ipill, .inj .chip { font-size: .85rem; } }
+@media (min-width: 1000px) {
+  .inj { grid-template-columns: 52px minmax(0, 1fr) 3rem 4.5rem 8.5rem 7rem 5.5rem 11rem; }
+  .inj .iz.chips { flex-wrap: wrap; } /* Hyman sits on five benches */
+  .inj .pmeta, .inj .istat, .inj .pinfo > .chips { display: none; }
+  .inj .iz { display: block; text-align: center; }
+  .inj .logo.big { width: 44px; height: 44px; margin: -4px auto; }
+  .inj .iz.chips { display: flex; margin: 0; justify-content: center; }
+  .inj.head { display: grid; padding-top: 14px; padding-bottom: 10px; font-size: .75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--muted); text-align: center; position: sticky; top: var(--bar-h, 0); z-index: 2;
+    background: var(--card); box-shadow: 0 1px 0 var(--line); }
+  .inj.head span:nth-child(2) { text-align: left; }
+  .inj.head .iz { display: block; }
+}
