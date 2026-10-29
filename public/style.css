@@ -452,3 +452,14 @@ img.logo[data-team] { cursor: pointer; }
   .money th:not(.own) { width: 13%; } /* the six money columns share the width evenly; Owner gets the rest */
   .money .parts { display: none; }
 }
+/* Rules page: one card per rule, a readable line length, the rule number in the accent colour */
+.rules { max-width: 52rem; }
+.rules h2 { margin: 18px 4px 10px; font-size: 1.25rem; }
+.rules h2:first-child { margin-top: 0; }
+.rules .card { padding: 4px 22px 10px; margin-bottom: 12px; line-height: 1.5; }
+.rules h3 { margin: 14px 0 6px; font-size: 1.1rem; }
+.rules h3 span { color: var(--accent); margin-right: 4px; }
+.rules ul, .rules ol { margin: 6px 0; padding-left: 1.3em; }
+.rules li { margin: 6px 0; }
+.rules p { margin: 6px 0; }
+@media (max-width: 600px) { .rules .card { padding: 2px 16px 8px; } }
