@@ -52,7 +52,7 @@ function render({ asOf, season, entry, halfway, seasonFinal, owners }) {
   if (prov.half) notes.push(`Half-Way pays $25 / $15 to the top two on ${day(halfway.date)}, the day the league reaches half its games.`);
   if (prov.reg) notes.push("Regular Season pays $100 / $60 / $30 / $10 to the top four when the regular season ends.");
   if (prov.half || prov.reg) notes.push("Amounts in italics are provisional: what they would pay if it ended today.");
-  notes.push("Round Money: in each draft round, the top four players by points pay $3.00 / $2.26 / $1.50 / $0.74. Playoff Money ($60 / $42 / $18) comes from the separate playoff pool. Tied places are split.");
+  notes.push("Round Money: in each draft round, the top four players by points pay $3.00 / $2.26 / $1.50 / $0.74. Playoff Money ($60 / $42 / $18) comes from the separate playoff pool. Owners on equal points are placed by the standings tiebreakers (points per game, then goals, then fewest games played; see Rules); tied players in a round split the money.");
   $("#note").textContent = notes.join(" ");
 }
 
