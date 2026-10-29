@@ -12,7 +12,10 @@
   <nav class="nav" id="nav"></nav>
   <header style="align-items:center">
     <h1>Draft</h1>
-    <select id="owner" class="filter" aria-label="Filter by owner"><option value="">All owners</option></select>
+    <div class="filters">
+      <select id="round" class="filter" aria-label="Go to round"><option value="">All rounds</option></select>
+      <select id="owner" class="filter" aria-label="Filter by owner"><option value="">All owners</option></select>
+    </div>
   </header>
   <div id="rounds"></div>
 </main>
@@ -20,14 +23,22 @@
 <script>
 // Pos, Team and Price (.wd) only show on wide screens, where each pick is a table-like row (matching the Teams and
 // Overnight pages) and the round label doubles as the column header row.
+// Current GP, TP and round money come from /api/standings (matched by player id on the owners' active rosters), so
+// there's no extra function. A drafted player who is no longer on an active roster has no current line.
+// The Round and Owner menus are either/or: picking one resets the other.
 let picks = [];
+let current = new Map();
+
+const curCells = (c) => `<span class="cur cur1">${c?.gp ?? ""}</span><span class="cur">${c ? `<b>${c.tp}</b>` : ""}</span><span class="cur">${c?.rm ? money(c.rm) : ""}</span>`;
+const curLine = (c) => (c ? `<span class="pmeta curline">${c.gp} GP · <b>${c.tp}</b> TP${c.rm ? ` · RM ${money(c.rm)}` : ""}</span>` : "");
 
 function render() {
   const who = $("#owner").value;
-  const shown = who ? picks.filter((p) => p.owner === who) : picks;
+  const rd = $("#round").value;
+  const shown = who ? picks.filter((p) => p.owner === who) : rd ? picks.filter((p) => p.round === +rd) : picks;
   const rounds = [...new Set(shown.map((p) => p.round))];
   $("#rounds").innerHTML = rounds.map((r) => `
-    <div class="roundhead"><span>Round ${r}</span>${["", "Player", "Pos", "Team", "Price", "Owner"].map((h) => `<span class="wd">${h}</span>`).join("")}</div>
+    <div class="roundhead"><span>Round ${r}</span>${["", "Player", "Pos", "Team", "Price", "Owner"].map((h) => `<span class="wd">${h}</span>`).join("")}${["GP", "TP", "RM"].map((h, i) => `<span class="wd cur${i ? "" : " cur1"}">${h}</span>`).join("")}</div>
     <div class="card">${shown.filter((p) => p.round === r).map((p) => `
       <div class="pick">
         <span class="num">${p.pick}</span>
@@ -35,25 +46,38 @@ function render() {
         <div class="pinfo">
           <a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener"><b>${p.name}</b></a>
           <span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}${price(p.cost)}</span>
+          ${curLine(current.get(p.id))}
         </div>
         <span class="wd">${p.pos}</span><span class="wd">${logo(p.team, true)}</span><span class="wd">${p.cost == null ? "" : money(p.cost)}</span>
         <span class="chip">${p.owner}</span>
+        ${curCells(current.get(p.id))}
       </div>`).join("")}</div>`).join("");
 }
 
 async function load() {
   try {
+    // Current stats are slower and a bonus: the draft shows first, the numbers fill in when they arrive (or never,
+    // if standings can't be loaded).
+    const st = fetch("/api/standings").then((s) => (s.ok ? s.json() : null)).catch(() => null);
     const r = await fetch("/draft.json");
     if (!r.ok) throw new Error(r.status);
     picks = (await r.json()).picks;
+    st.then((d) => {
+      if (!d) return;
+      for (const o of d.owners) for (const p of o.players) current.set(p.id, p);
+      render();
+    });
     const owners = [...new Set(picks.map((p) => p.owner))].sort();
     $("#owner").insertAdjacentHTML("beforeend", owners.map((o) => `<option>${o}</option>`).join(""));
+    const rounds = [...new Set(picks.map((p) => p.round))];
+    $("#round").insertAdjacentHTML("beforeend", rounds.map((n) => `<option value="${n}">Round ${n}</option>`).join(""));
     render();
   } catch (e) {
     $("#rounds").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the draft. Try refreshing.</div>`;
   }
 }
-$("#owner").addEventListener("change", render);
+$("#owner").addEventListener("change", () => { $("#round").value = ""; render(); });
+$("#round").addEventListener("change", () => { $("#owner").value = ""; render(); });
 load();
 </script>
 </body>

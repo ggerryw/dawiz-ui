@@ -4,7 +4,7 @@
   :root {
     --bg: #edf2fb; --card: #fff; --text: #14213d; --muted: #56627e; --line: #e0e6f1;
     --accent: #1a56c9; --good: #dff6dd; --bad: #fde0e0; --best: #1f8a3b; --worst: #c0392b;
-    --photo: #dfe5f1; --head: #f3f7fe; --frame: #d9e2f2;
+    --photo: #dfe5f1; --head: #f3f7fe; --frame: #d9e2f2; --bar: #d7e4fb;
     --wash: linear-gradient(180deg, #d6e3fb 0, #e6eefb 220px, var(--bg) 480px);
     --shadow: 0 6px 18px rgba(26, 60, 140, .08), 0 1px 3px rgba(20, 33, 61, .08);
     color-scheme: light;
@@ -12,12 +12,12 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
       --accent: #7ba8ff; --good: #1d3a2a; --bad: #43222a; --best: #5fd27f; --worst: #ff7b7b;
-      --photo: #2a3858; --head: transparent; --frame: transparent; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
+      --photo: #2a3858; --head: transparent; --frame: transparent; --bar: #0e1424; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
       color-scheme: dark; }
   }
   :root[data-theme="dark"] { --bg: #0e1424; --card: #172036; --text: #eef2fb; --muted: #9aa5c2; --line: #263250;
     --accent: #7ba8ff; --good: #1d3a2a; --bad: #43222a; --best: #5fd27f; --worst: #ff7b7b;
-    --photo: #2a3858; --head: transparent; --frame: transparent; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
+    --photo: #2a3858; --head: transparent; --frame: transparent; --bar: #0e1424; --wash: none; --shadow: 0 1px 4px rgba(0,0,0,.15);
     color-scheme: dark; }
   * { box-sizing: border-box; }
   html { font-size: 19px; }
@@ -134,7 +134,15 @@
   }
   .nav { display: flex; gap: 8px; margin: 0 0 16px; }
   /* light/dark toggle at the right end of the page header */
-  header .sub, header .filter { margin-left: auto; }
+  header .sub, header .filter, header .filters { margin-left: auto; }
+  .filters { display: flex; gap: 8px; } /* Draft: Round and Owner menus side by side */
+  /* phones: title and theme toggle on top, the two menus share a row underneath */
+  @media (max-width: 600px) {
+    header:has(> .filters) { flex-wrap: wrap; }
+    header .filters { order: 1; flex-basis: 100%; margin-left: 0; }
+    .filters .filter { flex: 1; min-width: 0; }
+    .filters + .theme { margin-left: auto; }
+  }
   .theme { flex: none; align-self: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--frame); cursor: pointer;
     background: var(--card); color: var(--text); font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow); }
   .theme:hover { color: var(--accent); }
@@ -144,8 +152,41 @@
   .nav a:not([aria-current]):hover { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
   /* four tabs don't fit one row on phones: the bar scrolls sideways (scrollbar hidden), same text size; the
      negative margin lets it run to the screen edge so a cut-off tab shows there is more */
-  @media (max-width: 600px) { .nav { overflow-x: auto; scrollbar-width: none; margin-left: -10px; margin-right: -10px; padding: 0 10px; }
-    .nav::-webkit-scrollbar { display: none; } .nav a { flex: none; } }
+  /* More menu: the pages that aren't tabs, under group headings. A <details>, so it opens without any script.
+     On phones the panel spans the tab bar; on wide screens it hangs under the More button. */
+  .nav { position: relative; align-items: center; }
+  .nav summary { padding: 8px 16px; border-radius: 999px; color: var(--muted); font-weight: 600; cursor: pointer; list-style: none;
+    background: color-mix(in srgb, var(--accent) 10%, transparent); white-space: nowrap; }
+  .nav summary::-webkit-details-marker { display: none; }
+  .nav summary:hover, .more[open] summary { color: var(--text); background: color-mix(in srgb, var(--accent) 18%, transparent); }
+  .more.cur summary { background: var(--accent); color: var(--card); }
+  /* The panel floats above the page: a lifted surface (a touch lighter than the cards in dark mode, where the same
+     colour made it blend into the table behind), an accent-tinted edge and a deep shadow. */
+  .more .menu { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 10; padding: 8px; display: flex; flex-direction: column;
+    background: color-mix(in srgb, var(--card) 92%, #fff); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 16px; box-shadow: 0 14px 40px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .2); }
+  .nav .menu a { background: none; border-radius: 10px; padding: 12px 14px; color: var(--text); }
+  .nav .menu a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .nav .menu a[aria-current] { background: var(--accent); color: var(--card); }
+  /* group headings: an accordion. Each heading is a shaded band across the panel (a little darker than the page
+     background, in both themes) that opens to show its pages; the chevron turns when open. */
+  .more .menu { padding: 0; overflow: hidden; }
+  .nav .mgroup > summary { display: flex; justify-content: space-between; align-items: center; border-radius: 0; padding: 13px 18px;
+    font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    background: color-mix(in srgb, var(--bg) 92%, #000); border-top: 1px solid var(--line); }
+  .nav .mgroup:first-child > summary { border-top: 0; }
+  .nav .mgroup > summary:hover { color: var(--text); }
+  .nav .mgroup[open] > summary { color: var(--accent); border-bottom: 1px solid var(--line); }
+  .mchev { font-size: 1.1em; transition: transform .15s; }
+  .mgroup[open] .mchev { transform: rotate(90deg); }
+  /* destinations: indented under their heading, hung off a thin accent guide line */
+  .nav .mgroup a { display: block; margin: 0 10px 0 30px; padding: 11px 14px; border-left: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 0 10px 10px 0; font-weight: 600; }
+  .nav .mgroup[open] > summary + a { margin-top: 8px; }
+  .nav .mgroup[open] a:last-child { margin-bottom: 10px; }
+  .nav .mgroup a[aria-current] { border-left-color: var(--accent); }
+  @media (max-width: 999px) { .more.cur-narrow summary { background: var(--accent); color: var(--card); } }
+  @media (max-width: 600px) { .nav a, .nav summary { padding: 8px 14px; } }
 /* Wide screens: open rosters become a full table, with round, position, team and price in their own
    columns instead of the line under the name. */
 @media (min-width: 1000px) {
@@ -175,18 +216,39 @@
   .chev { display: none; } /* rows open the Teams page here instead of expanding, so no expand arrow */
   #main .og, #main .og + * { width: 4.7em; }
   .legend { padding: 8px 4px; }
-  /* one top row: title, tabs, then date/filter and theme toggle on the right. The header's children join
-     main's grid (display: contents) so they can share the row with the tab bar. */
-  main { display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 24px; align-items: center; }
-  main > * { grid-column: 1 / -1; }
-  main > header { display: contents; }
-  main > nav, main > header > * { grid-row: 1; margin: 0 0 12px; }
-  main > header > h1 { grid-column: 1; min-width: 5em; } /* fits "Overnight", so the tabs don't shift between pages */
-  main > nav { grid-column: 2; }
-  main > header > .sub, main > header > .filter { grid-column: 3; justify-self: end; }
-  main > header > .theme { grid-column: 4; }
+  /* one top row: title, tabs, then date/filter and theme toggle on the right. The tab bar and header sit in one
+     wrapper (.topbar, added by common.js); the header's children join its grid (display: contents) so they can share
+     the row with the tab bar. The band stays pinned to the top of the window while the page scrolls under it. */
+  main { padding-top: 0; }
+  .topbar { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 24px;
+    align-items: center; padding-top: 12px; }
+  .topbar > header { display: contents; }
+  .topbar > nav, .topbar > header > * { grid-row: 1; margin: 0 0 12px; }
+  .topbar > header > h1 { grid-column: 1; min-width: 5em; } /* fits "Overnight", so the tabs don't shift between pages */
+  .topbar > nav { grid-column: 2; }
+  .topbar > header > .sub, .topbar > header > .filter, .topbar > header > .filters { grid-column: 3; justify-self: end; }
+  .topbar > header > .theme { grid-column: 4; }
+  /* the band's background runs the full window width, not just main's: a huge box-shadow spread, clipped to the band's
+     height (a shadow adds no scroll width; on a pseudo-element so the clip doesn't cut off the More menu) */
+  .topbar::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--bar);
+    box-shadow: 0 0 0 100vmax var(--bar); clip-path: inset(0 -100vmax); }
+
+  /* Column header rows stick just under the band (--bar-h, set by common.js). Cards clip instead of hiding overflow:
+     same rounded corners, but overflow: hidden would stop sticky from working. */
+  .card, .card.scroll { overflow: clip; }
+  .card thead { position: sticky; top: var(--bar-h, 0); z-index: 2; } /* the whole block, so Standings' two header rows stay stacked */
+  .card thead th { background: linear-gradient(var(--head), var(--head)), var(--card); }
+  .scorer.head, .ud.head { position: sticky; top: var(--bar-h, 0); z-index: 2; background: var(--card); box-shadow: 0 1px 0 var(--line); }
+  .roundhead { position: sticky; top: var(--bar-h, 0); z-index: 2; background: var(--bg); padding-top: 6px; padding-bottom: 6px; margin-top: 16px; margin-bottom: 2px; }
 
   .nav a.wide-only { display: inline-block; } /* Teams tab */
+  .nav .narrow-only { display: none; } /* in the More menu on phones only: a tab here */
+  .more { position: relative; }
+  .more .menu { left: auto; right: auto; min-width: 230px; } /* hangs under the More button */
+}
+/* Draft's two menus don't fit the top row until ~1160px: below that they get their own row, still on the right */
+@media (min-width: 1000px) and (max-width: 1159px) {
+  .topbar > header > .filters { grid-row: 2; grid-column: 1 / -1; }
 }
 /* Phones under ~400px have no spare width, so the Last night columns shrink to their contents (GP narrower than
    the TP pill) and the group header drifts ~5px right of the two values. Nudge it back. */
@@ -196,7 +258,6 @@
 /* Very narrow windows (< 350px, narrower than current phones): trim padding so the standings table still fits */
 @media (max-width: 350px) {
   main { padding: 8px; }
-  .nav { margin-left: -8px; margin-right: -8px; padding: 0 8px; }
   #main th, #main td { padding-left: 1px; padding-right: 1px; }
   #main td.name, #main th.own { padding-left: 4px; }
   .chev { margin-right: 2px; }
@@ -244,17 +305,21 @@
 .pick .pinfo { min-width: 0; }
 .filter { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
 @media (max-width: 600px) { .pick { gap: 8px; padding: 9px 10px; grid-template-columns: 2em auto 1fr auto; } }
-.pick .wd, .roundhead .wd { display: none; }
+.pick .wd, .roundhead .wd, .pick .cur { display: none; }
+.pick .curline b { color: var(--text); }
 @media (max-width: 600px) { .asof { display: none; } } /* Teams summary line: drop the date so the line fits on one row */
 /* Wide screens: columns for position, team and price. The round label is the header row, on the same grid (in rem,
    so its smaller font doesn't shift the columns). */
 @media (min-width: 1000px) {
-  .pick { grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem; }
-  .pick .wd { display: block; text-align: center; font-variant-numeric: tabular-nums; }
-  .pick .pmeta { display: none; }
+  /* draft columns on the left; then the "current" columns (GP, TP, RM) after a divider */
+  .pick { grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem 4rem 4rem 5rem; }
+  .pick .wd, .pick .cur { display: block; text-align: center; font-variant-numeric: tabular-nums; }
+  .pick .cur1, .roundhead .cur1 { border-left: 1px solid var(--line); padding-left: 12px; }
+  .pick .cur1 { align-self: stretch; margin: -10px 0; display: flex; align-items: center; justify-content: center; } /* divider runs the full row height */
+  .pick .pmeta { display: none; } /* includes the phone "current" line */
   .pick .logo.big { width: 44px; height: 44px; margin: -4px auto; }
   .pick .chip { justify-self: center; }
-  .roundhead { display: grid; grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem; gap: 12px; margin: 22px 0 8px; padding: 0 15px; } /* 15 = pick padding + card border */
+  .roundhead { display: grid; grid-template-columns: 2rem 52px 1fr 4rem 6rem 6rem 8rem 4rem 4rem 5rem; gap: 12px; margin: 22px 0 8px; padding: 0 15px; } /* 15 = pick padding + card border */
   .roundhead > span:first-child { white-space: nowrap; } /* spills over the empty photo column */
   .roundhead .wd { display: block; text-align: center; }
   .roundhead .wd:nth-child(3) { text-align: left; }
@@ -266,7 +331,7 @@
 .bp .bz, .bp.head { display: none; }
 @media (max-width: 600px) { .bp { gap: 8px; padding: 10px; } .bp .chip { font-size: .85rem; } .bp .stat span { font-size: .85rem; } }
 /* Wide screens: a column per owner with a check mark, under a header row (rem widths so the small header font lines up) */
-@media (min-width: 1150px) { /* 12 owner columns need more room than the other wide tables; narrower screens keep the chip layout */
+@media (min-width: 1000px) {
   .bp { grid-template-columns: 52px minmax(0, 1fr) 2.2rem 3.2rem repeat(4, 2.3rem) repeat(var(--cols), 3rem) 3.6rem; gap: 4px; padding: 8px 14px; }
   .bp .pmeta, .bp .chips, .bp .stat { display: none; }
   .bp .pinfo, .bp.head span:nth-child(2) { margin-left: 8px; } /* this grid's gap is 4px (12 owner columns), so add back the 12px the other pages put between photo and name */
@@ -282,6 +347,18 @@
   .bp.head .oc { color: var(--muted); font-weight: 700; overflow: hidden; text-overflow: clip; }
   .bp.head span:nth-child(2) { text-align: left; }
   .bp.head + .bp { border-top: 1px solid var(--line); }
+  /* header stays on screen while scrolling, just under the pinned top band */
+  .bp.head { position: sticky; top: var(--bar-h, 0); z-index: 2; background: var(--card); box-shadow: 0 1px 0 var(--line); }
+}
+/* 1000-1149px: 12 owner columns only fit if they're narrower, so the owner names in the header turn upright (read
+   bottom to top, like the old site) and the photo and logo shrink a little. Wider screens keep level names. */
+@media (min-width: 1000px) and (max-width: 1149px) {
+  .bp { grid-template-columns: 40px minmax(0, 1fr) 2rem 2.8rem repeat(4, 2.1rem) repeat(var(--cols), 2.2rem) 3rem; gap: 3px; padding: 8px 10px; }
+  .bp .photo { width: 40px; height: 40px; }
+  .bp .logo.big { width: 34px; height: 34px; margin: -2px auto; }
+  .bp .pinfo b { white-space: normal; }
+  .bp.head .oc, .bp.head .ct { writing-mode: vertical-rl; transform: rotate(180deg); padding: 6px 0; font-size: .75rem; letter-spacing: .03em; }
+  .bp.head { align-items: end; }
 }
 /* Undrafted page */
 .notice { padding: 8px 14px; border-radius: 10px; color: var(--text); background: color-mix(in srgb, var(--worst) 14%, transparent); } /* sits in the toolbar, left of the checkbox */
@@ -308,4 +385,70 @@
   .ud.head span:nth-child(2) { text-align: left; }
   .ud.head .uz { display: block; }
   .ud.head + .ud { border-top: 1px solid var(--line); }
+}
+/* The Chase page: one row per owner, a dot for pace so far and one for the pace needed to catch the leader, on a shared
+   scale (dots positioned in % of the track). The dashed line is the leader's pace. */
+.intro { margin: 0 4px 4px; font-size: 1.05rem; }
+.note { margin: 14px 4px; color: var(--muted); font-size: .9rem; }
+.legend .dot, .chase .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
+.legend i.dash { width: 16px; height: 0; border-radius: 0; border-top: 2px dashed var(--muted); vertical-align: 4px; }
+.dot.has { background: color-mix(in srgb, var(--accent) 45%, var(--card)); }
+.dot.need { background: var(--accent); }
+.crow { display: grid; grid-template-columns: 11rem 1fr; align-items: center; gap: 16px; padding: 10px 24px 10px 14px; border-top: 1px solid var(--line); }
+.crow:first-child { border-top: 0; }
+.crow.head { padding-top: 12px; padding-bottom: 4px; }
+.crow.head + .crow { border-top: 0; }
+.cname { display: flex; flex-direction: column; line-height: 1.25; }
+.cname > span { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cname > span b { color: var(--text); }
+.track { position: relative; height: 28px; }
+.crow.head .track { height: 20px; }
+.track .tick { position: absolute; transform: translateX(-50%); color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.track .dot { position: absolute; top: 7px; transform: translateX(-50%); }
+.track .gap { position: absolute; top: 11px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 25%, transparent); }
+.track .lead { position: absolute; top: -10px; bottom: -10px; border-left: 2px dashed color-mix(in srgb, var(--muted) 60%, transparent); }
+@media (max-width: 600px) {
+  .crow { grid-template-columns: 1fr; gap: 6px; padding: 10px 20px 12px 12px; }
+  .crow.head { display: none; } /* phones: the numbers are in each row's text line */
+}
+/* Who's Hot page: same rows as The Chase. A bar for the last 14 days' points; the upright line marks what the
+   owner's usual (season) pace would have scored, in the text color so it stands out in both themes. */
+.hot .crow { grid-template-columns: 17rem 1fr; }
+.hot .cname > span { white-space: normal; }
+.hot .track .bar { position: absolute; left: 0; top: 5px; height: 18px; border-radius: 0 4px 4px 0;
+  background: color-mix(in srgb, var(--accent) 45%, var(--card)); }
+.hot .track .bar.up { background: var(--accent); }
+.hot .track .usual { position: absolute; top: -1px; height: 30px; width: 4px; margin-left: -2px; border-radius: 2px;
+  background: var(--text); box-shadow: 0 0 0 2px var(--card); }
+.legend i.bar { width: 18px; background: var(--accent); }
+.legend i.usual { width: 4px; height: 18px; border-radius: 2px; background: var(--text); vertical-align: -4px; }
+@media (max-width: 600px) { .hot .crow { grid-template-columns: 1fr; } }
+/* Footer on every page (added by common.js): cartoon player and a tongue-in-cheek credit */
+.credits { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 28px 0 8px; color: var(--muted); font-size: .9rem; line-height: 1.35; }
+.credits img { flex: none; width: 53px; height: 60px; }
+.credits small { display: block; font-size: .85rem; font-style: italic; }
+@media (min-width: 1000px) { .credits { margin-top: 16px; } }
+/* NHL team logos everywhere open that team's page (nhl.html) */
+img.logo[data-team] { cursor: pointer; }
+/* NHL team page: big logo at the start of the summary line; owner chips in the Owner column */
+.nhlsum { display: flex; align-items: center; gap: 10px; }
+.nhlsum > span { flex: 1; min-width: 0; } /* text (and game pill) wraps beside the logo, not under it */
+.nhlsum .logo.big { margin: -6px 0; }
+.detail td.tm .chip { white-space: nowrap; }
+.chip.bench { background: none; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); } /* NHL team page: on an owner's bench, not an active spot */
+/* The Money page: one column per pot on wide screens; phones show owner, total and take-home, with the pots on a
+   line under the name. Provisional amounts (if it ended today) in italics; losses in red brackets. */
+.money tbody tr { border-top: 1px solid var(--line); }
+.money tr.total { border-top-width: 2px; font-weight: 700; }
+.money td.tot { font-weight: 700; }
+.money .prov { font-style: italic; color: var(--muted); }
+.money th small { display: block; font-size: 1em; font-weight: 400; font-style: italic; text-transform: none; letter-spacing: 0; }
+.money .parts { display: block; font-size: .9rem; font-weight: 400; color: var(--muted); white-space: normal; }
+.money tr.total .parts { display: none; }
+.money .loss { color: var(--worst); }
+.money .wd { display: none; }
+@media (min-width: 1000px) {
+  .money .wd { display: table-cell; }
+  .money th:not(.own) { width: 13%; } /* the six money columns share the width evenly; Owner gets the rest */
+  .money .parts { display: none; }
 }

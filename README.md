@@ -14,7 +14,13 @@ Each owner has 16 active players (one per draft round) and 8 bench players. Benc
 - **Benches**: every player on any owner's bench, best scorers first, with season GP/G/A/TP. Wide screens show a grid with a column per owner and a check mark where that owner picked the player; phones show an owner chip per player. Owner filter at the top. Built in the browser from the standings data, so there is no extra function.
 - **Undrafted**: the top 200 scorers who aren't on any owner's active roster, for the midseason drop/pick. Bench spots don't count as drafted, so owners who have a player on their bench show as owner chips, same as the Benches page (a column on wide screens, under the name on phones). Players priced over $2.50 in the bible are dimmed, with a red price and an "Ineligible" pill under the name; a banner at the top says so and a checkbox hides them. Served by `netlify/functions/undrafted.mjs` (one NHL stats call).
 - **Teams** (wide screens only): one owner's full roster table, picked from an alphabetical list of owners (like the Draft filter; the owner's rank shows in the summary line). Clicking an owner on Standings on a wide screen opens it; phones expand the roster in place instead.
-- **Draft**: round-by-round recap of the original draft (pick number, player, team, position, price, owner), with an owner filter. It is a frozen snapshot (see Draft snapshot).
+- **Draft**: round-by-round recap of the original draft (pick number, player, team, position, price, owner), with each pick's current GP, TP and round money, and a Round or Owner filter. It is a frozen snapshot (see Draft snapshot).
+- **The Chase** (in More, under Charts): for each owner, points per game so far and the pace needed for the rest of the season to catch the leader, if the leader keeps their pace.
+- **NHL Teams** (click any team logo, or More → NHL Teams): every current skater on one NHL team in one list, best scorers first, with the same columns as Teams but an Owner column instead of Team (a solid chip for an active roster spot, outlined chips for owners who have the player on their bench). Served by `netlify/functions/nhlteam.mjs` plus the standings.
+- **Who's Hot** (in More, under Charts): points each owner's team scored over the last 14 days, against what their usual (season) pace would have scored in the same games. Served by `netlify/functions/hot.mjs`.
+- **The Money** (in More, under Pool): what each owner has won so far, ranked by total, like the pool's money sheet. Everyone puts in $40; the pots are Half-Way Point ($25 / $15 for 1st / 2nd on the day the league reaches half its games), Regular Season ($100 / $60 / $30 / $10), Round Money and Playoff Money ($60 / $42 / $18, from the separate playoff pool, not built yet). Half-Way and Regular Season show what they would pay if it ended today, in italics, until their date passes. Served by `netlify/functions/money.mjs`.
+
+Menu: phones show Standings and Overnight as tabs plus a More menu with everything else, in groups that open one at a time; wide screens also show Teams as a tab.
 
 Round money: in each draft round, the active players with at least 1 point are ranked by points and the top four places pay $3.00, $2.26, $1.50 and $0.74. Tied players share the money for the places they cover.
 
@@ -33,6 +39,8 @@ The two files in `data/` only change in two situations. Everything else (stats, 
 ### 1. Midseason drop/pick (some owners' teams change)
 
 Only `data/teamFeed.csv` changes. The bible stays the same unless players were added to it.
+
+Before rebuilding the rosters, freeze the Half-Way Point winners in `HALFWAY_PAID` in `netlify/functions/money.mjs` (it is otherwise computed with the current rosters, which would be the new ones).
 
 1. Edit `data/teamFeed.csv`.
 2. Rebuild the rosters (**not** the draft, which must stay a record of the original draft):

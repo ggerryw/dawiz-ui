@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · Who's Hot</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header>
+    <h1>Who's Hot</h1>
+  </header>
+  <p class="intro" id="intro">Points scored by each owner's team over the last 14 days.</p>
+  <div class="legend">
+    <span><i class="bar"></i>Points in the last 14 days</span>
+    <span><i class="usual"></i>What their usual pace would have scored</span>
+  </div>
+  <div class="card chase hot" id="chart"><div class="empty">Loading…</div></div>
+  <p class="note">A bar past its line means the team is hot; short of it, cold. "Usual" is the team's points per game this
+    season, times the games it played in these 14 days, so a team that played more games isn't counted as hotter just for that.
+    Active players only.</p>
+</main>
+<script src="/common.js"></script>
+<script>
+// Owners sorted by points over the last 14 complete days (/api/hot), each with a marker at what their season
+// points-per-game would have produced in the same games. Same row layout as The Chase.
+const day = (d) => new Date(`${d}T12:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+function render({ from, to, owners }) {
+  $("#intro").textContent = `Points scored by each owner's team over the last 14 days, ${day(from)} to ${day(to)}.`;
+  const max = Math.max(...owners.flatMap((o) => [o.tp, o.usual]), 1) * 1.05;
+  const at = (v) => `${(v / max) * 100}%`;
+  $("#chart").innerHTML = owners.map((o) => {
+    const diff = o.tp - o.usual;
+    const vs = diff > 0 ? `<b>${diff} above usual</b>` : diff < 0 ? `${-diff} below usual` : "right on usual";
+    return `
+      <div class="crow">
+        <div class="cname"><b>${o.owner}</b><span><b>${o.tp}</b> pts in ${o.gp} games · ${vs}</span></div>
+        <div class="track"><span class="bar${diff > 0 ? " up" : ""}" style="width:${at(o.tp)}"></span><span class="usual" style="left:${at(o.usual)}"></span></div>
+      </div>`;
+  }).join("");
+}
+
+async function load() {
+  try {
+    const r = await fetch("/api/hot");
+    if (!r.ok) throw new Error(r.status);
+    render(await r.json());
+  } catch (e) {
+    $("#chart").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the last 14 days. Try refreshing.</div>`;
+  }
+}
+load();
+</script>
+</body>
+</html>
