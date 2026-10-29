@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DaWiz · Injuries</title>
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <nav class="nav" id="nav"></nav>
+  <header style="align-items:center">
+    <h1>Injuries</h1>
+    <select id="owner" class="filter" aria-label="Filter by owner"><option value="">All owners</option></select>
+  </header>
+  <p class="intro" id="intro">Drafted and bench players on the NHL injury list.</p>
+  <div class="legend">
+    <span><span class="chip">Owner</span> on their active roster</span>
+    <span><span class="chip bench">Owner</span> on their bench</span>
+  </div>
+  <div class="card" id="list"><div class="empty">Loading…</div></div>
+  <p class="note" id="note"></p>
+</main>
+<script src="/common.js"></script>
+<script>
+// Every pool player (active or bench) on the injury list (/api/injuries, from ESPN's injury feed), most serious first.
+// Wide screens: one column each for position, team, status, injury, expected return and owners, with ESPN's note under
+// the name. Phones: everything on lines under the name.
+const STATUS = { "IR-LT": "Long-term IR", "IR": "Injured reserve", "IR-NR": "IR (non-roster)", "OUT": "Out", "Day-To-Day": "Day-to-day" };
+const day = (d) => new Date(`${d}T12:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+const today = new Intl.DateTimeFormat("en-CA").format(new Date());
+// ESPN's estimate; one on or before today means he could be back for the next game
+const back = (d) => (!d ? "" : d <= today ? "Any day" : day(d));
+let data = { owners: [], players: [] };
+
+function render() {
+  const who = $("#owner").value;
+  const shown = who ? data.players.filter((p) => p.owner === who || p.owners.includes(who)) : data.players;
+  const chips = (p) => (p.owner ? `<span class="chip">${p.owner}</span>` : "") +
+    p.owners.map((n) => `<span class="chip bench" title="On ${n}'s bench">${n}</span>`).join("");
+  const pill = (p) => `<span class="ipill${p.status === "Day-To-Day" ? " dtd" : ""}">${STATUS[p.status] ?? p.status}</span>`;
+  const head = `<div class="inj head"><span></span><span>Player</span>${["Pos", "Team", "Status", "Injury", "Back", "Owner"].map((h) => `<span class="iz">${h}</span>`).join("")}</div>`;
+  $("#list").innerHTML = shown.length
+    ? head + shown.map((p) => `
+      <div class="inj">
+        <a href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener">${photo(p)}</a>
+        <div class="pinfo">
+          <a class="player" href="https://www.nhl.com/player/${p.id}" target="_blank" rel="noopener"><b>${p.name}</b></a>
+          <span class="pmeta">${logo(p.team)}${p.team ?? "—"} · ${p.pos}</span>
+          <div class="istat">${pill(p)}${p.type ? ` ${p.type}` : ""}${p.back ? ` · Back: <b>${back(p.back)}</b>` : ""}</div>
+          ${p.note ? `<div class="inote">${p.note}</div>` : ""}
+          <div class="chips">${chips(p)}</div>
+        </div>
+        <span class="iz">${p.pos}</span><span class="iz">${logo(p.team, true)}</span>
+        <span class="iz">${pill(p)}</span><span class="iz">${p.type ?? ""}</span><span class="iz"><b>${back(p.back)}</b></span>
+        <span class="iz chips">${chips(p)}</span>
+      </div>`).join("")
+    : `<div class="empty">${who ? `None of ${who}'s players are injured.` : "No pool players are injured."}</div>`;
+}
+
+async function load() {
+  try {
+    const r = await fetch("/api/injuries");
+    if (!r.ok) throw new Error(r.status);
+    data = await r.json();
+    $("#owner").insertAdjacentHTML("beforeend", data.owners.map((o) => `<option>${o}</option>`).join(""));
+    const n = data.players.length;
+    $("#intro").textContent = `${n} drafted or bench player${n === 1 ? " is" : "s are"} on the NHL injury list, most serious first.`;
+    $("#note").textContent = "Injury news comes from ESPN's NHL injury report" +
+      (data.updated ? ` (updated ${new Date(data.updated).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })})` : "") +
+      ". \"Back\" is their estimated return date and often changes; \"Any day\" means he could return for the next game.";
+    render();
+  } catch (e) {
+    $("#list").innerHTML = `<div class="empty" style="color:var(--worst)">Couldn't load the injury report. Try refreshing.</div>`;
+  }
+}
+$("#owner").addEventListener("change", render);
+load();
+</script>
+</body>
+</html>
