@@ -3,6 +3,7 @@
 // Sheet IDs drop the leading "84" (sheet 78402 -> NHL API 8478402).
 // Names/positions aren't in the feed, so they're looked up from the NHL API.
 import { readFileSync, writeFileSync } from "node:fs";
+import { skaterStats } from "../netlify/lib/nhl.mjs";
 
 // Positions and prices come from the bible (run build-bible.mjs first), not from the NHL API.
 const bible = JSON.parse(readFileSync(new URL("../netlify/lib/bible.json", import.meta.url), "utf8"));
@@ -38,12 +39,10 @@ async function getJson(url) {
   return null;
 }
 
-// 1. One bulk call covers everyone who has played this season.
+// 1. One bulk query (paged) covers everyone who has played this season.
 const [y, m] = new Date().toISOString().slice(0, 7).split("-").map(Number);
 const season = `${m >= 9 ? y : y - 1}${(m >= 9 ? y : y - 1) + 1}`;
-const bulk = await getJson(
-  `https://api.nhle.com/stats/rest/en/skater/summary?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`
-);
+const bulk = await skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`).catch(() => null);
 for (const p of bulk?.data ?? []) info.set(p.playerId, { name: p.skaterFullName, pos: p.positionCode });
 
 // 2. Anyone missing (no games yet this season) is looked up individually.

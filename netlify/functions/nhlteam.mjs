@@ -1,5 +1,5 @@
 import bible from "../lib/bible.json" with { type: "json" };
-import { STATS, WEB, etDate, getJson, gameLines, seasonId } from "../lib/nhl.mjs";
+import { WEB, etDate, gameLines, getJson, seasonId, skaterStats } from "../lib/nhl.mjs";
 
 // One NHL team's current skaters (/api/nhlteam?team=EDM) with season totals, last night's line, bible position and
 // price, and the team's game today. The NHL team page merges in owners from /api/standings. Goalies are left out
@@ -11,7 +11,7 @@ export default async (req) => {
 
   const [roster, totals, overnight, schedule] = await Promise.all([
     getJson(`${WEB}/roster/${team}/current`),
-    getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`),
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`),
     gameLines(etDate(-1)),
     getJson(`${WEB}/schedule/${today}`),
   ]);

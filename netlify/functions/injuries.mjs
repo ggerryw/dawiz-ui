@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, getJson, seasonId } from "../lib/nhl.mjs";
+import { getJson, seasonId, skaterStats } from "../lib/nhl.mjs";
 
 // Injuries: every pool player (active roster or bench) on the current NHL injury list, with the owners who have him.
 // The NHL's API has no injury list, so this reads ESPN's public NHL injuries feed (the one behind espn.com's injury
@@ -16,7 +16,7 @@ const key = (name) => name.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(
 export default async () => {
   const [feed, totals] = await Promise.all([
     getJson(ESPN),
-    getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`),
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`),
   ]);
   const teamById = new Map(totals.data.map((p) => [p.playerId, p.teamAbbrevs.split(",").pop().trim()]));
 

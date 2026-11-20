@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, etDate, gameLines, getJson, seasonId } from "../lib/nhl.mjs";
+import { etDate, gameLines, seasonId, skaterStats } from "../lib/nhl.mjs";
 import bible from "../lib/bible.json" with { type: "json" };
 
 // playerId -> owner names, for active roster spots only (bench is ignored here).
@@ -10,7 +10,7 @@ export default async () => {
   const date = etDate(-1);
   const [{ data }, totals] = await Promise.all([
     gameLines(date),
-    getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${seasonId(date)} and gameTypeId=2`)}`),
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId(date)} and gameTypeId=2`)}`),
   ]);
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
   const season = (id) => {

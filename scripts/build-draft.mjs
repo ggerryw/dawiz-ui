@@ -7,6 +7,7 @@
 // owner's active players with their draft pick number and price (freebies priced by pick).
 // Team is the player's team at snapshot time.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { skaterStats } from "../netlify/lib/nhl.mjs";
 
 const out = new URL("../public/draft.json", import.meta.url);
 if (existsSync(out) && !process.argv.includes("--force")) {
@@ -19,11 +20,7 @@ const n = rosters.length; // owners; array order = round-1 pick order
 
 const [y, m] = new Date().toISOString().slice(0, 7).split("-").map(Number);
 const start = m >= 9 ? y : y - 1;
-const bulk = await (
-  await fetch(
-    `https://api.nhle.com/stats/rest/en/skater/summary?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${start}${start + 1} and gameTypeId=2`)}`
-  )
-).json();
+const bulk = await skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${start}${start + 1} and gameTypeId=2`)}`);
 const team = new Map(bulk.data.map((p) => [p.playerId, p.teamAbbrevs.split(",").pop().trim()]));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

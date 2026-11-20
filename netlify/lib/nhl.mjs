@@ -15,16 +15,31 @@ export const seasonId = (date = etDate()) => {
   return `${start}${start + 1}`;
 };
 
+// Retries a few times on 429 (the API rate-limits bursts, and paged stats queries make several calls in a row).
 export const getJson = async (url) => {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`${r.status} ${url}`);
-  return r.json();
+  for (let attempt = 1; ; attempt++) {
+    const r = await fetch(url);
+    if (r.ok) return r.json();
+    if (r.status !== 429 || attempt === 4) throw new Error(`${r.status} ${url}`);
+    await new Promise((done) => setTimeout(done, 400 * attempt));
+  }
+};
+
+// Every row of a skater stats query. The stats API returns at most 100 rows per request (it used to honour
+// limit=-1 but quietly stopped in Nov 2026), so page through with `start`, sorted by player id so pages don't
+// overlap. One request at a time: the API rate-limits bursts. `query` is the rest of the URL, e.g.
+// `cayenneExp=...` or `isAggregate=true&cayenneExp=...`. Returns { data, total } like a single call did.
+const PAGE = 100;
+const BY_ID = encodeURIComponent(JSON.stringify([{ property: "playerId", direction: "ASC" }]));
+export const skaterStats = async (query) => {
+  const data = [];
+  for (let start = 0; ; start += PAGE) {
+    const page = await getJson(`${STATS}?limit=${PAGE}&start=${start}&sort=${BY_ID}&${query}`);
+    data.push(...page.data);
+    if (page.data.length < PAGE || data.length >= page.total) return { data, total: page.total };
+  }
 };
 
 // Every skater game line on one date (regular season), one row per player.
 export const gameLines = (date) =>
-  getJson(
-    `${STATS}?limit=-1&isGame=true&cayenneExp=${encodeURIComponent(
-      `gameDate>="${date}" and gameDate<="${date}" and gameTypeId=2`
-    )}`
-  );
+  skaterStats(`isGame=true&cayenneExp=${encodeURIComponent(`gameDate>="${date}" and gameDate<="${date}" and gameTypeId=2`)}`);

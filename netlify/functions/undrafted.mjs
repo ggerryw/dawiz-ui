@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, etDate, getJson, seasonId } from "../lib/nhl.mjs";
+import { etDate, seasonId, skaterStats } from "../lib/nhl.mjs";
 import bible from "../lib/bible.json" with { type: "json" };
 
 // Drop/pick: a player priced above this in the bible can't be picked.
@@ -13,7 +13,7 @@ const benched = new Map();
 for (const r of rosters) for (const p of r.bench ?? []) benched.set(p.id, [...(benched.get(p.id) ?? []), r.owner]);
 
 export default async () => {
-  const totals = await getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`);
+  const totals = await skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`);
 
   const players = totals.data
     .filter((p) => !taken.has(p.playerId) && p.points > 0)

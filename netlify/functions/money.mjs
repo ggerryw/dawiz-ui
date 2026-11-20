@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, WEB, etDate, getJson, seasonId } from "../lib/nhl.mjs";
+import { WEB, etDate, getJson, seasonId, skaterStats } from "../lib/nhl.mjs";
 import { SEASON_GAMES, byStandings, cents, payPlaces, roundMoney, standingsKey } from "./standings.mjs";
 
 // The Money: what each owner has won so far. Everyone puts in ENTRY; the pots are paid by place in the owner
@@ -20,7 +20,7 @@ const HALFWAY_PAID = null;
 // Places follow the DaWiz standings order (rule 9: TP, then PPG, then goals, then fewest GP); only owners equal on
 // all four share the places they cover, like Round Money.
 
-const totals = (exp) => getJson(`${STATS}?isAggregate=true&limit=-1&cayenneExp=${encodeURIComponent(exp)}`);
+const totals = (exp) => skaterStats(`isAggregate=true&cayenneExp=${encodeURIComponent(exp)}`);
 
 // Owners in standings order (best first) by their active players' totals, from one set of player totals.
 const ownerPoints = (rows) => {

@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { STATS, WEB, etDate, getJson, gameLines, seasonId } from "../lib/nhl.mjs";
+import { WEB, etDate, gameLines, getJson, seasonId, skaterStats } from "../lib/nhl.mjs";
 
 export const SEASON_GAMES = 84; // 84-game seasons from 2026-27 (1344 league games)
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
@@ -63,7 +63,7 @@ export default async () => {
   const season = seasonId();
 
   const [totals, overnight, schedule, nhlStandings] = await Promise.all([
-    getJson(`${STATS}?limit=-1&cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`),
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`),
     gameLines(yesterday),
     getJson(`${WEB}/schedule/${today}`),
     getJson(`${WEB}/standings/${today}`).catch(() => null), // only for games left (The Chase); not worth failing over
