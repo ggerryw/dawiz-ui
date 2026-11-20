@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { etDate, gameLines, onlyIds, seasonId, skaterStats } from "../lib/nhl.mjs";
+import { etDate, gameLines, seasonId, skaterStats } from "../lib/nhl.mjs";
 import bible from "../lib/bible.json" with { type: "json" };
 
 // playerId -> owner names, for active roster spots only (bench is ignored here).
@@ -8,12 +8,13 @@ for (const r of rosters) for (const p of r.players) active.set(p.id, [...(active
 
 export default async () => {
   const date = etDate(-1);
-  // Only the players this page lists: everyone with a point, plus active roster players who played. Then season
-  // totals for just those players (two small queries in a row beat paging through the whole league twice).
-  const { data } = await gameLines(date, ` and (points>=1${onlyIds([...active.keys()]).replace(" and", " or")})`);
-  const totals = await skaterStats(
-    `cayenneExp=${encodeURIComponent(`seasonId=${seasonId(date)} and gameTypeId=2${onlyIds(data.map((p) => p.playerId))}`)}`
-  );
+  // Every game line and every season total, side by side, filtered below. Not narrowed in the query like the other
+  // pages: the NHL answers a "points>=1" filter very slowly (1-2 s a page, ~4 s for this page in total), and
+  // unowned scorers can't be narrowed by player id.
+  const [{ data }, totals] = await Promise.all([
+    gameLines(date),
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId(date)} and gameTypeId=2`)}`),
+  ]);
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
   const season = (id) => {
     const s = byId.get(id);
