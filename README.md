@@ -120,3 +120,4 @@ Auto-publish is turned off. Pushing to GitHub does not change the live site; pub
 - Stats and schedule: `api.nhle.com` and `api-web.nhle.com` (public, no key)
 - Player photos and team logos: `assets.nhle.com`
 - Player links: `nhl.com/player/{id}`
+- Page-view counts: GoatCounter (`gerryssites.goatcounter.com`, no cookies). `common.js` loads its script on the live site (`dawiz-ui.netlify.app`) only, so local testing and other copies of the site don't count; update that check if the site moves to another domain.

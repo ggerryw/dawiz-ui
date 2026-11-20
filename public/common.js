@@ -91,6 +91,16 @@ $("main").insertAdjacentHTML("beforeend", `<footer class="credits">
     <small>No teeth were harmed in the making of these standings. Most of them, anyway.</small></div>
 </footer>`);
 
+// Page-view counts (GoatCounter: no cookies, free; stats at gerryssites.goatcounter.com). Live site only, so local
+// testing, deploy previews and the dev site from the fork don't count. Change the host here if the domain changes.
+if (location.hostname === "dawiz-ui.netlify.app") {
+  const gc = document.createElement("script");
+  gc.dataset.goatcounter = "https://gerryssites.goatcounter.com/count";
+  gc.async = true;
+  gc.src = "https://gc.zgo.at/count.js";
+  document.head.append(gc);
+}
+
 const price = (c) => (c == null ? "" : ` · $${c.toFixed(2)}`);
 const initials = (n) => n.split(" ").map((w) => w[0]).slice(0, 2).join("");
 const photo = (p) => `<span class="photo"><img loading="lazy" alt="" src="https://assets.nhle.com/mugs/nhl/latest/${p.id}.png" onerror="this.parentNode.textContent='${initials(p.name)}'"></span>`;
