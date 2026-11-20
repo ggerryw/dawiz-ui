@@ -1,5 +1,5 @@
 import bible from "../lib/bible.json" with { type: "json" };
-import { WEB, etDate, gameLines, getJson, seasonId, skaterStats } from "../lib/nhl.mjs";
+import { WEB, etDate, gameLines, getJson, onlyIds, seasonId, skaterStats } from "../lib/nhl.mjs";
 
 // One NHL team's current skaters (/api/nhlteam?team=EDM) with season totals, last night's line, bible position and
 // price, and the team's game today. The NHL team page merges in owners from /api/standings. Goalies are left out
@@ -9,11 +9,12 @@ export default async (req) => {
   if (!/^[A-Z]{3}$/.test(team)) return new Response("team must be a 3-letter code", { status: 400 });
   const today = etDate();
 
-  const [roster, totals, overnight, schedule] = await Promise.all([
-    getJson(`${WEB}/roster/${team}/current`),
-    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`),
-    gameLines(etDate(-1)),
-    getJson(`${WEB}/schedule/${today}`),
+  // The roster first, so the stats queries ask only for this team's skaters (1 page each, not the whole league).
+  const [roster, schedule] = await Promise.all([getJson(`${WEB}/roster/${team}/current`), getJson(`${WEB}/schedule/${today}`)]);
+  const ids = onlyIds([...roster.forwards, ...roster.defensemen].map((p) => p.id));
+  const [totals, overnight] = await Promise.all([
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2${ids}`)}`),
+    gameLines(etDate(-1), ids),
   ]);
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
   const lastNight = new Map(overnight.data.map((p) => [p.playerId, p]));

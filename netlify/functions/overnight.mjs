@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { etDate, gameLines, seasonId, skaterStats } from "../lib/nhl.mjs";
+import { etDate, gameLines, onlyIds, seasonId, skaterStats } from "../lib/nhl.mjs";
 import bible from "../lib/bible.json" with { type: "json" };
 
 // playerId -> owner names, for active roster spots only (bench is ignored here).
@@ -8,10 +8,12 @@ for (const r of rosters) for (const p of r.players) active.set(p.id, [...(active
 
 export default async () => {
   const date = etDate(-1);
-  const [{ data }, totals] = await Promise.all([
-    gameLines(date),
-    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId(date)} and gameTypeId=2`)}`),
-  ]);
+  // Only the players this page lists: everyone with a point, plus active roster players who played. Then season
+  // totals for just those players (two small queries in a row beat paging through the whole league twice).
+  const { data } = await gameLines(date, ` and (points>=1${onlyIds([...active.keys()]).replace(" and", " or")})`);
+  const totals = await skaterStats(
+    `cayenneExp=${encodeURIComponent(`seasonId=${seasonId(date)} and gameTypeId=2${onlyIds(data.map((p) => p.playerId))}`)}`
+  );
   const byId = new Map(totals.data.map((p) => [p.playerId, p]));
   const season = (id) => {
     const s = byId.get(id);
@@ -44,7 +46,7 @@ export default async () => {
         x.name.localeCompare(y.name)
     );
 
-  return new Response(JSON.stringify({ date, played: data.length, scorers }), {
+  return new Response(JSON.stringify({ date, scorers }), {
     headers: {
       "content-type": "application/json",
       "cache-control": "public, max-age=60, s-maxage=120",

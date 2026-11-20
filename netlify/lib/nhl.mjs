@@ -40,6 +40,10 @@ export const skaterStats = async (query) => {
   }
 };
 
-// Every skater game line on one date (regular season), one row per player.
-export const gameLines = (date) =>
-  skaterStats(`isGame=true&cayenneExp=${encodeURIComponent(`gameDate>="${date}" and gameDate<="${date}" and gameTypeId=2`)}`);
+// Narrows a stats query to these players: " and playerId in (...)". Asking only for the players a page needs is
+// much faster than paging through the whole league (the pool's ~250 players are 3 pages instead of 8).
+export const onlyIds = (ids) => ` and playerId in (${[...new Set(ids)].join(",") || 0})`;
+
+// Every skater game line on one date (regular season), one row per player. `filter` narrows it, e.g. onlyIds(...).
+export const gameLines = (date, filter = "") =>
+  skaterStats(`isGame=true&cayenneExp=${encodeURIComponent(`gameDate>="${date}" and gameDate<="${date}" and gameTypeId=2${filter}`)}`);

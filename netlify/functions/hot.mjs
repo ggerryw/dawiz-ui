@@ -1,11 +1,13 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { etDate, seasonId, skaterStats } from "../lib/nhl.mjs";
+import { etDate, onlyIds, seasonId, skaterStats } from "../lib/nhl.mjs";
 
 // Who's Hot: points each owner's active players scored over the last 14 complete ET days, and what the same games
 // would have produced at the owner's season pace. Bench players don't count, same as the standings.
 const DAYS = 14;
 
-const totals = (exp) => skaterStats(`isAggregate=true&cayenneExp=${encodeURIComponent(exp)}`);
+// Only owners' active players count, so only their stats are fetched.
+const activeIds = rosters.flatMap((r) => r.players.map((p) => p.id));
+const totals = (exp) => skaterStats(`isAggregate=true&cayenneExp=${encodeURIComponent(exp + onlyIds(activeIds))}`);
 
 export default async () => {
   const from = etDate(-DAYS);

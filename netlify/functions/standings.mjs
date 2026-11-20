@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { WEB, etDate, gameLines, getJson, seasonId, skaterStats } from "../lib/nhl.mjs";
+import { WEB, etDate, gameLines, getJson, onlyIds, seasonId, skaterStats } from "../lib/nhl.mjs";
 
 export const SEASON_GAMES = 84; // 84-game seasons from 2026-27 (1344 league games)
 const teamCache = new Map(); // playerId -> current team, for players with no games yet
@@ -14,6 +14,9 @@ async function currentTeam(id) {
   }
   return teamCache.get(id);
 }
+
+// Every pool player (active and bench): the only players whose stats this page needs.
+const poolIds = rosters.flatMap((r) => [...r.players, ...(r.bench ?? [])].map((p) => p.id));
 
 // How many benches each player is on (the same player can sit on several owners' benches).
 const benchCounts = new Map();
@@ -63,8 +66,8 @@ export default async () => {
   const season = seasonId();
 
   const [totals, overnight, schedule, nhlStandings] = await Promise.all([
-    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2`)}`),
-    gameLines(yesterday),
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${season} and gameTypeId=2${onlyIds(poolIds)}`)}`),
+    gameLines(yesterday, onlyIds(poolIds)),
     getJson(`${WEB}/schedule/${today}`),
     getJson(`${WEB}/standings/${today}`).catch(() => null), // only for games left (The Chase); not worth failing over
   ]);

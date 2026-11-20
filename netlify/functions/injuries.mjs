@@ -1,5 +1,5 @@
 import rosters from "./rosters.json" with { type: "json" };
-import { getJson, seasonId, skaterStats } from "../lib/nhl.mjs";
+import { getJson, onlyIds, seasonId, skaterStats } from "../lib/nhl.mjs";
 
 // Injuries: every pool player (active roster or bench) on the current NHL injury list, with the owners who have him.
 // The NHL's API has no injury list, so this reads ESPN's public NHL injuries feed (the one behind espn.com's injury
@@ -13,10 +13,13 @@ const ORDER = ["IR-LT", "IR", "IR-NR", "OUT", "Day-To-Day"];
 // "Tim Stützle" and "Tim Stutzle", "J.T. Miller" and "JT Miller" compare equal
 const key = (name) => name.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[.']/g, "").replace(/-/g, " ").trim();
 
+// Every pool player (active and bench); only their current teams are needed from the stats.
+const poolIds = rosters.flatMap((r) => [...r.players, ...(r.bench ?? [])].map((p) => p.id));
+
 export default async () => {
   const [feed, totals] = await Promise.all([
     getJson(ESPN),
-    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2`)}`),
+    skaterStats(`cayenneExp=${encodeURIComponent(`seasonId=${seasonId()} and gameTypeId=2${onlyIds(poolIds)}`)}`),
   ]);
   const teamById = new Map(totals.data.map((p) => [p.playerId, p.teamAbbrevs.split(",").pop().trim()]));
 
