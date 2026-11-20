@@ -30,6 +30,7 @@ Round money: in each draft round, the active players with at least 1 point are r
 
 - `public/` is the frontend: `index.html` (standings), `overnight.html` (everyone who scored last night, with their pool owner), `team.html` (one owner's roster, wide screens) and `draft.html` (recap of the draft, read from the static `draft.json`), sharing `style.css` and `common.js`. No framework or build step.
 - `netlify/functions/standings.mjs` and `overnight.mjs` are Netlify functions (shared helpers in `netlify/lib/nhl.mjs`). On each page load they pull stats, last night's games and today's schedule from the public NHL API and return JSON; `standings` totals each owner's active players, `overnight` lists last night's scorers and who owns them. (The NHL API can't be called straight from a browser, which is why the function exists.)
+- Player stats come from the NHL's stats endpoint (`api.nhle.com/stats/rest/en/skater/summary`), which returns **at most 100 rows per request**. Every stats call goes through `skaterStats()` in `netlify/lib/nhl.mjs`, which pages through with `start` (sorted by player id, so pages don't overlap) until it has every row. Most pages also narrow the query to the players they need with `onlyIds()`: the pool's ~250 players are 3 pages instead of 8 for the whole league. See Known behavior.
 - `data/` holds the two spreadsheets you edit by hand. `data/teamFeed.csv` is the source of truth for who owns whom. `data/bibleFeed.csv` lists every player with their draft price and position, and is the source of truth for both. A drafted player listed at $0.00 is a "freebie" priced by draft position: (owners × 16 + 1 − pick) / 100.
 - `scripts/build-bible.mjs` turns the bible into `netlify/lib/bible.json`; `scripts/build-rosters.mjs` turns `data/teamFeed.csv` into `netlify/functions/rosters.json`, using bible positions.
 - `server.mjs` is a local stand-in for Netlify, for testing only.
@@ -104,6 +105,11 @@ Auto-publish is turned off. Pushing to GitHub does not change the live site; pub
 ## Known behavior
 
 - **Standings are live.** Season totals come straight from the NHL stats, so a point appears shortly after a game ends, including games finished earlier today. "Last Night" is only the previous day's games (Eastern time), so TP minus Last Night is not strictly "yesterday's standings" until the day rolls over. This was considered and deliberately left as is.
+- **The NHL stats endpoint returns 100 rows at most.** It used to honour `limit=-1` (all rows), but on Nov 20, 2026 it started ignoring it and quietly returning the first 100, while still reporting the full `total`. Nothing errored: players past row 100 just showed 0 GP and 0 points, so Standings collapsed. Never go back to a single `limit=-1` call; use `skaterStats()`. Related lessons:
+  - Sort the pages (`skaterStats()` sorts by player id). Without a fixed order, rows can shift between pages, so players get counted twice or missed.
+  - One page at a time, not all at once: the API rate-limits bursts (HTTP 429), and `getJson()` retries a few times when that happens.
+  - Filtering by player id (`playerId in (...)`) is quick. Filtering on a stat such as `points>=1` is very slow on the NHL's side (1-2 s a page), so Overnight fetches everything and filters in code instead.
+  - Paging means several requests per page load: about 1 s uncached for the whole league, 0.3-0.4 s for just the pool's players. The NHL's own cache (up to 5 minutes) makes repeat loads faster.
 - **No auto-refresh.** Each page fetches its data once when opened; reload to update. A tab left open from before a deploy keeps running the old code until reloaded.
 - **"Playing Tonight" / game pills** use the NHL schedule for today (Eastern date) and count every game today, played or not. Postponed games are ignored.
 - **Netlify badge.** Netlify adds its own "Powered by Netlify" badge and script to every page; it is not in this repo and can't be removed from the code.
